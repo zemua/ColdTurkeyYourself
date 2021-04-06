@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="devs.mrp.coolyourturkey">
+
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_pavo_hourglass"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_pavo_hourglass_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:hasFragileUserData="true">
+
+        <receiver android:name="devs.mrp.coolyourturkey.watchdog.AutoStart">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name="devs.mrp.coolyourturkey.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.listados.ActivityListaOnOff">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.usagestats.StatsActivity">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.AddGroupActivity">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity">
+        </activity>
+        <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
+            android:exported="false"
+            android:description="@string/descripcion_servicio_watchdog" >
+        </service>
+    </application>
+
+</manifest>
