@@ -15,6 +15,7 @@ import java.util.ListIterator;
 public class AppLister {
     private static final String TAG = "AppLister";
     private final PackageManager pm;
+    private List<ApplicationInfo> mPackagesList;
     private List<ApplicationInfo> mPackages;
     private Context mContext;
 
@@ -25,6 +26,7 @@ public class AppLister {
         mPackages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         removeCurrentApp(); // don't list this app for positive-negative
         mPackages.sort(new MyComp());
+        mPackagesList = new ArrayList<>(mPackages);
     }
 
     public List<ApplicationInfo> getList(){
@@ -32,8 +34,8 @@ public class AppLister {
     }
 
     public List<ApplicationInfo> setNonSystemList(){
-        List<ApplicationInfo> packages = mPackages;
-        ListIterator<ApplicationInfo> iterator = packages.listIterator();
+        mPackages = new ArrayList<>(mPackagesList);
+        ListIterator<ApplicationInfo> iterator = mPackages.listIterator();
         while (iterator.hasNext()){
             ApplicationInfo app = iterator.next();
             try {
@@ -44,12 +46,12 @@ public class AppLister {
                 e.printStackTrace();
             }
         }
-        return packages;
+        return mPackages;
     }
 
     public List<ApplicationInfo> setSystemList(){
-        List<ApplicationInfo> packages = mPackages;
-        return packages;
+        mPackages = new ArrayList<>(mPackagesList);
+        return mPackages;
     }
 
     public AppLister removeCurrentApp(){
