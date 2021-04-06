@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 
 public class AppLister {
     private static final String TAG = "AppLister";
@@ -26,7 +30,7 @@ public class AppLister {
         mPackages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         removeCurrentApp(); // don't list this app for positive-negative
         mPackages.sort(new MyComp());
-        mPackagesList = new ArrayList<>(mPackages);
+        mPackagesList = new ArrayList<>(mPackages); // set baseline for operations
     }
 
     public List<ApplicationInfo> getList(){
@@ -51,6 +55,19 @@ public class AppLister {
 
     public List<ApplicationInfo> setSystemList(){
         mPackages = new ArrayList<>(mPackagesList);
+        return mPackages;
+    }
+
+    public List<ApplicationInfo> setPositiveList(List<AplicacionListada> positiveApps){
+        mPackages = new ArrayList<>(mPackagesList); // baseline
+        Map<String, String> map = positiveApps.stream().collect(Collectors.toMap(AplicacionListada::getNombre, AplicacionListada::getLista));
+        ListIterator<ApplicationInfo> iterator = mPackages.listIterator();
+        while (iterator.hasNext()){
+            ApplicationInfo app = iterator.next();
+            if (!map.containsKey(app.packageName)){
+                iterator.remove();
+            }
+        }
         return mPackages;
     }
 
