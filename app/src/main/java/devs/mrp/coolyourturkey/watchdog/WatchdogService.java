@@ -57,6 +57,8 @@ public class WatchdogService extends LifecycleService {
     ValueMapRepository mValueMapRepo;
     //boolean isSwitchOn = true;
     long lastEpoch;
+    long milisTranscurridos;
+    long now;
     ContadorRepository mContadorRepo;
     Contador mUltimoContador;
     private Exporter mExporter;
@@ -187,8 +189,8 @@ public class WatchdogService extends LifecycleService {
                         if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
                             // tiempo transcurrido desde el último check
-                            long now = System.currentTimeMillis();
-                            long milisTranscurridos = now - lastEpoch;
+                            now = System.currentTimeMillis();
+                            milisTranscurridos = now - lastEpoch;
 
                             if (milisTranscurridos < 0) {
                                 milisTranscurridos = 0;
@@ -285,8 +287,13 @@ public class WatchdogService extends LifecycleService {
                                     } else {
                                         mScreenBlock.desbloquear();
                                     }
-                                    if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
+                                    //if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
+                                    if (mToqueDeQuedaHandler.isToqueDeQueda()) {
                                         mToqueDeQuedaHandler.avisar();
+                                        if (lestanotif != ForegroundAppChecker.NEGATIVO) {
+                                            // if negative it is blocked and decreased before, if not and toque de queda, it decreases points here
+                                            negativeDecreaseCounter();
+                                        }
                                     }
                                 }
                             }
@@ -369,5 +376,18 @@ public class WatchdogService extends LifecycleService {
     public IBinder onBind(Intent intent) {
         super.onBind(intent);
         return binder;
+    }
+
+    private void negativeDecreaseCounter(){
+        long lproporcionMilisTranscurridos = milisTranscurridos * sProporcion;
+        long lacumula = mUltimoContador.getAcumulado() - lproporcionMilisTranscurridos;
+        pushAcumulado(now, lacumula);
+    }
+
+    private void positiveIncreaseCounter() {
+        if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
+            long lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
+            pushAcumulado(now, lacumula);
+        }
     }
 }

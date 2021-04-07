@@ -66,12 +66,12 @@
     <string name="no_avisar">No me avises</string>
     <string name="si_avisar">Avísame</string>
     <string name="text_aviso_cambio_neutral_buena_mala">Recibe un breve aviso cuando cambias entre actividades positivas, negativas o neutrales.</string>
-    <string name="texto_toque_de_queda_desde">Horario de toque de queda, apps buenas no suman puntos, apps malas son bloqueadas.</string>
+    <string name="texto_toque_de_queda_desde">Horario de toque de queda, todas las apps restan puntos, apps malas son bloqueadas.</string>
     <string name="guion"> - </string>
     <string name="cero_horas">00:00</string>
     <string name="avisame_cuando_estemos_llegando_al_toque_de_queda">Avísame cuando estemos llegando al toque de queda.</string>
     <string name="cuantos_minutos_aviso_antes_toque_de_queda">Cuántos minutos antes del toque de queda debo avisarte?</string>
-    <string name="toque_de_queda">Toque de Queda, no sumas puntos</string>
+    <string name="toque_de_queda">Toque de Queda, restando puntos...</string>
     <string name="toque_de_queda_asecas">Toque de Queda</string>
     <string name="minutos_para_toque_de_queda">Minutos para toque de queda</string>
     <string name="toque_de_queda_explicacion_dialogo">El toque de queda es una parte importante para dormir bien por las noches, recomendamos que se inicie al menos 30 minutos antes de ir a dormir, ¿seguro que quieres cambiarlo?</string>
