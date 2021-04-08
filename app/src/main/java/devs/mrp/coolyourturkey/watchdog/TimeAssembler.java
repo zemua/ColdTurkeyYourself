@@ -29,7 +29,8 @@ public class TimeAssembler implements Feedbacker<Long> {
 
     private boolean contadorFlag = false;
     private boolean importadoFlag = false;
-    private Long tiempoContador = 0L;
+    private Contador mUltimoContador;
+    //private Long tiempoContador = 0L;
     private Long tiempoImportado = 0L;
 
     public TimeAssembler(Application app, LifecycleOwner owner){
@@ -43,7 +44,11 @@ public class TimeAssembler implements Feedbacker<Long> {
             if (tipo == Importer.FEEDBACK_TIEMPO){
                 tiempoImportado = feedback;
                 importadoFlag = true;
-                giveFeedback(FEEDBACK_SUMATORIO, (tiempoContador+tiempoImportado)/mMisPreferencias.getProporcionTrabajoOcio());
+                if (mUltimoContador != null) {
+                    giveFeedback(FEEDBACK_SUMATORIO, (mUltimoContador.getAcumulado() + tiempoImportado) / mMisPreferencias.getProporcionTrabajoOcio());
+                } else {
+                    giveFeedback(FEEDBACK_SUMATORIO, (tiempoImportado) / mMisPreferencias.getProporcionTrabajoOcio());
+                }
             }
         });
 
@@ -52,16 +57,17 @@ public class TimeAssembler implements Feedbacker<Long> {
             @Override
             public void onChanged(List<Contador> contadors) {
                 if (contadors.size() > 0){
-                    tiempoContador = contadors.get(0).getAcumulado();
+                    //tiempoContador = contadors.get(0).getAcumulado();
+                    mUltimoContador = contadors.get(0);
                     contadorFlag = true;
-                    giveFeedback(FEEDBACK_SUMATORIO, (tiempoContador+tiempoImportado)/mMisPreferencias.getProporcionTrabajoOcio());
+                    giveFeedback(FEEDBACK_SUMATORIO, (mUltimoContador.getAcumulado()+tiempoImportado)/mMisPreferencias.getProporcionTrabajoOcio());
                 }
             }
         });
     }
 
     public Long getLast(){
-        return (tiempoContador + mImporter.importarTiempoTotal())/mMisPreferencias.getProporcionTrabajoOcio();
+        return (mUltimoContador.getAcumulado() + mImporter.importarTiempoTotal())/mMisPreferencias.getProporcionTrabajoOcio();
     }
 
     @Override
