@@ -20,14 +20,9 @@ public class WatchdogScreenOnOffReceiver extends BroadcastReceiver implements Fe
     public static final int APAGADA = 1;
 
     private List<FeedbackListener<Object>> feedbackList = new ArrayList<>();
-    private WatchdogStarter starter;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // in case the service has been killed somehow
-        starter = new WatchdogStarter(context);
-        starter.startService();
-
         int laction = -1;
         if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)){
             laction = APAGADA;
