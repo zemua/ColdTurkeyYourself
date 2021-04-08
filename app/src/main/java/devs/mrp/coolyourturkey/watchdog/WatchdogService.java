@@ -196,9 +196,7 @@ public class WatchdogService extends LifecycleService {
                                 milisTranscurridos = 0;
                             }
                             lastEpoch = now;
-
-                            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                            boolean isScreenOn = pm.isInteractive();
+                            boolean isScreenOn = mHandler.ifPhoneOnAndUnlocked();
 
                             synchronized (LOCK_0) {
                                 if (isScreenOn && ejecuta) {
@@ -288,10 +286,10 @@ public class WatchdogService extends LifecycleService {
                                         mScreenBlock.desbloquear();
                                     }
                                     //if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
+                                    mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
                                     if (mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                        mToqueDeQuedaHandler.avisar();
                                         if (lestanotif != ForegroundAppChecker.NEGATIVO) {
-                                            // if negative it is blocked and decreased before, if not and toque de queda, it decreases points here
+                                            // if negative it is blocked + decreased before, if not and toque de queda, it decreases points here
                                             negativeDecreaseCounter();
                                         }
                                     }

@@ -26,8 +26,8 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     private AppLister mDataset;
     private Context mContext;
-    private List<AplicacionListada> listaAppsSetted;
-    private boolean loaded = false; // prevent switches' weird behavior on further dataset update
+    private List<AppToGroup> listaAppsSetted;
+    private boolean loaded = false; // prevent switches' weird behavior on further group DB updates
 
     public ReviewGroupAppsAdapter(AppLister dataset, Context context){
         this.mDataset = dataset;
@@ -63,7 +63,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mDataset.getList().size();
     }
 
     public static class ReviewGroupAppsViewHolder extends RecyclerView.ViewHolder {
@@ -83,6 +83,21 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
             hposicion = -1;
         }
     }
+
+    public void updateDataSet(List<AplicacionListada> positiveApps) {
+        mDataset.setPositiveList(positiveApps);
+        this.notifyDataSetChanged();
+    }
+
+    public void firstGroupAllocationDbLoad(List<AppToGroup> appsToGroups) {
+        listaAppsSetted = appsToGroups;
+        if (!loaded) {
+            loaded = true;
+            this.notifyDataSetChanged();
+        }
+    }
+
+    public void resetLoaded() { loaded = false; }
 
     private Integer getAppGroupId(String packageName){
         // TODO

@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.watchdog;
 
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +11,8 @@ import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.PowerManager;
+import android.util.Log;
 
 import devs.mrp.coolyourturkey.MainActivity;
 import devs.mrp.coolyourturkey.R;
@@ -22,6 +25,8 @@ import java.util.Formatter;
 import java.util.List;
 
 public class WatchdogHandler implements Feedbacker<Object> {
+
+    private static final String TAG = "WATCH DOG HANDLER";
 
     public static final int TURKEY_NOTIFICATION_ID = 100;
     public static final String CHANNEL_ID = "coldturkeyyourself_service_channel";
@@ -217,5 +222,28 @@ public class WatchdogHandler implements Feedbacker<Object> {
     @Override
     public void addFeedbackListener(FeedbackListener<Object> listener) {
         feedbackList.add(listener);
+    }
+
+    public boolean ifPhoneIsUnlocked() {
+        boolean isPhoneLock = false;
+        if (mContext != null) {
+            KeyguardManager myKM = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+            if (myKM != null && myKM.isKeyguardLocked()) {
+                isPhoneLock = true;
+            }
+        }
+        Log.d(TAG, "phone is locked: " + isPhoneLock);
+        return !isPhoneLock;
+    }
+
+    public boolean ifPhoneIsOn() {
+        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isInteractive();
+        Log.d(TAG, "phone is on: " + isScreenOn);
+        return isScreenOn;
+    }
+
+    public boolean ifPhoneOnAndUnlocked() {
+        return ifPhoneIsUnlocked() & ifPhoneIsOn();
     }
 }
