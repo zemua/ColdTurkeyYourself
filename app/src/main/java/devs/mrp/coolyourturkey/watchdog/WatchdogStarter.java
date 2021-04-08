@@ -24,8 +24,8 @@ public class WatchdogStarter {
     public void startService(){
         createServiceIntent();
         ContextCompat.startForegroundService(mContext, mServiceIntent);
-        Intent intent = new Intent(mContext, WatchdogService.class);
         if (mConnection != null) {
+            Intent intent = new Intent(mContext, WatchdogService.class);
             mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 

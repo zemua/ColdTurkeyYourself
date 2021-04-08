@@ -141,7 +141,13 @@ public class WatchdogService extends LifecycleService {
 
         setEjecuta(true);
 
-        if (!ejecutor.isExecuting()) {
+        if (!ejecutor.isExecuting()) { // si ya hay un servicio checkeando, no vamos
+
+            /**
+             * the following are set before the "execute" because
+             * livedata cannot be observed in a background thread
+             */
+
             // Si reanudamos los checks después de estar parado, contar tiempo a partir de ahora
             lastEpoch = System.currentTimeMillis();
 
@@ -171,136 +177,140 @@ public class WatchdogService extends LifecycleService {
                 }
             });
 
-            ejecutor.singleExecute(() -> {
-                // referencia de la ultima notificacion y la que se mandaría ahora
-                // para ver si actualizamos o mantenemos
-                // para no mandar actalizaciones innecesarias
-                int lultimanotif = ForegroundAppChecker.NULL;
-                int lestanotif = ForegroundAppChecker.NULL;
-                String lultimonombre = "";
-                long lultimoAcumulado = 0L;
-                boolean lupdated = false;
+            if (!ejecutor.isExecuting()) { // recheck nothing changed
 
-                while (getEjecuta()) {
-                    try {
-                        sleeptime = 1000 * 3;
-                        sleep(sleeptime);
+                ejecutor.singleExecute(() -> {
 
-                        if (PermisosChecker.checkPermisoEstadisticas(this)) {
+                    // referencia de la ultima notificacion y la que se mandaría ahora
+                    // para ver si actualizamos o mantenemos
+                    // para no mandar actalizaciones innecesarias
+                    int lultimanotif = ForegroundAppChecker.NULL;
+                    int lestanotif = ForegroundAppChecker.NULL;
+                    String lultimonombre = "";
+                    long lultimoAcumulado = 0L;
+                    boolean lupdated = false;
 
-                            // tiempo transcurrido desde el último check
-                            now = System.currentTimeMillis();
-                            milisTranscurridos = now - lastEpoch;
+                    while (getEjecuta()) {
+                        try {
+                            sleeptime = 1000 * 3;
+                            sleep(sleeptime);
 
-                            if (milisTranscurridos < 0) {
-                                milisTranscurridos = 0;
-                            }
-                            lastEpoch = now;
-                            boolean isScreenOn = mHandler.ifPhoneOnAndUnlocked();
+                            if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
-                            synchronized (LOCK_0) {
-                                if (isScreenOn && ejecuta) {
-                                    ForegroundAppSpec lapp = new ForegroundAppSpec();
-                                    String lnombre;
+                                // tiempo transcurrido desde el último check
+                                now = System.currentTimeMillis();
+                                milisTranscurridos = now - lastEpoch;
 
-                                    lchecker.getForegroundApp(lapp, sleeptime);
-                                    lnombre = lapp.packageName;
+                                if (milisTranscurridos < 0) {
+                                    milisTranscurridos = 0;
+                                }
+                                lastEpoch = now;
+                                boolean isScreenOn = mHandler.ifPhoneOnAndUnlocked();
 
-                                    int ltipo = lapp.appType;
-                                    long lacumula = 0L;
-                                    mTiempoImportado = mImporter.importarTiempoTotal();
-                                    Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
-                                    sProporcion = mMisPreferencias.getProporcionTrabajoOcio();
-                                    switch (ltipo) {
-                                        case ForegroundAppChecker.NEGATIVO:
-                                            lestanotif = ForegroundAppChecker.NEGATIVO;
-                                            if (mUltimoContador != null) {
-                                                long lproporcionMilisTranscurridos = milisTranscurridos * sProporcion;
-                                                lacumula = mUltimoContador.getAcumulado() - lproporcionMilisTranscurridos;
-                                            }
-                                            if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                mNotificacion = mHandler.getNotificacionNegativa(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                lupdated = true;
-                                            } else {
-                                                lupdated = false;
-                                            }
-                                            if (!mScreenBlock.estamosBloqueando()) {
-                                                pushAcumulado(now, lacumula);
-                                            }
-                                            new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
-                                            break;
-                                        case ForegroundAppChecker.NEUTRO:
-                                            lestanotif = ForegroundAppChecker.NEUTRO;
-                                            lacumula = mUltimoContador.getAcumulado();
-                                            if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                lupdated = true;
-                                            } else {
-                                                lupdated = false;
-                                            }
-                                            break;
-                                        case ForegroundAppChecker.NULL:
-                                            lestanotif = ForegroundAppChecker.NULL;
-                                            lacumula = mUltimoContador.getAcumulado();
-                                            if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                lupdated = true;
-                                            } else {
-                                                lupdated = false;
-                                            }
-                                            break;
-                                        case ForegroundAppChecker.POSITIVO:
-                                            lestanotif = ForegroundAppChecker.POSITIVO;
-                                            if (mUltimoContador != null) {
-                                                lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
-                                            }
-                                            if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                mNotificacion = mHandler.getNotificacionPositiva(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                lupdated = true;
-                                            } else {
-                                                lupdated = false;
-                                            }
-                                            if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                                pushAcumulado(now, lacumula);
-                                            }
-                                            break;
-                                    }
+                                synchronized (LOCK_0) {
+                                    if (isScreenOn && ejecuta) {
+                                        ForegroundAppSpec lapp = new ForegroundAppSpec();
+                                        String lnombre;
 
-                                    if (lestanotif != lultimanotif && mMisPreferencias.getAvisoCambioPositivaNegativaNeutral()) {
-                                        new TimeToaster(this.getApplication()).noticeChanged(lestanotif);
-                                    }
-                                    if (lupdated) {
-                                        wasPausado = false;
-                                        mExporter.export(lacumula);
-                                        actualizaNotificacion(mNotificacion);
-                                        lultimonombre = lnombre;
-                                        lultimoAcumulado = lacumula;
-                                        lultimanotif = lestanotif;
-                                        lupdated = false;
-                                    }
-                                    if ((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) {
-                                        if (PermisosChecker.checkPermisoAlertas(this)) {
-                                            mScreenBlock.go();
+                                        lchecker.getForegroundApp(lapp, sleeptime);
+                                        lnombre = lapp.packageName;
+
+                                        int ltipo = lapp.appType;
+                                        long lacumula = 0L;
+                                        mTiempoImportado = mImporter.importarTiempoTotal();
+                                        Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
+                                        sProporcion = mMisPreferencias.getProporcionTrabajoOcio();
+                                        switch (ltipo) {
+                                            case ForegroundAppChecker.NEGATIVO:
+                                                lestanotif = ForegroundAppChecker.NEGATIVO;
+                                                if (mUltimoContador != null) {
+                                                    long lproporcionMilisTranscurridos = milisTranscurridos * sProporcion;
+                                                    lacumula = mUltimoContador.getAcumulado() - lproporcionMilisTranscurridos;
+                                                }
+                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                                    mNotificacion = mHandler.getNotificacionNegativa(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                                    lupdated = true;
+                                                } else {
+                                                    lupdated = false;
+                                                }
+                                                if (!mScreenBlock.estamosBloqueando()) {
+                                                    pushAcumulado(now, lacumula);
+                                                }
+                                                new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
+                                                break;
+                                            case ForegroundAppChecker.NEUTRO:
+                                                lestanotif = ForegroundAppChecker.NEUTRO;
+                                                lacumula = mUltimoContador.getAcumulado();
+                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                                    lupdated = true;
+                                                } else {
+                                                    lupdated = false;
+                                                }
+                                                break;
+                                            case ForegroundAppChecker.NULL:
+                                                lestanotif = ForegroundAppChecker.NULL;
+                                                lacumula = mUltimoContador.getAcumulado();
+                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                                    lupdated = true;
+                                                } else {
+                                                    lupdated = false;
+                                                }
+                                                break;
+                                            case ForegroundAppChecker.POSITIVO:
+                                                lestanotif = ForegroundAppChecker.POSITIVO;
+                                                if (mUltimoContador != null) {
+                                                    lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
+                                                }
+                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                                    mNotificacion = mHandler.getNotificacionPositiva(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                                    lupdated = true;
+                                                } else {
+                                                    lupdated = false;
+                                                }
+                                                if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
+                                                    pushAcumulado(now, lacumula);
+                                                }
+                                                break;
                                         }
-                                    } else {
-                                        mScreenBlock.desbloquear();
-                                    }
-                                    //if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
-                                    mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
-                                    if (mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                        if (lestanotif != ForegroundAppChecker.NEGATIVO) {
-                                            // if negative it is blocked + decreased before, if not and toque de queda, it decreases points here
-                                            negativeDecreaseCounter();
+
+                                        if (lestanotif != lultimanotif && mMisPreferencias.getAvisoCambioPositivaNegativaNeutral()) {
+                                            new TimeToaster(this.getApplication()).noticeChanged(lestanotif);
+                                        }
+                                        if (lupdated) {
+                                            wasPausado = false;
+                                            mExporter.export(lacumula);
+                                            actualizaNotificacion(mNotificacion);
+                                            lultimonombre = lnombre;
+                                            lultimoAcumulado = lacumula;
+                                            lultimanotif = lestanotif;
+                                            lupdated = false;
+                                        }
+                                        if ((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) {
+                                            if (PermisosChecker.checkPermisoAlertas(this)) {
+                                                mScreenBlock.go();
+                                            }
+                                        } else {
+                                            mScreenBlock.desbloquear();
+                                        }
+                                        //if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
+                                        mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
+                                        if (mToqueDeQuedaHandler.isToqueDeQueda()) {
+                                            if (lestanotif != ForegroundAppChecker.NEGATIVO) {
+                                                // if negative it is blocked + decreased before, if not and toque de queda, it decreases points here
+                                                negativeDecreaseCounter();
+                                            }
                                         }
                                     }
                                 }
                             }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-                }
-            });
+                });
+            }
         }
 
         return START_STICKY;
