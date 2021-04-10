@@ -17,7 +17,6 @@ public class AppToGroup {
     @ColumnInfo(name = "appname")
     private String appName;
 
-    @NonNull
     @ColumnInfo(name = "groupid")
     private Integer groupId;
 

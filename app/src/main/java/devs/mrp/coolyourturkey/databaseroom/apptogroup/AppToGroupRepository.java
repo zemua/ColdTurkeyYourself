@@ -16,7 +16,7 @@ public class AppToGroupRepository {
 
     private AppToGroupRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
-        // mDao = db.appToGroupDao(); // TODO incluir en room
+        mDao = db.appToGroupDao();
         mAllAppToGroup = mDao.findAllAppToGroup();
     }
 
@@ -30,6 +30,24 @@ public class AppToGroupRepository {
     public void insert(AppToGroup appToGroup) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.insert(appToGroup);
+        });
+    }
+
+    public void deleteById(Integer id) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteById(id);
+        });
+    }
+
+    public void deleteByIds(List<Integer> ids) {
+        ids.forEach(id -> {
+            deleteById(id);
+        });
+    }
+
+    public void deleteByGroupId(Integer groupid) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteByGroupId(groupid);
         });
     }
 

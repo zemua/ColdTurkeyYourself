@@ -67,7 +67,10 @@ public class TimeAssembler implements Feedbacker<Long> {
     }
 
     public Long getLast(){
-        return (mUltimoContador.getAcumulado() + mImporter.importarTiempoTotal())/mMisPreferencias.getProporcionTrabajoOcio();
+        if (contadorFlag && importadoFlag) {
+            return (mUltimoContador.getAcumulado() + mImporter.importarTiempoTotal()) / mMisPreferencias.getProporcionTrabajoOcio();
+        }
+        return 0L;
     }
 
     @Override

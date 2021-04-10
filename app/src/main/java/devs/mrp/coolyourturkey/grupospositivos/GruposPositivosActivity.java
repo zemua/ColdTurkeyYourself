@@ -49,6 +49,7 @@ public class GruposPositivosActivity extends AppCompatActivity implements Feedba
                     break;
                 case GruposPositivosFragment.FEEDBACK_ITEM_CLICKED:
                     intent = new Intent(GruposPositivosActivity.this, ReviewGroupActivity.class);
+                    intent.putExtra(ReviewGroupActivity.EXTRA_GROUP_ID, (Integer)feedback);
                     startActivityForResult(intent, LAUNCH_REVIEW);
                     break;
             }

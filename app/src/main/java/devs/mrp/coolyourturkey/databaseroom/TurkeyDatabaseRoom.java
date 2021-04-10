@@ -9,6 +9,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
+import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorDao;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
@@ -24,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class}, version = 3)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class}, version = 4)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -33,6 +35,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract ContadorDao contadorDao();
     public abstract ImportablesDao importablesDao();
     public abstract GrupoPositivoDao grupoPositivoDao();
+    public abstract AppToGroupDao appToGroupDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -66,6 +69,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         }
     };
 
+    /**
+     * Migrate from:
+     * version 3
+     * to
+     * version 4
+     */
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'apptogroup' ('id' INTEGER NOT NULL, 'appname' TEXT NOT NULL, 'groupid' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
     public static TurkeyDatabaseRoom getDatabase(final Context context) {
         mContext = context;
         if (INSTANCE == null) {
@@ -73,7 +89,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4) // add the migration schemas separated by commas
                             .build();
                 }
             }

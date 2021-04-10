@@ -100,4 +100,5 @@
     <string name="borrar">Borrar</string>
     <string name="condiciones_para_sumar">Condiciones para sumar puntos</string>
     <string name="exportar">Exportar</string>
+    <string name="en_otro_grupo">En otro grupo</string>
 </resources>

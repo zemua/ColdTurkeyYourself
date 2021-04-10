@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface AppToGroupDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(AppToGroup appToGroup);
 
     @Query("DELETE FROM apptogroup")
@@ -19,6 +19,9 @@ public interface AppToGroupDao {
 
     @Query("DELETE FROM apptogroup WHERE id = :id")
     void deleteById(Integer id);
+
+    @Query("DELETE FROM apptogroup WHERE groupid = :groupid")
+    void deleteByGroupId(Integer groupid);
 
     @Query("SELECT * FROM apptogroup ORDER BY id ASC")
     LiveData<List<AppToGroup>> findAllAppToGroup();

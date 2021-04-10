@@ -23,6 +23,18 @@ public class AppToGroupViewModel extends AndroidViewModel {
         mRepo.insert(appToGroup);
     }
 
+    public void deleteById(Integer id) {
+        mRepo.deleteById(id);
+    }
+
+    public void deleteByIds(List<Integer> ids) {
+        mRepo.deleteByIds(ids);
+    }
+
+    public void deleteByGroupId(Integer groupid) {
+        mRepo.deleteByGroupId(groupid);
+    }
+
     public  LiveData<List<AppToGroup>> getAllAppToGroup() {
         return mAllAppToGroup;
     }
