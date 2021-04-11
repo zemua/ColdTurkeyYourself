@@ -122,6 +122,12 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mDialogDelayer.interrumpe();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outstate) {
         outstate.putString(KEY_BUNDLE_MENSAJE, mMensaje);
         outstate.putString(KEY_BUNDLE_TITULO, mTitle);

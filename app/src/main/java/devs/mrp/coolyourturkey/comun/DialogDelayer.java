@@ -23,7 +23,7 @@ public class DialogDelayer implements Executor, Feedbacker<Integer> {
 
     AlertDialog mDialog;
     Integer countStart;
-    Thread t;
+    MyThread t;
     String mMensaje;
     Context mContext;
     Handler mHandler;
@@ -91,6 +91,64 @@ public class DialogDelayer implements Executor, Feedbacker<Integer> {
         };
     }
 
+    private class MyThread extends Thread {
+        boolean keepRunning = true;
+
+        MyThread() {
+            super();
+        }
+
+        @Override
+        public void run() {
+            DialogInterface.OnClickListener emptyListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // nada hasta que la cuenta llegue a cero
+                }
+            };
+            if (mMisPreferencias.getTiempoDeGraciaActivado()) {
+                tiempo = countStart;
+            } else {
+                tiempo = 0;
+            }
+            while (tiempo > 0 && keepRunning){
+                try {
+                    Thread.sleep(1000);
+                    tiempo--;
+                    final int t2 = tiempo; // para poder usarlo en el runnable
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                            b.setText(String.valueOf(t2));
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (keepRunning) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        b.setText(mMensaje);
+                        mDialog.setButton(DialogInterface.BUTTON_POSITIVE, mMensaje, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                giveFeedback(FEEDBACK_OK, null);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        void stopRunning(){
+            keepRunning = false;
+        }
+    }
+
     @Override
     public void giveFeedback(int tipo, Integer feedback) {
         listeners.forEach((listener)->{
@@ -109,13 +167,11 @@ public class DialogDelayer implements Executor, Feedbacker<Integer> {
 
     @Override
     public void execute(Runnable r) {
-        t = new Thread(r);
+        t = new MyThread();
         t.start();
     }
 
     public void interrumpe(){
-        if (t.isAlive()){
-            t.interrupt();
-        }
+        t.stopRunning();
     }
 }
