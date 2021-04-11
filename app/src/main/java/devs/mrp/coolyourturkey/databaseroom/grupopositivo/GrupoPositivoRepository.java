@@ -37,4 +37,10 @@ public class GrupoPositivoRepository {
         return mAllGrupoPositivo;
     }
 
+    public void deleteById(Integer id){
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(()-> {
+            mDao.deleteById(id);
+        });
+    }
+
 }

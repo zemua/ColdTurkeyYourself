@@ -673,26 +673,6 @@ public class ConfiguracionFragment extends Fragment {
 
         if (titulo != null && mensaje != null && mContext.getDrawable(iconoResId) != null) {
             mDialogo = new DialogWithDelay(iconoResId, titulo, mensaje, 0);
-
-            // poner cuenta atrás en el botón cuando esté lista la instancia del AlertDialog
-            /*mDialogo.addFeedbackListener(new FeedbackListener<AlertDialog>() {
-                @Override
-                public void giveFeedback(int tipo, AlertDialog feedback, Object... args) {
-                    if (tipo == DialogWithDelay.FEEDBACK_ALERT_DIALOG) {
-                        mDialogDelayer = new DialogDelayer(feedback, DialogDelayer.CUENTA_ATRAS_SEGUNDOS, mContext.getString(R.string.aceptar), mContext);
-                        mDialogDelayer.addFeedbackListener(new FeedbackListener<Integer>() {
-                            @Override
-                            public void giveFeedback(int tipo, Integer feedback, Object... args) {
-                                if (tipo == DialogDelayer.FEEDBACK_OK) {
-                                    mDialogo.pulsadoAceptar();
-                                }
-                            }
-                        });
-                        mDialogDelayer.go();
-                    }
-                }
-            });*/
-
             mDialogo.setTargetFragment(ConfiguracionFragment.this, tipo);
             mDialogo.show(fm, TAG_DIALOGO_CON_DELAY);
 

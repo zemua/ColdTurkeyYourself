@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
@@ -97,6 +99,14 @@ public class GruposPositivosFragment extends Fragment {
 
     public void addGrupoPositivoToDb(GrupoPositivo grupoPositivo) {
         mGrupoPositivoViewModel.insert(grupoPositivo);
+    }
+
+    public void removeGrupoPositivoFromDb(Integer id){
+        // Delete apps belonging to this group
+        AppToGroupRepository repo = AppToGroupRepository.getRepo(getActivity().getApplication());
+        repo.deleteByGroupId(id);
+        // Delete this group
+        mGrupoPositivoViewModel.deleteById(id);
     }
 
 }

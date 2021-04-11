@@ -26,4 +26,8 @@ public class GrupoPositivoViewModel extends AndroidViewModel {
     public LiveData<List<GrupoPositivo>> getAllGrupos() {
         return mAllGrupos;
     }
+
+    public void deleteById(Integer id) {
+        mRepo.deleteById(id);
+    }
 }

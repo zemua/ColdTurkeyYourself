@@ -98,7 +98,10 @@
     <string name="anhadir">Añadir</string>
     <string name="apps_en_este_grupo">Aplicaciones en este grupo</string>
     <string name="borrar">Borrar</string>
+    <string name="conservar">Conservar</string>
     <string name="condiciones_para_sumar">Condiciones para sumar puntos</string>
     <string name="exportar">Exportar</string>
     <string name="en_otro_grupo">En otro grupo</string>
+    <string name="confirmacion">Confirmación</string>
+    <string name="seguro_que_deseas_borrar_este_grupo">¿Seguro que deseas borrar este grupo?</string>
 </resources>

@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.grupospositivos;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +34,8 @@ public class ReviewGroupFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
 
+    public static final int FEEDBACK_DELETE_GROUP = 0;
+
     private Context mContext;
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
 
@@ -61,9 +65,6 @@ public class ReviewGroupFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        //mContext = context;
-        //mFeedbackReceiver = (FeedbackReceiver) context;
     }
 
     @Override
@@ -88,7 +89,18 @@ public class ReviewGroupFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO show confirm dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle(R.string.confirmacion);
+                builder.setMessage(R.string.seguro_que_deseas_borrar_este_grupo);
+                builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_DELETE_GROUP, getGroupId());
+                    }
+                });
+                builder.setNegativeButton(R.string.conservar, null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 

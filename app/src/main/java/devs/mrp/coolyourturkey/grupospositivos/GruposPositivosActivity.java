@@ -18,7 +18,7 @@ import devs.mrp.coolyourturkey.usagestats.StatsFragmentDoble;
 public class GruposPositivosActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
     // TODO edit existing groups
-    // TODO check all groups related activities that work well when turning the screen around
+    // TODO check that all groups related activities work well when turning the screen around
 
     private static final int LAUNCH_ADD = 1;
     private static final int LAUNCH_REVIEW = 2;
@@ -65,6 +65,14 @@ public class GruposPositivosActivity extends AppCompatActivity implements Feedba
                 String result = data.getStringExtra(AddGroupActivity.EXTRA_NAME);
                 GrupoPositivo g = new GrupoPositivo(result);
                 ((GruposPositivosFragment)fragment).addGrupoPositivoToDb(g);
+            }
+        }
+        if (requestCode == LAUNCH_REVIEW) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data.hasExtra(ReviewGroupActivity.RESULT_DELETE)) {
+                    Integer groupIdToDelete = data.getIntExtra(ReviewGroupActivity.RESULT_DELETE, -1);
+                    ((GruposPositivosFragment)fragment).removeGrupoPositivoFromDb(groupIdToDelete);
+                }
             }
         }
     }

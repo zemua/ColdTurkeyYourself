@@ -19,6 +19,8 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
 
     public static final String EXTRA_GROUP_ID = "extra_group_id";
 
+    public static final String RESULT_DELETE = "result_delete_group";
+
     private Fragment fragment;
     private Integer mGroupId;
 
@@ -45,7 +47,11 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
         if (feedbacker == fragment) {
             Intent intent;
             switch (accion) {
-                case 0:
+                case ReviewGroupFragment.FEEDBACK_DELETE_GROUP:
+                    intent = new Intent();
+                    intent.putExtra(RESULT_DELETE, mGroupId);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                     break;
             }
         }
