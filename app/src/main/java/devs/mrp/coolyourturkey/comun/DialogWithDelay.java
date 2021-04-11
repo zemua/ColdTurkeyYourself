@@ -105,6 +105,10 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         super.onResume();
         mContext = getActivity();
 
+        if (mDialogDelayer != null) {
+            mDialogDelayer.interrumpe();
+        }
+
         mDialogDelayer = new DialogDelayer(mDialogo, mTiempo, getActivity().getString(R.string.aceptar), mContext);
         mDialogDelayer.addFeedbackListener(new FeedbackListener<Integer>() {
             @Override

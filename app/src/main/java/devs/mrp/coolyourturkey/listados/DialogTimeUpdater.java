@@ -22,7 +22,7 @@ public class DialogTimeUpdater implements Executor, Feedbacker<Integer> {
 
     AlertDialog mDialog;
     Integer countStart;
-    Thread t;
+    MyThread t;
     String mMensaje;
     Context mContext;
     Handler mHandler;
@@ -44,7 +44,7 @@ public class DialogTimeUpdater implements Executor, Feedbacker<Integer> {
 
     @Override
     public void execute(Runnable r) {
-        t = new Thread(r);
+        t = new MyThread();
         t.start();
     }
 
@@ -64,43 +64,101 @@ public class DialogTimeUpdater implements Executor, Feedbacker<Integer> {
                 } else {
                     mTiempo = 0;
                 }
-                while (mTiempo > 0){
-                    try {
-                        Thread.sleep(1000);
-                        mTiempo--;
-                        final int t2 = mTiempo; // para poder usarlo en el runnable
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                                b.setText(String.valueOf(t2));
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    while (mTiempo > 0){
+                            Thread.sleep(1000);
+                            mTiempo--;
+                            final int t2 = mTiempo; // para poder usarlo en el runnable
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                                    b.setText(String.valueOf(t2));
+                                }
+                            });
+
                     }
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                            b.setText(mMensaje);
+                            mDialog.setButton(DialogInterface.BUTTON_POSITIVE, mMensaje, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    giveFeedback(FEEDBACK_OK, null);
+                                }
+                            });
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        b.setText(mMensaje);
-                        mDialog.setButton(DialogInterface.BUTTON_POSITIVE, mMensaje, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                giveFeedback(FEEDBACK_OK, null);
-                            }
-                        });
-                    }
-                });
             }
         };
     }
 
-    public void interrumpe(){
-        if (t.isAlive()){
-            t.interrupt();
+    private class MyThread extends Thread{
+        boolean keepRunning = true;
+        MyThread(){
+            super();
         }
+
+        @Override
+        public void run() {
+            DialogInterface.OnClickListener emptyListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // nada hasta que la cuenta llegue a cero
+                }
+            };
+
+            if (mMisPreferencias.getTiempoDeGraciaActivado()) {
+                mTiempo = countStart;
+            } else {
+                mTiempo = 0;
+            }
+            try { // TODO solve bug of double thread
+                while (mTiempo > 0 && keepRunning){
+                    Thread.sleep(1000);
+                    mTiempo--;
+                    final int t2 = mTiempo; // para poder usarlo en el runnable
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                            b.setText(String.valueOf(t2));
+                        }
+                    });
+
+                }
+                if (keepRunning) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button b = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                            b.setText(mMensaje);
+                            mDialog.setButton(DialogInterface.BUTTON_POSITIVE, mMensaje, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    giveFeedback(FEEDBACK_OK, null);
+                                }
+                            });
+                        }
+                    });
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void stopThread(){
+            keepRunning = false;
+        }
+    }
+
+    public void interrumpe(){
+            t.stopThread();
     }
 
     public Integer getTiempo(){

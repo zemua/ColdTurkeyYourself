@@ -83,7 +83,15 @@ public class ReviewGroupFragment extends Fragment {
         recyclerApps = v.findViewById(R.id.recyclerAppsGrupo);
         textConditions = v.findViewById(R.id.textCondiciones);
         recyclerConditions = v.findViewById(R.id.recyclerCondiciones);
+
         deleteButton = v.findViewById(R.id.buttonDelete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO show confirm dialog
+            }
+        });
+
         exportButton = v.findViewById(R.id.buttonExp);
 
         mAppLister = new AppLister(mContext);

@@ -152,7 +152,15 @@ public class WaiterConfirmDialog extends DialogFragment implements Feedbacker<Al
         outstate.putString(KEY_BUNDLE_APPNOMBRE, mAppNombre);
         outstate.putString(KEY_BUNDLE_APPLISTA, mAppLista);
 
+        mDialogTimeUpdater.interrumpe();
+
         super.onSaveInstanceState(outstate);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDialogTimeUpdater.interrumpe();
     }
 
     @Override

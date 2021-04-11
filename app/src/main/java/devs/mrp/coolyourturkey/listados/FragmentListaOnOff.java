@@ -142,7 +142,9 @@ public class FragmentListaOnOff extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_BUNDLE_TIPO_ACTUAL, tipoActual);
-
+        if (mDialogTimeUpdater != null) {
+            mDialogTimeUpdater.interrumpe();
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -212,7 +214,7 @@ public class FragmentListaOnOff extends Fragment {
         mAdapter.desSwitchear(listaAplicaciones);
 
         // poner cuenta atrás en el botón cuando esté lista la instancia del AlertDialog
-        dialogo.addFeedbackListener(new FeedbackListener<AlertDialog>() {
+        /*dialogo.addFeedbackListener(new FeedbackListener<AlertDialog>() {
             @Override
             public void giveFeedback(int tipo, AlertDialog feedback, Object... args) {
                 if (tipo == WaiterConfirmDialog.FEEDBACK_ALERT_DIALOG) {
@@ -228,7 +230,7 @@ public class FragmentListaOnOff extends Fragment {
                     });
                 }
             }
-        });
+        });*/
     }
 
     @Override
