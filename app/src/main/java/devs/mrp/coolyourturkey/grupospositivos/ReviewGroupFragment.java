@@ -35,6 +35,7 @@ public class ReviewGroupFragment extends Fragment {
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
 
     public static final int FEEDBACK_DELETE_GROUP = 0;
+    public static final int FEEDBACK_ADD_CONDITION = 1;
 
     private Context mContext;
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
@@ -45,6 +46,7 @@ public class ReviewGroupFragment extends Fragment {
     private RecyclerView recyclerConditions;
     private Button deleteButton;
     private Button exportButton;
+    private Button mAddConditionButton;
 
     private ReviewGroupAppsAdapter mAppsAdapter;
     private ReviewGroupsConditionsAdapter mConditionsAdapter;
@@ -149,6 +151,14 @@ public class ReviewGroupFragment extends Fragment {
                     default:
                         break;
                 }
+            }
+        });
+
+        mAddConditionButton = v.findViewById(R.id.buttonAddCondition);
+        mAddConditionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_ADD_CONDITION, null);
             }
         });
 

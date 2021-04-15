@@ -23,4 +23,7 @@ public interface GrupoPositivoDao {
     @Query("SELECT * FROM grupopositivo ORDER BY id ASC")
     LiveData<List<GrupoPositivo>> findAllGrupoPositivo();
 
+    @Query("SELECT * FROM grupopositivo WHERE id = :id")
+    LiveData<List<GrupoPositivo>> findGrupoPositivoById(Integer id);
+
 }

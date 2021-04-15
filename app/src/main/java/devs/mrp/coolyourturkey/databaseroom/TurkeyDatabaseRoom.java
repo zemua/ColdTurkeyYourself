@@ -11,6 +11,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorDao;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
@@ -26,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class}, version = 4)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class}, version = 5)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -36,6 +38,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract ImportablesDao importablesDao();
     public abstract GrupoPositivoDao grupoPositivoDao();
     public abstract AppToGroupDao appToGroupDao();
+    public abstract ConditionToGroupDao conditionToGroupDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -82,6 +85,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         }
     };
 
+    /**
+     * Migrate from:
+     * version 4
+     * to
+     * version 5
+     */
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'conditiontogroup' ('id' INTEGER NOT NULL, 'groupid' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'filetarget' TEXT, 'conditionalgroupid' INTEGER, 'conditionalminutes' INTEGER, 'fromlastndays' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
     public static TurkeyDatabaseRoom getDatabase(final Context context) {
         mContext = context;
         if (INSTANCE == null) {
@@ -89,7 +105,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // add the migration schemas separated by commas
                             .build();
                 }
             }

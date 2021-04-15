@@ -108,13 +108,17 @@ public class Importer implements Feedbacker<Long> {
             ListIterator<Uri> literator = importUris.listIterator();
             while (literator.hasNext()) {
                 Uri uri = literator.next();
-                if (tenemosPermisoLectura(mApp, uri)) {
-                    String longString = readTextFromUri(uri);
-                    Long longNum = Long.parseLong(longString);
-                    if (longNum != null) {
-                        preResult += longNum;
-                        Log.d(TAG, "añadidos a resultado importación " + String.valueOf(longNum) + " ms");
+                try {
+                    if (tenemosPermisoLectura(mApp, uri)) {
+                        String longString = readTextFromUri(uri);
+                        Long longNum = Long.parseLong(longString);
+                        if (longNum != null) {
+                            preResult += longNum;
+                            Log.d(TAG, "añadidos a resultado importación " + String.valueOf(longNum) + " ms");
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             mResult = preResult;

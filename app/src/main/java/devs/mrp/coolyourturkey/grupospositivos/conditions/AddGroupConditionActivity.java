@@ -1,26 +1,22 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupospositivos.conditions;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
-public class ReviewGroupActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
-
-    private static final String TAG = "ACTIVITY_REVIEW_GROUP";
+public class AddGroupConditionActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
     public static final String EXTRA_GROUP_ID = "extra_group_id";
 
-    public static final String RESULT_DELETE = "result_delete_group";
+    public static final Integer RESULT_SAVE = 0;
 
     private Fragment fragment;
     private Integer mGroupId;
@@ -32,15 +28,13 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
 
         Intent intent = getIntent();
         mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
-        Log.d(TAG, "id of the actual group: " + mGroupId);
 
         FragmentManager fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
-            fragment = new ReviewGroupFragment();
+            fragment = new AddGroupConditionFragment(mGroupId);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
-        ((ReviewGroupFragment)fragment).setGroupId(mGroupId);
     }
 
     @Override
@@ -48,16 +42,11 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
         if (feedbacker == fragment) {
             Intent intent;
             switch (accion) {
-                case ReviewGroupFragment.FEEDBACK_DELETE_GROUP:
-                    intent = new Intent();
-                    intent.putExtra(RESULT_DELETE, mGroupId);
-                    setResult(Activity.RESULT_OK, intent);
+                case AddGroupConditionFragment.FEEDBACK_SAVE:
+                    ConditionToGroupRepository repository = ConditionToGroupRepository.getRepo(this.getApplication());
+                    repository.insert((ConditionToGroup)feedback);
+                    setResult(RESULT_SAVE);
                     finish();
-                    break;
-                case ReviewGroupFragment.FEEDBACK_ADD_CONDITION:
-                    intent = new Intent(ReviewGroupActivity.this, AddGroupConditionActivity.class);
-                    intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_ID, mGroupId);
-                    startActivity(intent);
                     break;
             }
         }

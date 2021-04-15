@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="group_type_for_condition">
+        <item>Tiempo ganado en otro grupo</item>
+        <item>Tiempo importado de un archivo</item>
+    </string-array>
+</resources>

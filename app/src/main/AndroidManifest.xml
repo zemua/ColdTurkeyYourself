@@ -44,6 +44,8 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

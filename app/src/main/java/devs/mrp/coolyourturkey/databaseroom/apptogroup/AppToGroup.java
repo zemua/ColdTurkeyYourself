@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-//TODO add to room
 @Entity(tableName = "apptogroup")
 public class AppToGroup {
     @PrimaryKey(autoGenerate = true)
