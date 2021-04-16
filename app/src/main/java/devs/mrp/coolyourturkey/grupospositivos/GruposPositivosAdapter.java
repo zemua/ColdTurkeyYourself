@@ -37,7 +37,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     @NonNull
     @Override
     public GruposPositivosViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_grupospositivos, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_simple_text, parent, false);
         GruposPositivosViewHolder vh = new GruposPositivosViewHolder(v);
 
         vh.textView.setOnClickListener(new View.OnClickListener(){
@@ -78,7 +78,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
         public Integer id;
         public GruposPositivosViewHolder(View v) {
             super(v);
-            textView = v.findViewById(R.id.nombre);
+            textView = v.findViewById(R.id.templateTextView);
         }
     }
 

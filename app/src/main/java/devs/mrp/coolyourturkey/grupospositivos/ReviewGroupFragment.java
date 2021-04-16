@@ -18,10 +18,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.listados.AppLister;
@@ -36,6 +42,7 @@ public class ReviewGroupFragment extends Fragment {
 
     public static final int FEEDBACK_DELETE_GROUP = 0;
     public static final int FEEDBACK_ADD_CONDITION = 1;
+    public static final int FEEDBACK_CLICK_CONDITION = 2;
 
     private Context mContext;
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
@@ -58,6 +65,9 @@ public class ReviewGroupFragment extends Fragment {
     private AplicacionListadaViewModel mAplicacionListadaViewModel;
     private List<AplicacionListada> appsPositivas;
     private List<AppToGroup> groupedApps;
+    private ConditionToGroupViewModel mConditionToGroupViewModel;
+    private GrupoPositivoViewModel mGrupoPositivoViewModel;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +118,10 @@ public class ReviewGroupFragment extends Fragment {
 
         exportButton = v.findViewById(R.id.buttonExp);
 
+        /**
+         * Apps adapter
+         */
+
         mAppLister = new AppLister(mContext);
         mAppsAdapter = new ReviewGroupAppsAdapter(mAppLister, mContext, getGroupId());
         mAppsAdapter.resetLoaded();
@@ -135,8 +149,46 @@ public class ReviewGroupFragment extends Fragment {
             }
         });
 
+        /**
+         * Conditions adapter
+         */
+
+        mConditionsAdapter = new ReviewGroupsConditionsAdapter(mContext);
+        recyclerConditions.setAdapter(mConditionsAdapter);
         LinearLayoutManager layoutConditions = new LinearLayoutManager(mContext);
         recyclerConditions.setLayoutManager(layoutConditions);
+
+        mConditionToGroupViewModel = new ViewModelProvider(this, factory).get(ConditionToGroupViewModel.class);
+        mConditionToGroupViewModel.findConditionToGroupByGroupId(getGroupId()).observe(this, new Observer<List<ConditionToGroup>>() {
+            @Override
+            public void onChanged(List<ConditionToGroup> conditionToGroups) {
+                mConditionsAdapter.setDataset(conditionToGroups);
+            }
+        });
+
+        mGrupoPositivoViewModel = new ViewModelProvider(this, factory).get(GrupoPositivoViewModel.class);
+        mGrupoPositivoViewModel.getAllGrupos().observe(this, new Observer<List<GrupoPositivo>>() {
+            @Override
+            public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
+                mConditionsAdapter.setGrupos(mapaGrupos);
+            }
+        });
+
+        mConditionsAdapter.addFeedbackListener(new FeedbackListener<ConditionToGroup>() {
+            @Override
+            public void giveFeedback(int tipo, ConditionToGroup feedback, Object... args) {
+                switch (tipo) {
+                    case ReviewGroupsConditionsAdapter.FEEDBACK_CONDITION_SELECTED:
+                        mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_CLICK_CONDITION, feedback);
+                        break;
+                }
+            }
+        });
+
+        /**
+         *
+         */
 
         mAppsAdapter.addFeedbackListener(new FeedbackListener<AppToGroup>() {
             @Override

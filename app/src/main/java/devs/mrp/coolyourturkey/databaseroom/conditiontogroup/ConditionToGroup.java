@@ -23,14 +23,17 @@ public class ConditionToGroup {
     }
 
     public enum ConditionType {
-        GROUP(R.string.tiempo_ganado_en_otro_grupo), FILE(R.string.tiempo_importado_de_un_archivo);
+        GROUP(R.string.tiempo_ganado_en_otro_grupo, 0), FILE(R.string.tiempo_importado_de_un_archivo, 1);
         private Integer resourceId;
-        ConditionType(Integer resource) {
+        private Integer position;
+        ConditionType(Integer resource, Integer pos) {
             resourceId = resource;
+            position = pos;
         }
         public Integer getResourceId(){
             return resourceId;
         }
+        public Integer getPosition() { return position; }
     }
 
 

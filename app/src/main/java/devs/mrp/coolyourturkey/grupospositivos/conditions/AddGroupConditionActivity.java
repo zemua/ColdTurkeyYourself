@@ -8,8 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
+import devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class AddGroupConditionActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
@@ -34,6 +36,11 @@ public class AddGroupConditionActivity extends AppCompatActivity implements Feed
         if (fragment == null) {
             fragment = new AddGroupConditionFragment(mGroupId);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+        }
+
+        if (intent.hasExtra(ReviewGroupActivity.EXTRA_CONDITION)){
+            ConditionToGroup lCondition = (ConditionToGroup) ((ObjectWrapperForBinder)getIntent().getExtras().getBinder(ReviewGroupActivity.EXTRA_CONDITION)).getData();
+            ((AddGroupConditionFragment)fragment).setConditionForEdit(lCondition);
         }
     }
 

@@ -106,9 +106,11 @@
     <string name="seguro_que_deseas_borrar_este_grupo">¿Seguro que deseas borrar este grupo?</string>
     <string name="plus">+</string>
     <string name="nueva_condicion_para_grupo">Nueva condición para grupo</string>
+    <string name="condicion_para_grupo">Condición para grupo</string>
     <string name="h_de_horas">Horas</string>
     <string name="m_de_minutos">Minutos</string>
     <string name="d_de_dias_con_explicacion">Días (0 = hoy)</string>
+    <string name="d_de_dias">Días</string>
     <string name="tipo_de_condicion">Tipo de condición</string>
     <string name="si_el_grupo">Si el grupo</string>
     <string name="si_el_archivo">Si el archivo</string>
@@ -117,4 +119,5 @@
     <string name="explicacion_formato_archivo_condicion">(nota: el formato del contenido de este archivo .txt debe ser AAAA-MM-DD-TT siendo A el año, M el mes, D el día, T el tiempo de uso a leer)</string>
     <string name="tiempo_ganado_en_otro_grupo">Tiempo de otro grupo</string>
     <string name="tiempo_importado_de_un_archivo">Tiempo de un archivo</string>
+    <string name="guardar">Guardar</string>
 </resources>

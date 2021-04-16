@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -57,6 +58,12 @@ public class AddGroupConditionFragment extends Fragment {
 
     private ConstraintLayout mGroupsLayout;
     private ConstraintLayout mFileSourceLayout;
+
+    private List<GrupoPositivo> mGruposPositivos;
+    private ConditionToGroup mConditionForEdit;
+    private boolean mIsEditAction = false;
+    private boolean mViewReadyForEdit = false;
+    private boolean mTargetGroupReadyForEdit = false;
 
     AddGroupConditionFragment(Integer groupId){
         super();
@@ -159,19 +166,22 @@ public class AddGroupConditionFragment extends Fragment {
 
         List<GrupoPositivo> groupsObjectList = new ArrayList<>(); // Reference to get the id of the selected name
         List<String> groupsList = new ArrayList<>();
-        ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, groupsList);
-        groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mTargetGroupSpinner.setAdapter(groupAdapter);
+        ArrayAdapter<String> groupSpinerAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, groupsList);
+        groupSpinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mTargetGroupSpinner.setAdapter(groupSpinerAdapter);
         GrupoPositivoRepository grupoRepo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
         grupoRepo.findAllGrupoPositivo().observe(AddGroupConditionFragment.this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                mGruposPositivos = grupoPositivos;
                 groupsObjectList.clear();
                 groupsObjectList.addAll(grupoPositivos);
                 List<String> groupNamesList = grupoPositivos.stream().map(g -> g.getNombre()).collect(Collectors.toList());
-                groupAdapter.clear();
-                groupAdapter.addAll(groupNamesList);
-                groupAdapter.notifyDataSetChanged();
+                groupSpinerAdapter.clear();
+                groupSpinerAdapter.addAll(groupNamesList);
+                groupSpinerAdapter.notifyDataSetChanged();
+                mTargetGroupReadyForEdit = true;
+                if (mIsEditAction){setupEditExistingCondition(mConditionForEdit);}
             }
         });
 
@@ -185,7 +195,7 @@ public class AddGroupConditionFragment extends Fragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (verifyConditionalTime() & verifyFromLastNdays()) {
+                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
                     ConditionToGroup condition = new ConditionToGroup();
 
                     condition.setGroupid(getGroupId());
@@ -203,6 +213,11 @@ public class AddGroupConditionFragment extends Fragment {
                 }
             }
         });
+
+        mViewReadyForEdit = true;
+        if (mConditionForEdit != null && mIsEditAction) {
+            setupEditExistingCondition(mConditionForEdit);
+        }
 
         return v;
     }
@@ -271,6 +286,64 @@ public class AddGroupConditionFragment extends Fragment {
             return true;
         }
         return false;
+    }
+
+    private boolean checkEmptyFileUri(){
+        if (mConditionType != ConditionToGroup.ConditionType.FILE) {
+            mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        if (mFileUri == null) {
+            mSelectedFileTextView.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
+    public void setConditionForEdit(ConditionToGroup condition) {
+        mIsEditAction = true;
+        mConditionForEdit = condition;
+        setupEditExistingCondition(mConditionForEdit);
+    }
+
+    private void setupEditExistingCondition(ConditionToGroup condition){
+        if (mViewReadyForEdit && condition != null && (ConditionToGroup.ConditionType.valueOf(condition.getType()) != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
+
+            switch (ConditionToGroup.ConditionType.valueOf(condition.getType())) {
+                case GROUP:
+                    mTypeSpinner.setSelection(ConditionToGroup.ConditionType.GROUP.getPosition());
+                    break;
+                case FILE:
+                    mTypeSpinner.setSelection(ConditionToGroup.ConditionType.FILE.getPosition());
+                    break;
+            }
+
+            //mTargetGroupSpinner
+            if (mGruposPositivos != null) {
+                for (int i = 0; i < mGruposPositivos.size(); i++) {
+                    if (mGruposPositivos.get(i).getId() == condition.getConditionalgroupid()) {
+                        mTargetGroupSpinner.setSelection(i);
+                    }
+                }
+            }
+
+            mSelectedFileTextView.setText(condition.getFiletarget());
+            if (!condition.getFiletarget().equals("")) {
+                mFileUri = Uri.parse(condition.getFiletarget());
+            }
+
+            mUsedHoursEditText.setText(String.valueOf(condition.getConditionalminutes() / 60));
+
+            mUsedMinutesEditText.setText(String.valueOf(condition.getConditionalminutes() % 60));
+
+            mLapsedDaysEditText.setText(String.valueOf(condition.getFromlastndays()));
+        }
+    }
+
+    public void setupClearEditMode(){
+        mIsEditAction = false;
+        mConditionForEdit = null;
     }
 
 }
