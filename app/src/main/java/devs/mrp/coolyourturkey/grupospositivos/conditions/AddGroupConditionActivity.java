@@ -17,11 +17,13 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 public class AddGroupConditionActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
     public static final String EXTRA_GROUP_ID = "extra_group_id";
+    public static final String EXTRA_GROUP_NAME = "extra_group_name";
 
     public static final Integer RESULT_SAVE = 0;
 
     private Fragment fragment;
     private Integer mGroupId;
+    private String mGroupName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,11 +32,12 @@ public class AddGroupConditionActivity extends AppCompatActivity implements Feed
 
         Intent intent = getIntent();
         mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+        mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
 
         FragmentManager fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
-            fragment = new AddGroupConditionFragment(mGroupId);
+            fragment = new AddGroupConditionFragment(mGroupId, mGroupName);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
 

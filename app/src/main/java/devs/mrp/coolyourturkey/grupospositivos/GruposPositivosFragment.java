@@ -75,9 +75,9 @@ public class GruposPositivosFragment extends Fragment {
         mGroupsRecyclerView.setLayoutManager(layoutManager);
         mGroupsRecyclerView.setAdapter(mAdapter);
 
-        mAdapter.addFeedbackListener(new FeedbackListener<Integer>() {
+        mAdapter.addFeedbackListener(new FeedbackListener<GrupoPositivo>() {
             @Override
-            public void giveFeedback(int tipo, Integer feedback, Object... args) {
+            public void giveFeedback(int tipo, GrupoPositivo feedback, Object... args) {
                 if (tipo == GruposPositivosAdapter.FEEDBACK_ITEM_CLICKED) {
                     mFeedbackReceiver.receiveFeedback(GruposPositivosFragment.this, FEEDBACK_ITEM_CLICKED, feedback);
                 }

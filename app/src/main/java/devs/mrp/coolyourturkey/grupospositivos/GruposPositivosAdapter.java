@@ -18,7 +18,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
-public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivosAdapter.GruposPositivosViewHolder> implements Feedbacker<Integer> {
+public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivosAdapter.GruposPositivosViewHolder> implements Feedbacker<GrupoPositivo> {
 
     private static String TAG = "GRUPOS_POSITIVOS_ADAPTER";
 
@@ -27,7 +27,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     private List<GrupoPositivo> mDataset;
     private Context mContext;
 
-    private ArrayList<FeedbackListener<Integer>> mFeedbackListener = new ArrayList<>();
+    private ArrayList<FeedbackListener<GrupoPositivo>> mFeedbackListener = new ArrayList<>();
 
     public GruposPositivosAdapter(List<GrupoPositivo> dataset, Context context) {
         mDataset = dataset;
@@ -43,7 +43,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
         vh.textView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                giveFeedback(FEEDBACK_ITEM_CLICKED, vh.id);
+                giveFeedback(FEEDBACK_ITEM_CLICKED, vh.grupo);
             }
         });
 
@@ -52,6 +52,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
 
     @Override
     public void onBindViewHolder(@NonNull GruposPositivosViewHolder holder, int position) {
+        holder.grupo = mDataset.get(position);
         holder.textView.setText(mDataset.get(position).getNombre());
         holder.id = mDataset.get(position).getId();
     }
@@ -62,20 +63,21 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     }
 
     @Override
-    public void giveFeedback(int tipo, Integer feedback) {
+    public void giveFeedback(int tipo, GrupoPositivo feedback) {
         mFeedbackListener.forEach((item) -> {
             item.giveFeedback(tipo, feedback);
         });
     }
 
     @Override
-    public void addFeedbackListener(FeedbackListener<Integer> listener) {
+    public void addFeedbackListener(FeedbackListener<GrupoPositivo> listener) {
         mFeedbackListener.add(listener);
     }
 
     public static class GruposPositivosViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
         public Integer id;
+        public GrupoPositivo grupo;
         public GruposPositivosViewHolder(View v) {
             super(v);
             textView = v.findViewById(R.id.templateTextView);

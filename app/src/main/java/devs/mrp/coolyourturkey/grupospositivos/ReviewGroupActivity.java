@@ -21,6 +21,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
     private static final String TAG = "ACTIVITY_REVIEW_GROUP";
 
     public static final String EXTRA_GROUP_ID = "extra_group_id";
+    public static final String EXTRA_GROUP_NAME = "extra_group_name";
     public static final String EXTRA_CONDITION_ID = "extra_condition_id";
     public static final String EXTRA_CONDITION = "extra_condition";
 
@@ -28,6 +29,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
 
     private Fragment fragment;
     private Integer mGroupId;
+    private String mGroupName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
 
         Intent intent = getIntent();
         mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
-        Log.d(TAG, "id of the actual group: " + mGroupId);
+        mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
 
         FragmentManager fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
@@ -66,6 +68,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                 case ReviewGroupFragment.FEEDBACK_CLICK_CONDITION:
                     intent = new Intent(ReviewGroupActivity.this, AddGroupConditionActivity.class);
                     intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_ID, mGroupId);
+                    intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_NAME, mGroupName);
                     final ConditionToGroup objSent = (ConditionToGroup)feedback;
                     final Bundle bundle = new Bundle();
                     bundle.putBinder(EXTRA_CONDITION, new ObjectWrapperForBinder(objSent));

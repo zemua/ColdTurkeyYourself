@@ -55,6 +55,7 @@ public class AddGroupConditionFragment extends Fragment {
     private EditText mUsedMinutesEditText;
     private EditText mLapsedDaysEditText;
     private Button mSaveButton;
+    private Button mButtonBorrar; // TODO dialogo confiramción y borrar condición
 
     private ConstraintLayout mGroupsLayout;
     private ConstraintLayout mFileSourceLayout;
@@ -65,9 +66,10 @@ public class AddGroupConditionFragment extends Fragment {
     private boolean mViewReadyForEdit = false;
     private boolean mTargetGroupReadyForEdit = false;
 
-    AddGroupConditionFragment(Integer groupId){
+    AddGroupConditionFragment(Integer groupId, String groupName){
         super();
         mGroupId = groupId;
+        mGroupName = groupName;
     }
 
     @Override
@@ -130,15 +132,7 @@ public class AddGroupConditionFragment extends Fragment {
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
 
-        GrupoPositivoRepository repo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
-        repo.findGrupoPositivoById(getGroupId()).observe(this, new Observer<List<GrupoPositivo>>() {
-            @Override
-            public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                if (grupoPositivos != null && grupoPositivos.size() > 0){
-                    mGroupNameTextView.setText(grupoPositivos.get(0).getNombre());
-                }
-            }
-        });
+        mGroupNameTextView.setText(mGroupName);
 
         List<String> typesList = ConditionToGroup.getTypesList().stream().map(s -> getResources().getString(s)).collect(Collectors.toList());
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, typesList);
@@ -173,6 +167,14 @@ public class AddGroupConditionFragment extends Fragment {
         grupoRepo.findAllGrupoPositivo().observe(AddGroupConditionFragment.this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                ListIterator<GrupoPositivo> iterator = grupoPositivos.listIterator();
+                while (iterator.hasNext()){
+                    GrupoPositivo lGrupo = iterator.next();
+                    if (lGrupo.getNombre().equals(getGroupName())){
+                        iterator.remove(); // remove self-group from selection
+                        break;
+                    }
+                }
                 mGruposPositivos = grupoPositivos;
                 groupsObjectList.clear();
                 groupsObjectList.addAll(grupoPositivos);
@@ -208,6 +210,10 @@ public class AddGroupConditionFragment extends Fragment {
                     condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
                     condition.setConditionalminutes((Integer.parseInt(mUsedHoursEditText.getText().toString())*60)+Integer.parseInt(mUsedMinutesEditText.getText().toString()));
                     condition.setFromlastndays(Integer.parseInt(mLapsedDaysEditText.getText().toString()));
+
+                    if (mIsEditAction && mConditionForEdit != null) {
+                        condition.setId(mConditionForEdit.getId());
+                    }
 
                     mFeedbackReceiver.receiveFeedback(AddGroupConditionFragment.this, FEEDBACK_SAVE, condition);
                 }

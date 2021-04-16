@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.databaseroom.conditiontogroup;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Dao
 public interface ConditionToGroupDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ConditionToGroup conditionToGroup);
 
     @Query("DELETE FROM conditiontogroup WHERE id = :id")
