@@ -1,7 +1,9 @@
 package devs.mrp.coolyourturkey.grupospositivos.conditions;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FileReader;
+import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
@@ -35,8 +38,15 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 public class AddGroupConditionFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_NAME_ACTUAL = "key.bundle.name.actual";
+    private static final String KEY_BUNDLE_URI = "key.bundle.uri";
+    private static final String KEY_CONDITION_TYPE = "key.condition.type";
+    private static final String KEY_BUNDLE_GRUPOS_POSITIVOS_LIST = "key.bundle.grupos.positivos.list";
+    private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
+    private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
 
     public static final int FEEDBACK_SAVE = 0;
+    public static final int FEEDBACK_DELETE_CONDITION = 1;
     private static final int REQUEST_CODE_READ = 10;
 
     private Context mContext;
@@ -55,7 +65,7 @@ public class AddGroupConditionFragment extends Fragment {
     private EditText mUsedMinutesEditText;
     private EditText mLapsedDaysEditText;
     private Button mSaveButton;
-    private Button mButtonBorrar; // TODO dialogo confiramción y borrar condición
+    private Button mButtonBorrar;
 
     private ConstraintLayout mGroupsLayout;
     private ConstraintLayout mFileSourceLayout;
@@ -66,6 +76,10 @@ public class AddGroupConditionFragment extends Fragment {
     private boolean mViewReadyForEdit = false;
     private boolean mTargetGroupReadyForEdit = false;
 
+    public AddGroupConditionFragment(){ // needed for rotating the screen
+        super();
+    }
+
     AddGroupConditionFragment(Integer groupId, String groupName){
         super();
         mGroupId = groupId;
@@ -75,6 +89,17 @@ public class AddGroupConditionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null){
+            setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
+            setGroupName(savedInstanceState.getString(KEY_BUNDLE_NAME_ACTUAL));
+            if (savedInstanceState.containsKey(KEY_BUNDLE_URI)){
+                mFileUri = Uri.parse(savedInstanceState.getString(KEY_BUNDLE_URI));
+            }
+            mConditionType = (ConditionToGroup.ConditionType) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_CONDITION_TYPE)).getData();
+            mGruposPositivos = (List<GrupoPositivo>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST)).getData();
+            mConditionForEdit = (ConditionToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
+            mIsEditAction = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION);
+        }
     }
 
     @Override
@@ -83,6 +108,14 @@ public class AddGroupConditionFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
+        outState.putString(KEY_BUNDLE_NAME_ACTUAL, getGroupName());
+        if (mFileUri != null) {
+            outState.putString(KEY_BUNDLE_URI, mFileUri.toString());
+        }
+        outState.putBinder(KEY_CONDITION_TYPE, new ObjectWrapperForBinder(mConditionType));
+        outState.putBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST, new ObjectWrapperForBinder(mGruposPositivos));
+        outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mConditionForEdit));
+        outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEditAction);
         super.onSaveInstanceState(outState);
     }
 
@@ -128,6 +161,7 @@ public class AddGroupConditionFragment extends Fragment {
         mUsedMinutesEditText = v.findViewById(R.id.editTextMinutos);
         mLapsedDaysEditText = v.findViewById(R.id.editTextDaysLapsed);
         mSaveButton = v.findViewById(R.id.buttonAnhadir);
+        mButtonBorrar = v.findViewById(R.id.buttonBorrar);
 
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
@@ -201,14 +235,23 @@ public class AddGroupConditionFragment extends Fragment {
                     ConditionToGroup condition = new ConditionToGroup();
 
                     condition.setGroupid(getGroupId());
-                    condition.setType(mConditionType.toString());
+                    condition.setType(mConditionType);
                     if (mFileUri != null) {
                         condition.setFiletarget(mFileUri.toString());
                     } else {
                         condition.setFiletarget("");
                     }
                     condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
-                    condition.setConditionalminutes((Integer.parseInt(mUsedHoursEditText.getText().toString())*60)+Integer.parseInt(mUsedMinutesEditText.getText().toString()));
+
+                    Integer ltime = 0;
+                    if(!mUsedHoursEditText.getText().toString().equals("")){
+                        ltime += (Integer.parseInt(mUsedHoursEditText.getText().toString())*60);
+                    }
+                    if (!mUsedMinutesEditText.getText().toString().equals("")){
+                        ltime += Integer.parseInt(mUsedMinutesEditText.getText().toString());
+                    }
+                    condition.setConditionalminutes(ltime);
+
                     condition.setFromlastndays(Integer.parseInt(mLapsedDaysEditText.getText().toString()));
 
                     if (mIsEditAction && mConditionForEdit != null) {
@@ -219,6 +262,27 @@ public class AddGroupConditionFragment extends Fragment {
                 }
             }
         });
+
+        if (mIsEditAction) {
+            mButtonBorrar.setVisibility(View.VISIBLE);
+            mButtonBorrar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle(R.string.confirmacion);
+                    builder.setMessage(R.string.seguro_que_deseas_borrar_esta_condicion);
+                    builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                                mFeedbackReceiver.receiveFeedback(AddGroupConditionFragment.this, FEEDBACK_DELETE_CONDITION, mConditionForEdit);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.conservar, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
 
         mViewReadyForEdit = true;
         if (mConditionForEdit != null && mIsEditAction) {
@@ -299,7 +363,7 @@ public class AddGroupConditionFragment extends Fragment {
             mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
             return false;
         }
-        if (mFileUri == null) {
+        if (mFileUri == null || !FileReader.ifHaveReadingRights(mContext, mFileUri)) {
             mSelectedFileTextView.setBackgroundColor(Color.RED);
             return true;
         }
@@ -314,9 +378,9 @@ public class AddGroupConditionFragment extends Fragment {
     }
 
     private void setupEditExistingCondition(ConditionToGroup condition){
-        if (mViewReadyForEdit && condition != null && (ConditionToGroup.ConditionType.valueOf(condition.getType()) != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
+        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
 
-            switch (ConditionToGroup.ConditionType.valueOf(condition.getType())) {
+            switch (condition.getType()) {
                 case GROUP:
                     mTypeSpinner.setSelection(ConditionToGroup.ConditionType.GROUP.getPosition());
                     break;
@@ -350,6 +414,7 @@ public class AddGroupConditionFragment extends Fragment {
     public void setupClearEditMode(){
         mIsEditAction = false;
         mConditionForEdit = null;
+        mButtonBorrar.setVisibility(View.GONE);
     }
 
 }

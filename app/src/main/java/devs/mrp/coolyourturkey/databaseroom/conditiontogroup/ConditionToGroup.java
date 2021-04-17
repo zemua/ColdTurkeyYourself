@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,8 @@ public class ConditionToGroup {
 
     @NonNull
     @ColumnInfo(name = "type")
-    private String type; // we use the name of the ENUM in the db
+    @TypeConverters(ConditionTypeConverter.class)
+    private ConditionType type;
 
     @ColumnInfo(name = "filetarget")
     private String filetarget;
@@ -66,8 +69,8 @@ public class ConditionToGroup {
     public Integer getId() {return this.id;}
     public void setGroupid(Integer groupId) {this.groupid = groupId;}
     public Integer getGroupid() {return this.groupid;}
-    public void setType(String type) {this.type = type;}
-    public String getType() {return this.type;}
+    public void setType(ConditionType type){this.type = type;}
+    public ConditionType getType() {return type;}
     public void setFiletarget(String filetarget) {this.filetarget = filetarget;}
     public String getFiletarget(){return this.filetarget;}
     public void setConditionalgroupid(Integer conditionalgroupid){this.conditionalgroupid = conditionalgroupid;}

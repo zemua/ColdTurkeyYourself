@@ -104,6 +104,7 @@
     <string name="en_otro_grupo">En otro grupo</string>
     <string name="confirmacion">Confirmación</string>
     <string name="seguro_que_deseas_borrar_este_grupo">¿Seguro que deseas borrar este grupo?</string>
+    <string name="seguro_que_deseas_borrar_esta_condicion">¿Seguro que deseas borrar esta condición?</string>
     <string name="plus">+</string>
     <string name="nueva_condicion_para_grupo">Nueva condición para grupo</string>
     <string name="condicion_para_grupo">Condición para grupo</string>
@@ -120,4 +121,5 @@
     <string name="tiempo_ganado_en_otro_grupo">Tiempo de otro grupo</string>
     <string name="tiempo_importado_de_un_archivo">Tiempo de un archivo</string>
     <string name="guardar">Guardar</string>
+    <string name="txt">txt</string>
 </resources>

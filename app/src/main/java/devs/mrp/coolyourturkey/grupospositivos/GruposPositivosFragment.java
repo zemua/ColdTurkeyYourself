@@ -19,6 +19,7 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
@@ -103,8 +104,13 @@ public class GruposPositivosFragment extends Fragment {
 
     public void removeGrupoPositivoFromDb(Integer id){
         // Delete apps belonging to this group
-        AppToGroupRepository repo = AppToGroupRepository.getRepo(getActivity().getApplication());
-        repo.deleteByGroupId(id);
+        AppToGroupRepository appRepo = AppToGroupRepository.getRepo(getActivity().getApplication());
+        appRepo.deleteByGroupId(id);
+        // Delete conditions from this group
+        ConditionToGroupRepository conditionRepo = ConditionToGroupRepository.getRepo(getActivity().getApplication());
+        conditionRepo.deleteByGroupId(id);
+        // Delete conditions that refer to this group
+        conditionRepo.deleteByConditionalGroupId(id);
         // Delete this group
         mGrupoPositivoViewModel.deleteById(id);
     }

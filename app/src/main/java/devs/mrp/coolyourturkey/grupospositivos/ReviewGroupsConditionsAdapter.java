@@ -92,7 +92,7 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
 
     private String concatenateConditionText(ConditionToGroup condition) {
         StringBuilder s = new StringBuilder();
-        switch(ConditionToGroup.ConditionType.valueOf(condition.getType())){
+        switch(condition.getType()){
             case GROUP:
                 s.append(mContext.getResources().getString(R.string.si_el_grupo));
                 s.append(" ");

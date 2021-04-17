@@ -62,13 +62,12 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     break;
                 case ReviewGroupFragment.FEEDBACK_ADD_CONDITION:
                     intent = new Intent(ReviewGroupActivity.this, AddGroupConditionActivity.class);
-                    intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_ID, mGroupId);
+                    addGroupDataAsExtra(intent);
                     startActivity(intent);
                     break;
                 case ReviewGroupFragment.FEEDBACK_CLICK_CONDITION:
                     intent = new Intent(ReviewGroupActivity.this, AddGroupConditionActivity.class);
-                    intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_ID, mGroupId);
-                    intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_NAME, mGroupName);
+                    addGroupDataAsExtra(intent);
                     final ConditionToGroup objSent = (ConditionToGroup)feedback;
                     final Bundle bundle = new Bundle();
                     bundle.putBinder(EXTRA_CONDITION, new ObjectWrapperForBinder(objSent));
@@ -77,5 +76,10 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     break;
             }
         }
+    }
+
+    private void addGroupDataAsExtra(Intent intent) {
+        intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_ID, mGroupId);
+        intent.putExtra(AddGroupConditionActivity.EXTRA_GROUP_NAME, mGroupName);
     }
 }

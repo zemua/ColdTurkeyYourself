@@ -20,6 +20,7 @@ public class AddGroupConditionActivity extends AppCompatActivity implements Feed
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
 
     public static final Integer RESULT_SAVE = 0;
+    public static final Integer RESULT_DELETE = 1;
 
     private Fragment fragment;
     private Integer mGroupId;
@@ -51,11 +52,18 @@ public class AddGroupConditionActivity extends AppCompatActivity implements Feed
     public void receiveFeedback(Fragment feedbacker, int accion, Object feedback, Object... args) {
         if (feedbacker == fragment) {
             Intent intent;
+            ConditionToGroupRepository repository;
             switch (accion) {
                 case AddGroupConditionFragment.FEEDBACK_SAVE:
-                    ConditionToGroupRepository repository = ConditionToGroupRepository.getRepo(this.getApplication());
+                    repository = ConditionToGroupRepository.getRepo(this.getApplication());
                     repository.insert((ConditionToGroup)feedback);
                     setResult(RESULT_SAVE);
+                    finish();
+                    break;
+                case AddGroupConditionFragment.FEEDBACK_DELETE_CONDITION:
+                    repository = ConditionToGroupRepository.getRepo(this.getApplication());
+                    repository.deleteById(((ConditionToGroup)feedback).getId());
+                    setResult(RESULT_DELETE);
                     finish();
                     break;
             }
