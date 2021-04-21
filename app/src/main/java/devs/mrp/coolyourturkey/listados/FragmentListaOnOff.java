@@ -109,13 +109,13 @@ public class FragmentListaOnOff extends Fragment {
             @Override
             public void giveFeedback(int tipo, AplicacionListada feedback, Object... args) {
                 if (tipo == AppsListAdapter.FEEDBACK_INSERT){
-                    // hay una regla de conflictos, si es repe lo reemplaza
-                    mAplicacionViewModel.insert(feedback);
-                    if (feedback.getLista().equals(AplicacionListada.getPOSITIVA())){
-                        // delete from the group
+                    //if we are removing an app from the positive list to become "neutral"
+                    if (feedback.getLista().equals(AplicacionListada.getNEUTRAL())){
+                        // delete from the group in case it is assigned
                         appToGroupRepository.deleteByPackage(feedback.getNombre());
+                        // TODO test
                     }
-                    //Log.d(TAG, "terminando insert en FragmentListaOnOff");
+                    mAplicacionViewModel.insert(feedback); // on conflict replace
                 }
                 if (tipo == AppsListAdapter.FEEDBACK_REQUEST_CONFIRM) {
                     AplicacionListada app = feedback;
