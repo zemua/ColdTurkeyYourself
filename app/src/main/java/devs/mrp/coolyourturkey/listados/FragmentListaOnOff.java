@@ -113,7 +113,6 @@ public class FragmentListaOnOff extends Fragment {
                     if (feedback.getLista().equals(AplicacionListada.getNEUTRAL())){
                         // delete from the group in case it is assigned
                         appToGroupRepository.deleteByPackage(feedback.getNombre());
-                        // TODO test
                     }
                     mAplicacionViewModel.insert(feedback); // on conflict replace
                 }

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 @Entity(tableName = "timelogger")
 public class TimeLogger {
@@ -15,7 +16,11 @@ public class TimeLogger {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "id")
-    private Integer id;
+    private Long id;
+
+    @NonNull
+    @ColumnInfo(name = "millistimestamp")
+    private Long millistimestamp;
 
     @NonNull
     @ColumnInfo(name = "packagename")
@@ -26,7 +31,8 @@ public class TimeLogger {
 
     @NonNull
     @ColumnInfo(name = "positivenegative")
-    private String positivenegative;
+    @TypeConverters(TimeLoggerTypeConverter.class)
+    private Type positivenegative;
 
     @NonNull
     @ColumnInfo(name = "usedtime")
@@ -36,14 +42,16 @@ public class TimeLogger {
     @ColumnInfo(name = "countedtime")
     private Long countedtimemilis;
 
-    public void setId(Integer id){this.id = id;}
-    public Integer getId(){return this.id;}
+    public void setId(Long id){this.id = id;}
+    public Long getId(){return this.id;}
+    public void setMillistimestamp(Long millisTimestamp){this.millistimestamp = millisTimestamp;}
+    public Long getMillistimestamp(){return this.millistimestamp;}
     public void setPackageName(String packageName){this.packageName = packageName;}
     public String getPackageName(){return this.packageName;}
     public void setGroupId(Integer groupId){this.groupId = groupId;}
     public Integer getGroupId(){return this.groupId;}
-    public void setPositivenegative(Type type){this.positivenegative = type.toString();}
-    public Type getPositiveNegative(){return Type.valueOf(positivenegative);}
+    public void setPositivenegative(Type type){this.positivenegative = type;}
+    public Type getPositivenegative(){return this.positivenegative;}
     public void setUsedtimemilis(Long milis){this.usedtimemilis = milis;}
     public Long getUsedtimemilis(){return this.usedtimemilis;}
     public void setCountedtimemilis(Long milis){this.countedtimemilis = milis;}

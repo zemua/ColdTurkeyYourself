@@ -19,6 +19,8 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoDao;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaDao;
+import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
+import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerDao;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesDao;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
@@ -28,7 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class}, version = 5)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class}, version = 6)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -39,6 +41,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract GrupoPositivoDao grupoPositivoDao();
     public abstract AppToGroupDao appToGroupDao();
     public abstract ConditionToGroupDao conditionToGroupDao();
+    public abstract TimeLoggerDao timeLoggerDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -98,6 +101,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         }
     };
 
+    /**
+     * Migrate from:
+     * version 5
+     * to
+     * version 6
+     */
+    static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timelogger' ('id' BIGINT NOT NULL, 'millistimestamp' BIGINT NOT NULL, 'packagename' TEXT NOT NULL, 'groupid' INTEGER, 'positivenegative' TEXT NOT NULL, 'usedtime' BIGINT NOT NULL, 'countedtime' BIGINT NOT NULL, PRIMARY KEY ('id'))");
+        }
+    };
+
     public static TurkeyDatabaseRoom getDatabase(final Context context) {
         mContext = context;
         if (INSTANCE == null) {
@@ -105,7 +121,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6) // add the migration schemas separated by commas
                             .build();
                 }
             }
