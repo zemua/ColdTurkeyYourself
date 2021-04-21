@@ -23,6 +23,9 @@ public interface AppToGroupDao {
     @Query("DELETE FROM apptogroup WHERE groupid = :groupid")
     void deleteByGroupId(Integer groupid);
 
+    @Query("DELETE FROM apptogroup WHERE appname = :apppackage")
+    void deleteByPackage(String apppackage);
+
     @Query("SELECT * FROM apptogroup ORDER BY id ASC")
     LiveData<List<AppToGroup>> findAllAppToGroup();
 

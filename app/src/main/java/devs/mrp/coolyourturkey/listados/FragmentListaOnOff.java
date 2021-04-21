@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -45,6 +46,7 @@ public class FragmentListaOnOff extends Fragment {
     private AppLister mAppLister;
     private boolean mostrandoAppsSistema = false;
     private AplicacionListadaViewModel mAplicacionViewModel;
+    private AppToGroupRepository appToGroupRepository;
     private List<AplicacionListada> listaAplicaciones;
     private TextView mTextoTitulo;
     private DialogTimeUpdater mDialogTimeUpdater;
@@ -102,12 +104,17 @@ public class FragmentListaOnOff extends Fragment {
             }
         });
 
+        appToGroupRepository = AppToGroupRepository.getRepo(getActivity().getApplication());
         mAdapter.addFeedbackListener(new FeedbackListener<AplicacionListada>(){
             @Override
             public void giveFeedback(int tipo, AplicacionListada feedback, Object... args) {
                 if (tipo == AppsListAdapter.FEEDBACK_INSERT){
                     // hay una regla de conflictos, si es repe lo reemplaza
                     mAplicacionViewModel.insert(feedback);
+                    if (feedback.getLista().equals(AplicacionListada.getPOSITIVA())){
+                        // delete from the group
+                        appToGroupRepository.deleteByPackage(feedback.getNombre());
+                    }
                     //Log.d(TAG, "terminando insert en FragmentListaOnOff");
                 }
                 if (tipo == AppsListAdapter.FEEDBACK_REQUEST_CONFIRM) {

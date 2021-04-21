@@ -51,6 +51,12 @@ public class AppToGroupRepository {
         });
     }
 
+    public void deleteByPackage(String apppackage) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteByPackage(apppackage);
+        });
+    }
+
     public LiveData<List<AppToGroup>> findAllAppToGroup() {
         return mAllAppToGroup;
     }
