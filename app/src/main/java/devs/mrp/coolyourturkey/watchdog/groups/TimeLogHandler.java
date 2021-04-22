@@ -32,6 +32,8 @@ public class TimeLogHandler {
 
     private static final String TAG = "TIME_LOG_HANDLER";
 
+    private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes
+
     private Application mApplication;
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
@@ -47,6 +49,7 @@ public class TimeLogHandler {
     private Map<String, TimeSummary> timeSummaryMap; // to get the time for each group and condition, be it group, file...
     private TimeLogger timeLogger;
     private Long dayRefreshed = 0L;
+    private Long mLastFilesChecked;
 
     public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
         mApplication = application;
@@ -120,36 +123,31 @@ public class TimeLogHandler {
      *
      */
 
-    private void initTimeLogger(){
-        if (timeLogger == null) {
-            timeLogger = new TimeLogger();
-        }
+    private void initTimeLogger(String packageName, Long millis){
+        timeLogger = new TimeLogger();
+        setPackageNameAndAutoAssignGroupId(packageName);
+        setCurrent(millis);
+        decrease(millis);
     }
 
     private void clearTimeLoggerReference() {
         timeLogger = null;
     }
 
-    public void insertTimeBadApp(Long millis) throws Exception {
-        initTimeLogger();
-        setCurrent(millis);
-        decrease(millis);
+    public void insertTimeBadApp(String packageName, Long millis) throws Exception {
+        initTimeLogger(packageName, millis);
         timeLogger.setPositivenegative(TimeLogger.Type.NEGATIVE);
         send();
     }
 
-    public void insertTimeGoodApp(Long millis) throws Exception {
-        initTimeLogger();
-        setCurrent(millis);
-        increase(millis);
+    public void insertTimeGoodApp(String packageName, Long millis) throws Exception {
+        initTimeLogger(packageName, millis);
         timeLogger.setPositivenegative(TimeLogger.Type.POSITIVE);
         send();
     }
 
-    public void insertTimeNeutralApp(Long millis) throws Exception {
-        initTimeLogger();
-        setCurrent(millis);
-        maintain();
+    public void insertTimeNeutralApp(String packageName, Long millis) throws Exception {
+        initTimeLogger(packageName, millis);
         timeLogger.setPositivenegative(TimeLogger.Type.NEUTRAL);
         send();
     }
@@ -158,6 +156,7 @@ public class TimeLogHandler {
         if (!checkIfDataEnoughAndSubmit()){
             throw new Exception("Data provided in the submitted TimeLogger is not enough");
         }
+        clearTimeLoggerReference();
     }
 
     private boolean checkIfDataEnoughAndSubmit() {
@@ -189,7 +188,6 @@ public class TimeLogHandler {
 
     private void submitTimeLogger() {
         timeLoggerRepository.insert(timeLogger);
-        timeLogger = null;
     }
 
     private void setCurrent(Long millis) {
@@ -217,18 +215,15 @@ public class TimeLogHandler {
         timeLogger.setCountedtimemilis(0L);
     }
 
-    public void setGroupId(Integer groupId) {
-        initTimeLogger();
+    private void setGroupId(Integer groupId) {
         timeLogger.setGroupId(groupId);
     }
 
-    public void setPackageName(String packageName) {
-        initTimeLogger();
+    private void setPackageName(String packageName) {
         timeLogger.setPackageName(packageName);
     }
 
-    public void setPackageNameAndAutoAssignGroupId(String packageName) {
-        initTimeLogger();
+    private void setPackageNameAndAutoAssignGroupId(String packageName) {
         timeLogger.setPackageName(packageName);
         assignGroupIdFromPackageName(packageName);
     }
@@ -238,7 +233,7 @@ public class TimeLogHandler {
             timeLogger.setGroupId(appsToGroupsVSpackageNameMap.get(name).getGroupId());
         } else {
             Log.d(TAG, "no package found in appsToGroupsVSpackageNameMap for assignGroupIdFromPackageName");
-            timeLogger.setGroupId(null);
+            timeLogger.setGroupId(-1);
         }
     }
 
@@ -451,11 +446,19 @@ public class TimeLogHandler {
     }
 
     private void refreshTimeLoggedOnFiles() {
-        Set<Integer> set = conditionToFileListVSgroupIdMap.keySet();
-        set.stream().forEach(groupId -> {
-            List<ConditionToGroup> conditionsList = conditionToFileListVSgroupIdMap.get(groupId);
-            conditionsList.stream().forEach(c -> observeTimeLoggedOnFile(c));
-        });
+        if (mLastFilesChecked == null) {
+            mLastFilesChecked = 0L;
+        }
+        Long now = System.currentTimeMillis();
+        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked) {
+            Log.d(TAG, "updating time logged in files");
+            mLastFilesChecked = now;
+            Set<Integer> set = conditionToFileListVSgroupIdMap.keySet();
+            set.stream().forEach(groupId -> {
+                List<ConditionToGroup> conditionsList = conditionToFileListVSgroupIdMap.get(groupId);
+                conditionsList.stream().forEach(c -> observeTimeLoggedOnFile(c));
+            });
+        }
     }
 
     private void addConditionToFileMap(ConditionToGroup condition) {

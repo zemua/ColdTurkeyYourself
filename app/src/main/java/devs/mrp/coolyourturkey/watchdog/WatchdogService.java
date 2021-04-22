@@ -27,6 +27,7 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import devs.mrp.coolyourturkey.workspace.TurkeyBroadcaster;
 import devs.mrp.coolyourturkey.workspace.TurkeyBroadreader;
 import devs.mrp.coolyourturkey.workspace.WspController;
@@ -40,6 +41,7 @@ import static java.lang.Thread.sleep;
 public class WatchdogService extends LifecycleService {
 
     // TODO simplify the loop and decentralize in other classes
+    // TODO periodically do some cleanup of old registers of ContadorRepository
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
     private static final Object LOCK_0 = new Object();
@@ -56,8 +58,6 @@ public class WatchdogService extends LifecycleService {
     WatchdogHandler mHandler;
     Notification mNotificacion;
     NotificationManager mNotificationManager;
-    ValueMapRepository mValueMapRepo;
-    //boolean isSwitchOn = true;
     long lastEpoch;
     long milisTranscurridos;
     long now;
@@ -69,6 +69,7 @@ public class WatchdogService extends LifecycleService {
     ScreenBlock mScreenBlock;
     private MisPreferencias mMisPreferencias;
     private ToqueDeQuedaHandler mToqueDeQuedaHandler;
+    private TimeLogHandler mTimeLogHandler;
 
     @Override
     public void onCreate() {
@@ -81,6 +82,7 @@ public class WatchdogService extends LifecycleService {
         mTiempoImportado = 0L;
         mMisPreferencias = new MisPreferencias(this);
         mToqueDeQuedaHandler = new ToqueDeQuedaHandler(this);
+        mTimeLogHandler = new TimeLogHandler(this, this.getApplication(), this);
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -96,28 +98,10 @@ public class WatchdogService extends LifecycleService {
             if (tipo == WatchdogHandler.FEEDBACK_APAGADA) {
                 pausar();
             } else if (tipo == WatchdogHandler.FEEDBACK_ENCENDIDA) {
-                //if (isSwitchOn) {
                 WatchdogStarter lstarter = new WatchdogStarter(this);
                 lstarter.startService();
-                //}
             }
         });
-
-        // Observer del valor guardado del switch
-        /*mValueMapRepo = ValueMapRepository.getRepo(this.getApplication());
-        mValueMapRepo.getValueOf(WatchdogHandler.WATCHDOG_ACTIVO_DB_ID).observe(this, new Observer<List<ValueMap>>() {
-            @Override
-            public void onChanged(List<ValueMap> valueMaps) {
-                if (valueMaps.size() == 0) {
-                    // todavía no se ha agregado esta entrada, lo agregamos como true y activamos el switch
-                    isSwitchOn = true;
-                } else if (valueMaps.get(0).getValor().equals(ValueMap.VALOR_FALSE)) {
-                    isSwitchOn = false;
-                } else {
-                    isSwitchOn = true;
-                }
-            }
-        });*/
 
         // Observer del último contador para saber cual es el último tiempo acumulado que tenemos
         mContadorRepo = ContadorRepository.getRepo(this.getApplication());
@@ -194,8 +178,10 @@ public class WatchdogService extends LifecycleService {
 
                     while (getEjecuta()) {
                         try {
-                            sleeptime = 1000 * 3;
+                            sleeptime = 1000 * 3; // 3 seconds between checks
                             sleep(sleeptime);
+
+                            mTimeLogHandler.watchDog(); // perform periodic stuff in the handler
 
                             if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
@@ -237,6 +223,7 @@ public class WatchdogService extends LifecycleService {
                                                 }
                                                 if (!mScreenBlock.estamosBloqueando()) {
                                                     pushAcumulado(now, lacumula);
+                                                    try {mTimeLogHandler.insertTimeBadApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
                                                 }
                                                 new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
                                                 break;
@@ -249,6 +236,7 @@ public class WatchdogService extends LifecycleService {
                                                 } else {
                                                     lupdated = false;
                                                 }
+                                                try {mTimeLogHandler.insertTimeNeutralApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
                                                 break;
                                             case ForegroundAppChecker.NULL:
                                                 lestanotif = ForegroundAppChecker.NULL;
@@ -259,6 +247,7 @@ public class WatchdogService extends LifecycleService {
                                                 } else {
                                                     lupdated = false;
                                                 }
+                                                // no log this time because we don't know which kind of app is it
                                                 break;
                                             case ForegroundAppChecker.POSITIVO:
                                                 lestanotif = ForegroundAppChecker.POSITIVO;
@@ -273,6 +262,7 @@ public class WatchdogService extends LifecycleService {
                                                 }
                                                 if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
                                                     pushAcumulado(now, lacumula);
+                                                    try {mTimeLogHandler.insertTimeGoodApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
                                                 }
                                                 break;
                                         }
@@ -296,11 +286,10 @@ public class WatchdogService extends LifecycleService {
                                         } else {
                                             mScreenBlock.desbloquear();
                                         }
-                                        //if (lestanotif == ForegroundAppChecker.NEGATIVO || lestanotif == ForegroundAppChecker.POSITIVO){
                                         mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
                                         if (mToqueDeQuedaHandler.isToqueDeQueda()) {
                                             if (lestanotif != ForegroundAppChecker.NEGATIVO) {
-                                                // if negative it is blocked + decreased before, if not and toque de queda, it decreases points here
+                                                // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
                                                 negativeDecreaseCounter();
                                             }
                                         }
