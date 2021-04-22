@@ -17,8 +17,6 @@ import devs.mrp.coolyourturkey.usagestats.StatsFragmentDoble;
 
 public class GruposPositivosActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
-    // TODO check that all groups related activities work well when turning the screen around
-
     private static final int LAUNCH_ADD = 1;
     private static final int LAUNCH_REVIEW = 2;
 

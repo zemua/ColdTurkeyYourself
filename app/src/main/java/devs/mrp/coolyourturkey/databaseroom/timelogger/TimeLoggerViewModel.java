@@ -21,8 +21,8 @@ public class TimeLoggerViewModel extends AndroidViewModel {
 
     public void deleteByOlderThan(Long millisOlderThan) {mRepo.deleteByEarlierThan(millisOlderThan);}
 
-    public LiveData<List<TimeLogger>> findByOlderThanAndGroupId(Long olderThan, Integer groupid) {
-        return mRepo.findByOlderThanAndGroupId(olderThan, groupid);
+    public LiveData<List<TimeLogger>> findByNewerThanAndGroupId(Long newerThan, Integer groupid) {
+        return mRepo.findByNewerThanAndGroupId(newerThan, groupid);
     }
 
 }

@@ -37,8 +37,8 @@ public class TimeLoggerRepository {
         });
     }
 
-    public LiveData<List<TimeLogger>> findByOlderThanAndGroupId(Long olderThan, Integer groupId) {
-        return mDao.findByTimeOlderAndGroupId(olderThan, groupId);
+    public LiveData<List<TimeLogger>> findByNewerThanAndGroupId(Long newerThan, Integer groupId) {
+        return mDao.findByTimeNewerAndGroupId(newerThan, groupId);
     }
 
 }

@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.comun;
 
 import java.util.Formatter;
+import java.util.concurrent.TimeUnit;
 
 public class MilisToTime {
 
@@ -47,4 +48,6 @@ public class MilisToTime {
     public static long getMilisDeHoras(int horas) {
         return horas * 60L * 60L * 1000L;
     }
+
+    public static long getDaysFromMilis(long milis) {return TimeUnit.MILLISECONDS.toDays(milis);}
 }

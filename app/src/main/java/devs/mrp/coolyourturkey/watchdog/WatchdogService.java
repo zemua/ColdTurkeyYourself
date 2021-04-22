@@ -39,6 +39,8 @@ import static java.lang.Thread.sleep;
 
 public class WatchdogService extends LifecycleService {
 
+    // TODO simplify the loop and decentralize in other classes
+
     private static final String TAG = "WATCHDOG SERVICE TAG";
     private static final Object LOCK_0 = new Object();
 

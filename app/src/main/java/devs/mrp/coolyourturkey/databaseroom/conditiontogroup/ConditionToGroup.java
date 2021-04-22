@@ -80,4 +80,14 @@ public class ConditionToGroup {
     public void setFromlastndays(Integer fromlastndays){this.fromlastndays = fromlastndays;}
     public Integer getFromlastndays(){return this.fromlastndays;}
 
+    public void cloneCondition(ConditionToGroup c) {
+        this.id = c.getId();
+        this.groupid = c.getGroupid();
+        this.type = c.getType();
+        this.filetarget = c.getFiletarget();
+        this.conditionalgroupid = c.getConditionalgroupid();
+        this.conditionalminutes = c.getConditionalminutes();
+        this.fromlastndays = c.getFromlastndays();
+    }
+
 }

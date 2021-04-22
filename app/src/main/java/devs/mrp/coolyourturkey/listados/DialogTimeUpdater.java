@@ -118,7 +118,7 @@ public class DialogTimeUpdater implements Executor, Feedbacker<Integer> {
             } else {
                 mTiempo = 0;
             }
-            try { // TODO solve bug of double thread
+            try {
                 while (mTiempo > 0 && keepRunning){
                     Thread.sleep(1000);
                     mTiempo--;
