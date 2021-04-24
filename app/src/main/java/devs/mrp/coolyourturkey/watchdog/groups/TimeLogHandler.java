@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.watchdog.groups;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -37,15 +38,18 @@ public class TimeLogHandler {
     private Application mApplication;
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
+    private Handler mMainHandler;
     private TimeLoggerRepository timeLoggerRepository;
     private AppToGroupRepository appToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private LiveData<List<ConditionToGroup>> mConditionsLiveData;
+    private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to remove the observers individually in main thread
     private List<ConditionToGroup> mConditions;
     private Map<String, AppToGroup> appsToGroupsVSpackageNameMap; // to get the group from the packagename
     private Map<Integer, List<ConditionToGroup>> conditionToGroupListVSgroupIdMap; // to get list of group-conditions for each group
     private Map<Integer, List<ConditionToGroup>> conditionToFileListVSgroupIdMap; // to get list of file-conditions for each group
     private List<LiveData<List<TimeLogger>>> listOfLoggerLiveDatas; // for removing observers before re-observing new ones
+    private Map<LiveData<List<TimeLogger>>,List<Observer<List<TimeLogger>>>> listOfLoggerLiveDataObservers; // to remove the observers individually and avoid bulk-remove while adding new ones in a different thread
     private Map<String, TimeSummary> timeSummaryMap; // to get the time for each group and condition, be it group, file...
     private TimeLogger timeLogger;
     private Long dayRefreshed = 0L;
@@ -55,6 +59,7 @@ public class TimeLogHandler {
         mApplication = application;
         mContext = context;
         mLifecycleOwner = lifecycleOwner;
+        mMainHandler = new Handler(mContext.getMainLooper());
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         appToGroupRepository = AppToGroupRepository.getRepo(application);
@@ -67,6 +72,7 @@ public class TimeLogHandler {
 
         conditionToGroupListVSgroupIdMap = new HashMap<>();
         listOfLoggerLiveDatas = new ArrayList<>();
+        listOfLoggerLiveDataObservers = new HashMap<>();
         timeSummaryMap = new HashMap<>();
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
@@ -250,7 +256,7 @@ public class TimeLogHandler {
 
     private void refreshConditionsObserver() { // called when we change the day
         clearConditionsObserver();
-        mConditionsLiveData.observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+        mConditionsLiveDataObserver = new Observer<List<ConditionToGroup>>() {
             @Override
             public void onChanged(List<ConditionToGroup> conditionToGroups) {
                 if (conditionToGroupListVSgroupIdMap != null) {conditionToGroupListVSgroupIdMap.clear();}
@@ -266,6 +272,12 @@ public class TimeLogHandler {
                         observeTimeLoggedOnFile(c);
                     }
                 });
+            }
+        };
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mConditionsLiveData.observe(mLifecycleOwner, mConditionsLiveDataObserver);
             }
         });
     }
@@ -361,7 +373,14 @@ public class TimeLogHandler {
 
     private void clearConditionsObserver() {
         clearLogObservers();
-        mConditionsLiveData.removeObservers(mLifecycleOwner);
+        if (mConditionsLiveDataObserver!=null) {
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mConditionsLiveData.removeObserver(mConditionsLiveDataObserver);
+                }
+            });
+        }
     }
 
     private void addConditionToGroupMap(ConditionToGroup condition) {
@@ -373,8 +392,17 @@ public class TimeLogHandler {
 
     private void clearLogObservers() {
         listOfLoggerLiveDatas.stream().forEach(ld -> {
-            // ld.removeObservers(mLifecycleOwner); // removeObservers can only be called in the main thread
-            // TODO rework class in order to remove observers individually, as it is done in different threads, so no new observers are removed by accident
+            // observers are removed individually instead of bulk
+            // to prevent deleting new added observers in background thread
+            // since observers can only be removed in main thread
+            listOfLoggerLiveDataObservers.get(ld).stream().forEach(obs -> {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ld.removeObserver(obs);
+                    }
+                });
+            });
         });
         timeSummaryMap.clear();
     }
@@ -382,12 +410,22 @@ public class TimeLogHandler {
     private void observeTimeLoggedOnGroup(ConditionToGroup c) {
         LiveData<List<TimeLogger>> timesLogged = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getGroupid());
         listOfLoggerLiveDatas.add(timesLogged);
-        timesLogged.observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
+        Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
             @Override
             public void onChanged(List<TimeLogger> timeLoggers) {
                 Long sum = timeLoggers.stream().collect(Collectors.summingLong(t -> t.getCountedtimemilis()));
                 TimeSummary summary = new TimeSummary(c.getGroupid(), c.getConditionalgroupid(), sum);
                 timeSummaryMap.put(summary.getKey(), summary);
+            }
+        };
+        if (!listOfLoggerLiveDataObservers.containsKey(timesLogged)) {
+            listOfLoggerLiveDataObservers.put(timesLogged, new ArrayList<>());
+        }
+        listOfLoggerLiveDataObservers.get(timesLogged).add(observer);
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                timesLogged.observe(mLifecycleOwner, observer);
             }
         });
     }
@@ -451,7 +489,7 @@ public class TimeLogHandler {
             mLastFilesChecked = 0L;
         }
         Long now = System.currentTimeMillis();
-        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked) {
+        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && conditionToFileListVSgroupIdMap != null) {
             Log.d(TAG, "updating time logged in files");
             mLastFilesChecked = now;
             Set<Integer> set = conditionToFileListVSgroupIdMap.keySet();
