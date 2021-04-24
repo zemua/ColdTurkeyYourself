@@ -373,7 +373,8 @@ public class TimeLogHandler {
 
     private void clearLogObservers() {
         listOfLoggerLiveDatas.stream().forEach(ld -> {
-            ld.removeObservers(mLifecycleOwner);
+            // ld.removeObservers(mLifecycleOwner); // removeObservers can only be called in the main thread
+            // TODO rework class in order to remove observers individually, as it is done in different threads, so no new observers are removed by accident
         });
         timeSummaryMap.clear();
     }
@@ -469,7 +470,9 @@ public class TimeLogHandler {
     }
 
     private void clearFileObservers(){ // called when ConditionToGroup list changes
-        conditionToFileListVSgroupIdMap.clear();
+        if (conditionToFileListVSgroupIdMap != null) {
+            conditionToFileListVSgroupIdMap.clear();
+        }
     }
 
 }

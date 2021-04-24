@@ -21,6 +21,8 @@ import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
+    // TODO load list of apps in different thread to not affect UI performance
+
     private static final String TAG = "Main_Activity";
 
     Fragment fragment;
