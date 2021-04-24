@@ -261,7 +261,12 @@ public class WatchdogService extends LifecycleService {
                                                     lupdated = false;
                                                 }
                                                 if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                                    pushAcumulado(now, lacumula);
+                                                    if (mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {
+                                                        pushAcumulado(now, lacumula);
+                                                        Log.d(TAG, "positive app and conditions met, summing time");
+                                                    } else {
+                                                        Log.d(TAG, "positive app but conditions not met");
+                                                    }
                                                     try {mTimeLogHandler.insertTimeGoodApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
                                                 }
                                                 break;

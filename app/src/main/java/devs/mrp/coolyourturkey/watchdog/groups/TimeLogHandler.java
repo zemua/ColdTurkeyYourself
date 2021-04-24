@@ -71,6 +71,7 @@ public class TimeLogHandler {
         });
 
         conditionToGroupListVSgroupIdMap = new HashMap<>();
+        conditionToFileListVSgroupIdMap = new HashMap<>();
         listOfLoggerLiveDatas = new ArrayList<>();
         listOfLoggerLiveDataObservers = new HashMap<>();
         timeSummaryMap = new HashMap<>();
@@ -330,7 +331,7 @@ public class TimeLogHandler {
         return MilisToTime.getMilisDeMinutos(con.getConditionalminutes());
     }
 
-    private boolean ifConditionMet(Integer groupId, Integer conditionId) {
+    private boolean ifConditionMet(Integer groupId, Integer conditionId) { // TODO check times spent on each condition
         if (getTimeCountedOnGroupCondition(groupId, conditionId) >= getMillisRequiredOnGroupCondition(groupId, conditionId)){
             return true;
         } return false;
