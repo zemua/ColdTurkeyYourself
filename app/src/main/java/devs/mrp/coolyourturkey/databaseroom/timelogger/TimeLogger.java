@@ -10,7 +10,7 @@ import androidx.room.TypeConverters;
 public class TimeLogger {
 
     public enum Type {
-        POSITIVE, NEGATIVE, NEUTRAL;
+        POSITIVECONDITIONSMET, POSITIVECONDITIONSNOTMET, NEGATIVE, NEUTRAL;
     }
 
     @PrimaryKey(autoGenerate = true)

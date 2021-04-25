@@ -149,7 +149,11 @@ public class TimeLogHandler {
 
     public void insertTimeGoodApp(String packageName, Long millis) throws Exception {
         initTimeLogger(packageName, millis);
-        timeLogger.setPositivenegative(TimeLogger.Type.POSITIVE);
+        if (ifAllAppConditionsMet(packageName)) {
+            timeLogger.setPositivenegative(TimeLogger.Type.POSITIVECONDITIONSMET);
+        } else {
+            timeLogger.setPositivenegative(TimeLogger.Type.POSITIVECONDITIONSNOTMET);
+        }
         send();
     }
 
