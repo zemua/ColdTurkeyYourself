@@ -122,4 +122,5 @@
     <string name="tiempo_importado_de_un_archivo">Tiempo de un archivo</string>
     <string name="guardar">Guardar</string>
     <string name="txt">txt</string>
+    <string name="condiciones_no_cumplidas">¡¡ Condiciones NO cumplidas !!</string>
 </resources>

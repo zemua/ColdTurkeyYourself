@@ -19,6 +19,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -111,17 +112,26 @@ public class WatchdogHandler implements Feedbacker<Object> {
         return mNotificacion;
     }
 
-    public Notification getNotificacionPositiva(String paquete, Long restante, Long proporcion) {
+    public Notification getNotificacionPositiva(TimeLogHandler logger, String paquete, Long restante, Long proporcion) {
         createNotificationChannel();
         if (mToqueDeQuedaHandler.isToqueDeQueda()){
             mNotificacion = getNotificationToqueDeQueda(paquete);
         }else {
-            mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
-                    .setContentTitle(packageToLabel(paquete))
-                    .setContentText(mContext.getText(R.string.content_notificacion_positiva) + milisToTime(restante / proporcion) + mContext.getText(R.string.y_sumando_tiempo))
-                    .setSmallIcon(R.drawable.notificacion_caliente)
-                    .setContentIntent(mPendingIntent)
-                    .build();
+            if (logger.ifAllAppConditionsMet(paquete)) {
+                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
+                        .setContentTitle(packageToLabel(paquete))
+                        .setContentText(mContext.getText(R.string.content_notificacion_positiva) + milisToTime(restante / proporcion) + mContext.getText(R.string.y_sumando_tiempo))
+                        .setSmallIcon(R.drawable.notificacion_caliente)
+                        .setContentIntent(mPendingIntent)
+                        .build();
+            } else {
+                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
+                        .setContentTitle(packageToLabel(paquete))
+                        .setContentText(mContext.getText(R.string.content_notificacion_positiva) + " " + mContext.getText(R.string.condiciones_no_cumplidas))
+                        .setSmallIcon(R.drawable.notificacion_neutral)
+                        .setContentIntent(mPendingIntent)
+                        .build();
+            }
         }
         return mNotificacion;
     }
