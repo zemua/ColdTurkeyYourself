@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class}, version = 6)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class}, version = 7)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -114,6 +114,25 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         }
     };
 
+    /**
+     * Migrate from:
+     * version 5
+     * to
+     * version 6
+     */
+    static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("DROP TABLE IF EXISTS 'timelogger'");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timelogger' ('id' INTEGER NOT NULL, 'millistimestamp' INTEGER NOT NULL, 'packagename' TEXT NOT NULL, 'groupid' INTEGER, 'positivenegative' TEXT NOT NULL, 'usedtime' INTEGER NOT NULL, 'countedtime' INTEGER NOT NULL, PRIMARY KEY ('id'))");
+        }
+    };
+
+    /**
+     * No more migration scripts
+     * Need to include them in the following in getDatabase()
+     */
+
     public static TurkeyDatabaseRoom getDatabase(final Context context) {
         mContext = context;
         if (INSTANCE == null) {
@@ -121,7 +140,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7) // add the migration schemas separated by commas
                             .build();
                 }
             }

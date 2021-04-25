@@ -33,8 +33,11 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class ReviewGroupFragment extends Fragment {
+
+    // TODO implement export time to file
 
     private static final String TAG = "FRAGMENT_REVIEW_GROUP";
 
@@ -153,7 +156,8 @@ public class ReviewGroupFragment extends Fragment {
          * Conditions adapter
          */
 
-        mConditionsAdapter = new ReviewGroupsConditionsAdapter(mContext);
+        TimeLogHandler logger = new TimeLogHandler(mContext, this.getActivity().getApplication(), this);
+        mConditionsAdapter = new ReviewGroupsConditionsAdapter(mContext, logger);
         recyclerConditions.setAdapter(mConditionsAdapter);
         LinearLayoutManager layoutConditions = new LinearLayoutManager(mContext);
         recyclerConditions.setLayoutManager(layoutConditions);

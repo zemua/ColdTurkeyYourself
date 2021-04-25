@@ -23,21 +23,28 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGroupsConditionsAdapter.ReviewGroupsConditionsViewHolder> implements Feedbacker<ConditionToGroup> {
+
+    // TODO show current state of conditions (current time spent) and highlight with colors (green/red) depending on met/not met
+    // ifConditionMet(groupId, conditionId) to highlight color
+    // getTimeCountedOnGroupCondition(groupId, conditionId) to check the time spent on the group of this condition (if group)
 
     public static final int FEEDBACK_CONDITION_SELECTED = 0;
 
     private List<ConditionToGroup> mDataset;
     private Context mContext;
     private Map<Integer, GrupoPositivo> mGrupos; // Integer = id del grupo
+    private TimeLogHandler mTimeLogHandler;
 
     private List<FeedbackListener<ConditionToGroup>> mListeners = new ArrayList<>();
 
-    public ReviewGroupsConditionsAdapter(Context context) {
+    public ReviewGroupsConditionsAdapter(Context context, TimeLogHandler logger) {
         mContext = context;
         mDataset = new ArrayList<>();
         mGrupos = new HashMap<>();
+        mTimeLogHandler = logger;
     }
 
     @NonNull
@@ -90,6 +97,12 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         }
     }
 
+    private Integer getLoggerMinutes(Integer groupId, Integer conditionId) {
+        Long millis = mTimeLogHandler.getTimeCountedOnGroupCondition(groupId, conditionId);
+        Long minutes = millis / 60 / 1000;
+        return minutes.intValue();
+    }
+
     private String concatenateConditionText(ConditionToGroup condition) {
         StringBuilder s = new StringBuilder();
         switch(condition.getType()){
@@ -121,6 +134,16 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         s.append(mContext.getResources().getString(R.string.en_los_ultimos)).append(" ");
         s.append(String.valueOf(condition.getFromlastndays())).append(" ");
         s.append(mContext.getResources().getString(R.string.d_de_dias));
+        s.append(". ");
+        s.append(mContext.getResources().getString(R.string.actualmente_ha_usado));
+        s.append(" ");
+        s.append(getLoggerMinutes(condition.getGroupid(), condition.getId())/60);
+        s.append(" ");
+        s.append(mContext.getResources().getString(R.string.h_de_horas));
+        s.append(" ");
+        s.append(getLoggerMinutes(condition.getGroupid(), condition.getId())%60);
+        s.append(" ");
+        s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
     }
 

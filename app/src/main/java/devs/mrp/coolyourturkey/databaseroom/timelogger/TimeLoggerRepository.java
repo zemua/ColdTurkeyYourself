@@ -10,7 +10,7 @@ import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 
 public class TimeLoggerRepository {
 
-    private TimeLoggerDao mDao;
+    private static TimeLoggerDao mDao;
     private static TimeLoggerRepository mRepo;
 
     private TimeLoggerRepository(Application application) {
@@ -39,6 +39,10 @@ public class TimeLoggerRepository {
 
     public LiveData<List<TimeLogger>> findByNewerThanAndGroupId(Long newerThan, Integer groupId) {
         return mDao.findByTimeNewerAndGroupId(newerThan, groupId);
+    }
+
+    public LiveData<List<TimeLogger>> findAllTimeLogger() {
+        return mDao.findAllTimeLogger();
     }
 
 }

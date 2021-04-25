@@ -117,6 +117,7 @@
     <string name="si_el_archivo">Si el archivo</string>
     <string name="ha_usado">ha usado</string>
     <string name="en_los_ultimos">en los últimos</string>
+    <string name="actualmente_ha_usado">Actualmente ha usado</string>
     <string name="explicacion_formato_archivo_condicion">(nota: el formato del contenido de este archivo .txt debe ser AAAA-MM-DD-TT siendo A el año, M el mes, D el día, T el tiempo de uso a leer)</string>
     <string name="tiempo_ganado_en_otro_grupo">Tiempo de otro grupo</string>
     <string name="tiempo_importado_de_un_archivo">Tiempo de un archivo</string>

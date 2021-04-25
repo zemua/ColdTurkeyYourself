@@ -31,6 +31,9 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class TimeLogHandler {
 
+    // TODO test and debug file-conditions are read correctly
+    // TODO fix bug on condition update for a group time
+
     private static final String TAG = "TIME_LOG_HANDLER";
 
     private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes
@@ -134,7 +137,6 @@ public class TimeLogHandler {
         timeLogger = new TimeLogger();
         setPackageNameAndAutoAssignGroupId(packageName);
         setCurrent(millis);
-        decrease(millis);
     }
 
     private void clearTimeLoggerReference() {
@@ -143,12 +145,14 @@ public class TimeLogHandler {
 
     public void insertTimeBadApp(String packageName, Long millis) throws Exception {
         initTimeLogger(packageName, millis);
+        decrease(millis);
         timeLogger.setPositivenegative(TimeLogger.Type.NEGATIVE);
         send();
     }
 
     public void insertTimeGoodApp(String packageName, Long millis) throws Exception {
         initTimeLogger(packageName, millis);
+        increase(millis);
         if (ifAllAppConditionsMet(packageName)) {
             timeLogger.setPositivenegative(TimeLogger.Type.POSITIVECONDITIONSMET);
         } else {
@@ -159,6 +163,7 @@ public class TimeLogHandler {
 
     public void insertTimeNeutralApp(String packageName, Long millis) throws Exception {
         initTimeLogger(packageName, millis);
+        timeLogger.setCountedtimemilis(0L);
         timeLogger.setPositivenegative(TimeLogger.Type.NEUTRAL);
         send();
     }
@@ -202,7 +207,11 @@ public class TimeLogHandler {
     }
 
     private void setCurrent(Long millis) {
-        timeLogger.setUsedtimemilis(millis);
+        if (millis >= 0) {
+            timeLogger.setUsedtimemilis(millis);
+        } else {
+            timeLogger.setUsedtimemilis(-millis);
+        }
         timeLogger.setMillistimestamp(System.currentTimeMillis());
     }
 
@@ -301,7 +310,7 @@ public class TimeLogHandler {
      *
      */
 
-    private Long getTimeCountedOnGroupCondition(Integer groupId, Integer conditionId) {
+    public Long getTimeCountedOnGroupCondition(Integer groupId, Integer conditionId) {
         TimeSummary t = new TimeSummary(groupId, conditionId);
         String key = t.getKey();
         Long time;
@@ -335,7 +344,7 @@ public class TimeLogHandler {
         return MilisToTime.getMilisDeMinutos(con.getConditionalminutes());
     }
 
-    private boolean ifConditionMet(Integer groupId, Integer conditionId) { // TODO check times spent on each condition
+    public boolean ifConditionMet(Integer groupId, Integer conditionId) {
         if (getTimeCountedOnGroupCondition(groupId, conditionId) >= getMillisRequiredOnGroupCondition(groupId, conditionId)){
             return true;
         } return false;
@@ -431,6 +440,14 @@ public class TimeLogHandler {
             @Override
             public void run() {
                 timesLogged.observe(mLifecycleOwner, observer);
+            }
+        });
+
+        timeLoggerRepository.findAllTimeLogger().observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
+            @Override
+            public void onChanged(List<TimeLogger> timeLoggers) { // TODO check that records are inserted correctly
+                List<TimeLogger> testeo = timeLoggers;
+                Log.d(TAG, "timeLoggers has " + timeLoggers.size() + " records");
             }
         });
     }

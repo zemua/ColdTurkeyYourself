@@ -256,7 +256,11 @@ public class WatchdogService extends LifecycleService {
                                                 }
                                                 if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
                                                     mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    lupdated = true;
+                                                    if (mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {
+                                                        lupdated = true;
+                                                    } else {
+                                                        lupdated = false;
+                                                    }
                                                 } else {
                                                     lupdated = false;
                                                 }
