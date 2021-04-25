@@ -43,6 +43,8 @@ import java.util.List;
 
 public class ConfiguracionFragment extends Fragment {
 
+    // TODO add option for toast when you are in a positive app that doesnt met the conditions yet
+
     private static String TAG = "CONFIGURACION FRAGMENT";
 
     private static int REQUEST_CODE_WRITE = 20;
