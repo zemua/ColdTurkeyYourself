@@ -223,7 +223,7 @@ public class WatchdogService extends LifecycleService {
                                                 }
                                                 if (!mScreenBlock.estamosBloqueando()) {
                                                     pushAcumulado(now, lacumula);
-                                                    try {mTimeLogHandler.insertTimeBadApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
+                                                    try {mTimeLogHandler.insertTimeBadApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 }
                                                 new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
                                                 break;
@@ -236,7 +236,7 @@ public class WatchdogService extends LifecycleService {
                                                 } else {
                                                     lupdated = false;
                                                 }
-                                                try {mTimeLogHandler.insertTimeNeutralApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
+                                                try {mTimeLogHandler.insertTimeNeutralApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 break;
                                             case ForegroundAppChecker.NULL:
                                                 lestanotif = ForegroundAppChecker.NULL;
@@ -267,7 +267,7 @@ public class WatchdogService extends LifecycleService {
                                                     } else {
                                                         Log.d(TAG, "positive app but conditions not met"); // TODO some times when conditions not met still says they are met (variables cruzadas con observers del hilo principal deben ser volatile?)
                                                     }
-                                                    try {mTimeLogHandler.insertTimeGoodApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
+                                                    try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 }
                                                 break;
                                         }

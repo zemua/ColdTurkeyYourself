@@ -69,20 +69,29 @@ public class TimeLogHandler {
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
         appToGroupRepository = AppToGroupRepository.getRepo(application);
-        appToGroupRepository.findAllAppToGroup().observe(lifecycleOwner, new Observer<List<AppToGroup>>() {
+        mMainHandler.post(new Runnable() {
             @Override
-            public void onChanged(List<AppToGroup> appToGroups) {
-                mAppToGroups = appToGroups;
+            public void run() {
+                appToGroupRepository.findAllAppToGroup().observe(lifecycleOwner, new Observer<List<AppToGroup>>() {
+                    @Override
+                    public void onChanged(List<AppToGroup> appToGroups) {
+                        mAppToGroups = appToGroups;
+                    }
+                });
             }
         });
 
-        mAllConditionsToGroup = new ArrayList<>();
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
-        mConditionsLiveData.observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+        mMainHandler.post(new Runnable() {
             @Override
-            public void onChanged(List<ConditionToGroup> conditionToGroups) {
-                mAllConditionsToGroup = conditionToGroups;
+            public void run() {
+                mConditionsLiveData.observe(lifecycleOwner, new Observer<List<ConditionToGroup>>() {
+                    @Override
+                    public void onChanged(List<ConditionToGroup> conditionToGroups) {
+                        mAllConditionsToGroup = conditionToGroups;
+                    }
+                });
             }
         });
         refreshDayCounting();
@@ -230,6 +239,7 @@ public class TimeLogHandler {
     }
 
     private void submitTimeLogger() {
+        Log.d(TAG, "inserting timelogger " + timeLogger.getCountedtimemilis());
         timeLoggerRepository.insert(timeLogger);
     }
 
@@ -298,7 +308,7 @@ public class TimeLogHandler {
 
     private void refreshDayCounting() {
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
-        if (dayRefreshed != currentDay()){
+        if (dayRefreshed != currentDay() && mAllConditionsToGroup != null){
             dayRefreshed = currentDay();
             refreshConditionsObserver();
         }
@@ -391,11 +401,13 @@ public class TimeLogHandler {
 
     private List<ConditionToGroup> getListOfConditionIdsOfGroup(Integer groupId) {
         List<ConditionToGroup> list = new ArrayList<>();
-        mAllConditionsToGroup.stream().forEach(c -> {
-            if (c.getGroupid() == groupId) {
-                list.add(c);
-            }
-        });
+        if (mAllConditionsToGroup != null) {
+            mAllConditionsToGroup.stream().forEach(c -> {
+                if (c.getGroupid() == groupId) {
+                    list.add(c);
+                }
+            });
+        }
         return list;
     }
 
@@ -495,7 +507,7 @@ public class TimeLogHandler {
             mLastFilesChecked = 0L;
         }
         Long now = System.currentTimeMillis();
-        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked) {
+        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && mAllConditionsToGroup != null) {
             mLastFilesChecked = now;
             mAllConditionsToGroup.stream().forEach(c -> {
                 if (c.getType() == ConditionToGroup.ConditionType.FILE){

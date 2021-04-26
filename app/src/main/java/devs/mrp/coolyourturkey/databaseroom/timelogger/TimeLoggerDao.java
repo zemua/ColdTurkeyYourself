@@ -13,6 +13,9 @@ public interface TimeLoggerDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(TimeLogger timeLogger);
 
+    @Query("DELETE FROM timelogger")
+    void deleteAll();
+
     @Query("DELETE FROM timelogger WHERE id = :id")
     void deleteByID(Long id);
 
