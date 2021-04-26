@@ -50,9 +50,9 @@ public class TimeLogHandler {
     private ConditionToGroupRepository conditionToGroupRepository;
 
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to clear observers only
-    private List<LiveData<List<TimeLogger>>> mListOfLoggerLiveData; // to clear observers only
+    private List<LiveData<List<TimeLogger>>> mListOfLoggerLiveData = new ArrayList<>(); // to clear observers only
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
-    private Map<String, TimeSummary> mFileTimeSummaryMap;
+    private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
 
@@ -78,7 +78,8 @@ public class TimeLogHandler {
 
         mAllConditionsToGroup = new ArrayList<>();
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
-        conditionToGroupRepository.findAllConditionToGroup().observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+        mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
+        mConditionsLiveData.observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
             @Override
             public void onChanged(List<ConditionToGroup> conditionToGroups) {
                 mAllConditionsToGroup = conditionToGroups;
