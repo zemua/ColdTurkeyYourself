@@ -97,8 +97,8 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         }
     }
 
-    private Integer getLoggerMinutes(Integer groupId, Integer conditionId) {
-        Long millis = mTimeLogHandler.getTimeCountedOnGroupCondition(groupId, conditionId);
+    private Integer getLoggerMinutes(ConditionToGroup condition) {
+        Long millis = mTimeLogHandler.getTimeCountedOnGroupCondition(condition);
         Long minutes = millis / 60 / 1000;
         return minutes.intValue();
     }
@@ -137,11 +137,11 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         s.append(". ");
         s.append(mContext.getResources().getString(R.string.actualmente_ha_usado));
         s.append(" ");
-        s.append(getLoggerMinutes(condition.getGroupid(), condition.getId())/60);
+        s.append(getLoggerMinutes(condition)/60);
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.h_de_horas));
         s.append(" ");
-        s.append(getLoggerMinutes(condition.getGroupid(), condition.getId())%60);
+        s.append(getLoggerMinutes(condition)%60);
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
