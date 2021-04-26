@@ -242,14 +242,12 @@ public class WatchdogHandler implements Feedbacker<Object> {
                 isPhoneLock = true;
             }
         }
-        Log.d(TAG, "phone is locked: " + isPhoneLock);
         return !isPhoneLock;
     }
 
     public boolean ifPhoneIsOn() {
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = pm.isInteractive();
-        Log.d(TAG, "phone is on: " + isScreenOn);
         return isScreenOn;
     }
 

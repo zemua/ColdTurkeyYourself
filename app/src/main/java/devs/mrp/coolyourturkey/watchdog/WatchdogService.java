@@ -206,7 +206,7 @@ public class WatchdogService extends LifecycleService {
                                         int ltipo = lapp.appType;
                                         long lacumula = 0L;
                                         mTiempoImportado = mImporter.importarTiempoTotal();
-                                        Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
+                                        //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
                                         sProporcion = mMisPreferencias.getProporcionTrabajoOcio();
                                         switch (ltipo) {
                                             case ForegroundAppChecker.NEGATIVO:
@@ -254,22 +254,18 @@ public class WatchdogService extends LifecycleService {
                                                 if (mUltimoContador != null) {
                                                     lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
                                                 }
-                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                                //if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
                                                     mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    if (mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {
-                                                        lupdated = true;
-                                                    } else {
-                                                        lupdated = false;
-                                                    }
-                                                } else {
-                                                    lupdated = false;
-                                                }
+                                                    lupdated = true;
+                                                //} else {
+                                                //    lupdated = false;
+                                                //}
                                                 if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
                                                     if (mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {
                                                         pushAcumulado(now, lacumula);
                                                         Log.d(TAG, "positive app and conditions met, summing time");
                                                     } else {
-                                                        Log.d(TAG, "positive app but conditions not met");
+                                                        Log.d(TAG, "positive app but conditions not met"); // TODO some times when conditions not met still says they are met (variables cruzadas con observers del hilo principal deben ser volatile?)
                                                     }
                                                     try {mTimeLogHandler.insertTimeGoodApp(lnombre, lacumula);} catch (Exception e) {e.printStackTrace();}
                                                 }

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.comun.FileReader;
+import devs.mrp.coolyourturkey.comun.IntegerWrap;
+import devs.mrp.coolyourturkey.comun.LongWrapper;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
@@ -45,15 +48,14 @@ public class TimeLogHandler {
     private TimeLoggerRepository timeLoggerRepository;
     private AppToGroupRepository appToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
-    private LiveData<List<ConditionToGroup>> mConditionsLiveData;
-    private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to remove the observers individually in main thread
-    private List<ConditionToGroup> mConditions;
-    private Map<String, AppToGroup> appsToGroupsVSpackageNameMap; // to get the group from the packagename
-    private Map<Integer, List<ConditionToGroup>> conditionToGroupListVSgroupIdMap; // to get list of group-conditions for each group
-    private Map<Integer, List<ConditionToGroup>> conditionToFileListVSgroupIdMap; // to get list of file-conditions for each group
-    private List<LiveData<List<TimeLogger>>> listOfLoggerLiveDatas; // for removing observers before re-observing new ones
-    private Map<LiveData<List<TimeLogger>>,List<Observer<List<TimeLogger>>>> listOfLoggerLiveDataObservers; // to remove the observers individually and avoid bulk-remove while adding new ones in a different thread
-    private Map<String, TimeSummary> timeSummaryMap; // to get the time for each group and condition, be it group, file...
+
+    private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to clear observers only
+    private List<LiveData<List<TimeLogger>>> mListOfLoggerLiveData; // to clear observers only
+    private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
+    private Map<String, TimeSummary> mFileTimeSummaryMap;
+    private List<AppToGroup> mAppToGroups;
+    private List<ConditionToGroup> mAllConditionsToGroup;
+
     private TimeLogger timeLogger;
     private Long dayRefreshed = 0L;
     private Long mLastFilesChecked;
@@ -65,21 +67,23 @@ public class TimeLogHandler {
         mMainHandler = new Handler(mContext.getMainLooper());
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
+        mTimeLoggersByConditionId = new HashMap<>();
         appToGroupRepository = AppToGroupRepository.getRepo(application);
         appToGroupRepository.findAllAppToGroup().observe(lifecycleOwner, new Observer<List<AppToGroup>>() {
             @Override
             public void onChanged(List<AppToGroup> appToGroups) {
-                appsToGroupsVSpackageNameMap = appToGroups.stream().collect(Collectors.toMap(AppToGroup::getAppName, app -> app));
+                mAppToGroups = appToGroups;
             }
         });
 
-        conditionToGroupListVSgroupIdMap = new HashMap<>();
-        conditionToFileListVSgroupIdMap = new HashMap<>();
-        listOfLoggerLiveDatas = new ArrayList<>();
-        listOfLoggerLiveDataObservers = new HashMap<>();
-        timeSummaryMap = new HashMap<>();
+        mAllConditionsToGroup = new ArrayList<>();
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
-        mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
+        conditionToGroupRepository.findAllConditionToGroup().observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+            @Override
+            public void onChanged(List<ConditionToGroup> conditionToGroups) {
+                mAllConditionsToGroup = conditionToGroups;
+            }
+        });
         refreshDayCounting();
     }
 
@@ -108,9 +112,9 @@ public class TimeLogHandler {
     }
 
     public boolean ifAllAppConditionsMet(String packageName) {
-        if (appsToGroupsVSpackageNameMap.containsKey(packageName)){
-            Integer groupId = appsToGroupsVSpackageNameMap.get(packageName).getGroupId();
-            return ifAllGroupConditionsMet(groupId);
+        AppToGroup app = appsToGroupContainsPackageName(packageName);
+        if (app != null){
+            return ifAllGroupConditionsMet(app.getGroupId());
         } else {
             Log.d(TAG, "no packageName found in appsToGroupsVSpackageNameMap for ifAllAppConditionsMet");
             Log.d(TAG, "this package is not assigned to a group, and so it has no conditions to meet");
@@ -119,6 +123,28 @@ public class TimeLogHandler {
     }
 
 
+    private AppToGroup appsToGroupContainsPackageName(String packageName){
+        IntegerWrap id = new IntegerWrap(-1);
+        StringBuilder name = new StringBuilder();
+        IntegerWrap groupId = new IntegerWrap(-1);
+        BooleanWrap containsKey = new BooleanWrap();
+        containsKey.set(false);
+        mAppToGroups.stream().forEach(k -> {
+            if(k.getAppName().equals(packageName)){
+                containsKey.set(true);
+                id.set(k.getId());
+                name.append(k.getAppName());
+                groupId.set(k.getGroupId());
+            }
+        });
+        if(containsKey.get()){
+            AppToGroup app = new AppToGroup(name.toString(), groupId.get());
+            app.setId(id.get());
+            return app;
+        } else {
+            return null;
+        }
+    }
 
 
 
@@ -249,10 +275,11 @@ public class TimeLogHandler {
     }
 
     private void assignGroupIdFromPackageName(String name) {
-        if (appsToGroupsVSpackageNameMap.containsKey(name)) {
-            timeLogger.setGroupId(appsToGroupsVSpackageNameMap.get(name).getGroupId());
+        AppToGroup app = appsToGroupContainsPackageName(name);
+        if (app != null) {
+            timeLogger.setGroupId(app.getGroupId());
         } else {
-            Log.d(TAG, "no package found in appsToGroupsVSpackageNameMap for assignGroupIdFromPackageName");
+            //Log.d(TAG, "no package found in appsToGroupsVSpackageNameMap for assignGroupIdFromPackageName");
             timeLogger.setGroupId(-1);
         }
     }
@@ -268,39 +295,73 @@ public class TimeLogHandler {
      * Refresh for all kinds of conditions
      */
 
-    private void refreshConditionsObserver() { // called when we change the day
-        clearConditionsObserver();
-        mConditionsLiveDataObserver = new Observer<List<ConditionToGroup>>() {
-            @Override
-            public void onChanged(List<ConditionToGroup> conditionToGroups) {
-                if (conditionToGroupListVSgroupIdMap != null) {conditionToGroupListVSgroupIdMap.clear();}
-                if (conditionToFileListVSgroupIdMap != null) {conditionToFileListVSgroupIdMap.clear();}
-                clearLogObservers();
-                clearFileObservers();
-                conditionToGroups.stream().forEach(c -> {
-                    if (c.getType().equals(ConditionToGroup.ConditionType.GROUP)) {
-                        addConditionToGroupMap(c);
-                        observeTimeLoggedOnGroup(c);
-                    } else if (c.getType().equals(ConditionToGroup.ConditionType.FILE)) {
-                        addConditionToFileMap(c);
-                        observeTimeLoggedOnFile(c);
-                    }
-                });
-            }
-        };
-        mMainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mConditionsLiveData.observe(mLifecycleOwner, mConditionsLiveDataObserver);
-            }
-        });
-    }
-
     private void refreshDayCounting() {
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
         if (dayRefreshed != currentDay()){
             dayRefreshed = currentDay();
             refreshConditionsObserver();
+        }
+    }
+
+    private void refreshConditionsObserver() { // called when we change the day
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    clearConditionsObserver();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mConditionsLiveData.observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+                    @Override
+                    public void onChanged(List<ConditionToGroup> conditionToGroups) {
+                        mMainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    clearLogObservers();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                conditionToGroups.stream().forEach(c -> {
+                                    if (c.getType().equals(ConditionToGroup.ConditionType.GROUP)) {
+                                        try {
+                                            observeTimeLoggedOnGroup(c);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else if (c.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+                                        observeTimeLoggedOnFile(c);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void clearConditionsObserver() throws Exception {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            clearLogObservers();
+            if (mConditionsLiveData != null) {
+                mConditionsLiveData.removeObservers(mLifecycleOwner);
+            }
+        } else {
+            throw new Exception("clearConditionsObserver to be called in main thread");
+        }
+    }
+
+    private void clearLogObservers() throws Exception {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            if (mListOfLoggerLiveData != null) {
+                mListOfLoggerLiveData.stream().forEach(ld -> {
+                    ld.removeObservers(mLifecycleOwner);
+                });
+            }
+        } else {
+            throw new Exception("clearLogObservers to be called in main thread");
         }
     }
 
@@ -310,54 +371,30 @@ public class TimeLogHandler {
      *
      */
 
-    public Long getTimeCountedOnGroupCondition(Integer groupId, Integer conditionId) {
-        TimeSummary t = new TimeSummary(groupId, conditionId);
-        String key = t.getKey();
+    public Long getTimeCountedOnGroupCondition(ConditionToGroup cond) {
         Long time;
-        if (timeSummaryMap.containsKey(key)) {
-            time = timeSummaryMap.get(key).getSummedTime();
+        if (mTimeLoggersByConditionId.containsKey(cond.getId())) {
+            time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
         } else {
-            Log.d(TAG, "no time found on timeSummaryMap for getTimeCountedOnGroupCondition");
             time = 0L;
         }
+        Log.d(TAG, "time counted: " + time);
         return time;
     }
 
-    private Long getMillisRequiredOnGroupCondition(Integer groupId, Integer conditionId) {
-        if (conditionToGroupListVSgroupIdMap.containsKey(groupId)) {
-            return milisecondsRequiredByCondition(conditionToGroupListVSgroupIdMap, groupId, conditionId);
-        }
-        if (conditionToFileListVSgroupIdMap.containsKey(groupId)){
-            return milisecondsRequiredByCondition(conditionToFileListVSgroupIdMap, groupId, conditionId);
-        }
-        Log.d(TAG, "no matching condition found for getMillisRequiredOnGroupCondition");
-        return 0L;
-    }
-
-    private Long milisecondsRequiredByCondition(Map<Integer, List<ConditionToGroup>> map, Integer groupId, Integer conditionId){
-        ConditionToGroup con = new ConditionToGroup();
-        map.get(groupId).stream().forEach(c -> {
-            if (c.getId().equals(conditionId)) {
-                con.cloneCondition(c);
-            }
-        });
-        return MilisToTime.getMilisDeMinutos(con.getConditionalminutes());
-    }
-
-    public boolean ifConditionMet(Integer groupId, Integer conditionId) {
-        if (getTimeCountedOnGroupCondition(groupId, conditionId) >= getMillisRequiredOnGroupCondition(groupId, conditionId)){
+    public boolean ifConditionMet(ConditionToGroup cond) {
+        if (getTimeCountedOnGroupCondition(cond) >= MilisToTime.getMilisDeMinutos(cond.getConditionalminutes())){
             return true;
         } return false;
     }
 
-    private List<Integer> getListOfConditionIdsOfGroup(Integer groupId) {
-        List<Integer> list = new ArrayList<>();
-        if (conditionToGroupListVSgroupIdMap.containsKey(groupId)){
-            list.addAll(conditionToGroupListVSgroupIdMap.get(groupId).stream().map(con -> con.getId()).collect(Collectors.toList()));
-        }
-        if (conditionToFileListVSgroupIdMap.containsKey(groupId)) {
-            list.addAll(conditionToFileListVSgroupIdMap.get(groupId).stream().map(con -> con.getId()).collect(Collectors.toList()));
-        }
+    private List<ConditionToGroup> getListOfConditionIdsOfGroup(Integer groupId) {
+        List<ConditionToGroup> list = new ArrayList<>();
+        mAllConditionsToGroup.stream().forEach(c -> {
+            if (c.getGroupid() == groupId) {
+                list.add(c);
+            }
+        });
         return list;
     }
 
@@ -365,11 +402,10 @@ public class TimeLogHandler {
         BooleanWrap b = new BooleanWrap();
         b.set(true);
         getListOfConditionIdsOfGroup(groupId).stream().forEach(c -> {
-            if (!ifConditionMet(groupId, c)){
+            if (!ifConditionMet(c)){
                 b.set(false);
             }
         });
-        Log.d(TAG, "all group conditions met? " + b.get());
         return b.get();
     }
 
@@ -385,71 +421,18 @@ public class TimeLogHandler {
      *
      */
 
-    private void clearConditionsObserver() {
-        clearLogObservers();
-        if (mConditionsLiveDataObserver!=null) {
-            mMainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mConditionsLiveData.removeObserver(mConditionsLiveDataObserver);
-                }
-            });
-        }
-    }
-
-    private void addConditionToGroupMap(ConditionToGroup condition) {
-        if (!conditionToGroupListVSgroupIdMap.containsKey(condition.getGroupid())) {
-            conditionToGroupListVSgroupIdMap.put(condition.getGroupid(), new ArrayList<>());
-        }
-        conditionToGroupListVSgroupIdMap.get(condition.getGroupid()).add(condition);
-    }
-
-    private void clearLogObservers() {
-        listOfLoggerLiveDatas.stream().forEach(ld -> {
-            // observers are removed individually instead of bulk
-            // to prevent deleting new added observers in background thread
-            // since observers can only be removed in main thread
-            listOfLoggerLiveDataObservers.get(ld).stream().forEach(obs -> {
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ld.removeObserver(obs);
-                    }
-                });
-            });
-        });
-        timeSummaryMap.clear();
-    }
-
-    private void observeTimeLoggedOnGroup(ConditionToGroup c) {
-        LiveData<List<TimeLogger>> timesLogged = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getGroupid());
-        listOfLoggerLiveDatas.add(timesLogged);
-        Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
+    private void observeTimeLoggedOnGroup(ConditionToGroup c) throws Exception {
+        LiveData<List<TimeLogger>> timeLoggerLD = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid());
+        mListOfLoggerLiveData.add(timeLoggerLD);
+        timeLoggerLD.observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
             @Override
             public void onChanged(List<TimeLogger> timeLoggers) {
-                Long sum = timeLoggers.stream().collect(Collectors.summingLong(t -> t.getCountedtimemilis()));
-                TimeSummary summary = new TimeSummary(c.getGroupid(), c.getConditionalgroupid(), sum);
-                timeSummaryMap.put(summary.getKey(), summary);
+                mTimeLoggersByConditionId.put(c.getId(), timeLoggers);
             }
-        };
-        if (!listOfLoggerLiveDataObservers.containsKey(timesLogged)) {
-            listOfLoggerLiveDataObservers.put(timesLogged, new ArrayList<>());
+        });
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new Exception("observeTimeLoggedOnGroup shall be called from main thread");
         }
-        listOfLoggerLiveDataObservers.get(timesLogged).add(observer);
-        mMainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                timesLogged.observe(mLifecycleOwner, observer);
-            }
-        });
-
-        timeLoggerRepository.findAllTimeLogger().observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
-            @Override
-            public void onChanged(List<TimeLogger> timeLoggers) { // TODO check that records are inserted correctly
-                List<TimeLogger> testeo = timeLoggers;
-                Log.d(TAG, "timeLoggers has " + timeLoggers.size() + " records");
-            }
-        });
     }
 
 
@@ -496,7 +479,7 @@ public class TimeLogHandler {
                 Long dateMilis = cal.getTimeInMillis();
                 if (dateMilis >= offsetDayInMillis(condition.getFromlastndays().longValue())) {
                     TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), consumption);
-                    timeSummaryMap.put(ts.getKey(), ts);
+                    mFileTimeSummaryMap.put(ts.getKey(), ts);
                 }
             } else {
                 Log.d(TAG, "content of file doesn't match requirements for " + condition.getFiletarget());
@@ -511,28 +494,13 @@ public class TimeLogHandler {
             mLastFilesChecked = 0L;
         }
         Long now = System.currentTimeMillis();
-        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && conditionToFileListVSgroupIdMap != null) {
-            Log.d(TAG, "updating time logged in files");
+        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked) {
             mLastFilesChecked = now;
-            Set<Integer> set = conditionToFileListVSgroupIdMap.keySet();
-            set.stream().forEach(groupId -> {
-                List<ConditionToGroup> conditionsList = conditionToFileListVSgroupIdMap.get(groupId);
-                conditionsList.stream().forEach(c -> observeTimeLoggedOnFile(c));
+            mAllConditionsToGroup.stream().forEach(c -> {
+                if (c.getType() == ConditionToGroup.ConditionType.FILE){
+                    observeTimeLoggedOnFile(c);
+                }
             });
         }
     }
-
-    private void addConditionToFileMap(ConditionToGroup condition) {
-        if (!conditionToFileListVSgroupIdMap.containsKey(condition.getGroupid())) {
-            conditionToFileListVSgroupIdMap.put(condition.getGroupid(), new ArrayList<>());
-        }
-        conditionToFileListVSgroupIdMap.get(condition.getGroupid()).add(condition);
-    }
-
-    private void clearFileObservers(){ // called when ConditionToGroup list changes
-        if (conditionToFileListVSgroupIdMap != null) {
-            conditionToFileListVSgroupIdMap.clear();
-        }
-    }
-
 }
