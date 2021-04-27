@@ -50,7 +50,9 @@ public class TimeLogHandler {
     private ConditionToGroupRepository conditionToGroupRepository;
 
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to clear observers only
-    private List<LiveData<List<TimeLogger>>> mListOfLoggerLiveData = new ArrayList<>(); // to clear observers only
+    private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
+    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObservers; // to be cleared from livedata only
+
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
@@ -65,6 +67,8 @@ public class TimeLogHandler {
         mContext = context;
         mLifecycleOwner = lifecycleOwner;
         mMainHandler = new Handler(mContext.getMainLooper());
+
+        mMapOfLoggerLiveDataObservers = new HashMap<>();
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
@@ -83,17 +87,19 @@ public class TimeLogHandler {
 
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
-        mMainHandler.post(new Runnable() {
+        /*mMainHandler.post(new Runnable() {
             @Override
             public void run() {
-                mConditionsLiveData.observe(lifecycleOwner, new Observer<List<ConditionToGroup>>() {
+                mConditionsLiveDataObserver = new Observer<List<ConditionToGroup>>() {
                     @Override
                     public void onChanged(List<ConditionToGroup> conditionToGroups) {
                         mAllConditionsToGroup = conditionToGroups;
                     }
-                });
+                };
+                mConditionsLiveData.observe(lifecycleOwner, mConditionsLiveDataObserver);
             }
-        });
+        });*/
+        refreshConditionsObserver();
         refreshDayCounting();
     }
 
@@ -239,7 +245,6 @@ public class TimeLogHandler {
     }
 
     private void submitTimeLogger() {
-        Log.d(TAG, "inserting timelogger " + timeLogger.getCountedtimemilis());
         timeLoggerRepository.insert(timeLogger);
     }
 
@@ -308,8 +313,9 @@ public class TimeLogHandler {
 
     private void refreshDayCounting() {
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
-        if (dayRefreshed != currentDay() && mAllConditionsToGroup != null){
-            dayRefreshed = currentDay();
+        Long currentDay = currentDay();
+        if (!dayRefreshed.equals(currentDay) && mAllConditionsToGroup != null){
+            dayRefreshed = currentDay;
             refreshConditionsObserver();
         }
     }
@@ -323,9 +329,10 @@ public class TimeLogHandler {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mConditionsLiveData.observe(mLifecycleOwner, new Observer<List<ConditionToGroup>>() {
+                mConditionsLiveDataObserver = new Observer<List<ConditionToGroup>>() {
                     @Override
                     public void onChanged(List<ConditionToGroup> conditionToGroups) {
+                        mAllConditionsToGroup = conditionToGroups;
                         mMainHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -348,7 +355,8 @@ public class TimeLogHandler {
                             }
                         });
                     }
-                });
+                };
+                mConditionsLiveData.observe(mLifecycleOwner, mConditionsLiveDataObserver);
             }
         });
     }
@@ -357,7 +365,7 @@ public class TimeLogHandler {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             clearLogObservers();
             if (mConditionsLiveData != null) {
-                mConditionsLiveData.removeObservers(mLifecycleOwner);
+                mConditionsLiveData.removeObserver(mConditionsLiveDataObserver);
             }
         } else {
             throw new Exception("clearConditionsObserver to be called in main thread");
@@ -366,10 +374,11 @@ public class TimeLogHandler {
 
     private void clearLogObservers() throws Exception {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            if (mListOfLoggerLiveData != null) {
-                mListOfLoggerLiveData.stream().forEach(ld -> {
-                    ld.removeObservers(mLifecycleOwner);
+            if (mMapOfLoggerLiveDataObservers != null) {
+                mMapOfLoggerLiveDataObservers.keySet().stream().forEach(key -> {
+                    key.removeObserver(mMapOfLoggerLiveDataObservers.get(key));
                 });
+                mMapOfLoggerLiveDataObservers.clear();
             }
         } else {
             throw new Exception("clearLogObservers to be called in main thread");
@@ -394,6 +403,7 @@ public class TimeLogHandler {
     }
 
     public boolean ifConditionMet(ConditionToGroup cond) {
+        Log.d(TAG, "time needed: " + MilisToTime.getMilisDeMinutos(cond.getConditionalminutes()));
         if (getTimeCountedOnGroupCondition(cond) >= MilisToTime.getMilisDeMinutos(cond.getConditionalminutes())){
             return true;
         } return false;
@@ -436,13 +446,14 @@ public class TimeLogHandler {
 
     private void observeTimeLoggedOnGroup(ConditionToGroup c) throws Exception {
         LiveData<List<TimeLogger>> timeLoggerLD = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid());
-        mListOfLoggerLiveData.add(timeLoggerLD);
-        timeLoggerLD.observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
+        Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
             @Override
             public void onChanged(List<TimeLogger> timeLoggers) {
                 mTimeLoggersByConditionId.put(c.getId(), timeLoggers);
             }
-        });
+        };
+        mMapOfLoggerLiveDataObservers.put(timeLoggerLD, observer);
+        timeLoggerLD.observe(mLifecycleOwner, observer);
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw new Exception("observeTimeLoggedOnGroup shall be called from main thread");
         }
