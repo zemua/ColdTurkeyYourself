@@ -68,6 +68,7 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         holder.conditionToGroup = mDataset.get(position);
         String description = concatenateConditionText(mDataset.get(position));
         holder.textView.setText(description);
+        setBackgroundOnConditionMet(holder, mDataset.get(position));
     }
 
     @Override
@@ -145,6 +146,14 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
+    }
+
+    private void setBackgroundOnConditionMet(ReviewGroupsConditionsViewHolder holder, ConditionToGroup condition) {
+        if (mTimeLogHandler.ifConditionMet(condition)) {
+            // TODO set green color
+        } else {
+            // TODO set red color
+        }
     }
 
     public void setDataset(List<ConditionToGroup> dataSet) {

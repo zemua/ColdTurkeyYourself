@@ -158,6 +158,14 @@ public class ReviewGroupFragment extends Fragment {
 
         TimeLogHandler logger = new TimeLogHandler(mContext, this.getActivity().getApplication(), this);
         mConditionsAdapter = new ReviewGroupsConditionsAdapter(mContext, logger);
+        logger.addFeedbackListener(new FeedbackListener<Object>() {
+            @Override
+            public void giveFeedback(int tipo, Object feedback, Object... args) {
+                if (tipo == TimeLogHandler.FEEDBACK_LOGGERS_CHANGED) {
+                    mConditionsAdapter.notifyDataSetChanged();
+                }
+            }
+        });
         recyclerConditions.setAdapter(mConditionsAdapter);
         LinearLayoutManager layoutConditions = new LinearLayoutManager(mContext);
         recyclerConditions.setLayoutManager(layoutConditions);

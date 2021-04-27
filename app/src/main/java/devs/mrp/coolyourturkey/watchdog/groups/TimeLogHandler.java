@@ -31,15 +31,19 @@ import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
-public class TimeLogHandler {
+public class TimeLogHandler implements Feedbacker<Object> {
 
     // TODO test and debug file-conditions are read correctly
-    // TODO fix bug on condition update for a group time
 
     private static final String TAG = "TIME_LOG_HANDLER";
 
     private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes
+    public static final int FEEDBACK_LOGGERS_CHANGED = 0;
+
+    private List<FeedbackListener<Object>> feedbackListeners = new ArrayList<>();
 
     private Application mApplication;
     private Context mContext;
@@ -95,6 +99,18 @@ public class TimeLogHandler {
     public void watchDog() {
         refreshDayCounting();
         refreshTimeLoggedOnFiles();
+    }
+
+    @Override
+    public void giveFeedback(int tipo, Object feedback) {
+        feedbackListeners.stream().forEach(l -> {
+            l.giveFeedback(tipo, feedback);
+        });
+    }
+
+    @Override
+    public void addFeedbackListener(FeedbackListener<Object> listener) {
+        feedbackListeners.add(listener);
     }
 
     private class TimeSummary {
@@ -439,6 +455,7 @@ public class TimeLogHandler {
             @Override
             public void onChanged(List<TimeLogger> timeLoggers) {
                 mTimeLoggersByConditionId.put(c.getId(), timeLoggers);
+                giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
             }
         };
         mMapOfLoggerLiveDataObservers.put(timeLoggerLD, observer);
