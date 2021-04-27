@@ -27,10 +27,6 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGroupsConditionsAdapter.ReviewGroupsConditionsViewHolder> implements Feedbacker<ConditionToGroup> {
 
-    // TODO show current state of conditions (current time spent) and highlight with colors (green/red) depending on met/not met
-    // ifConditionMet(groupId, conditionId) to highlight color
-    // getTimeCountedOnGroupCondition(groupId, conditionId) to check the time spent on the group of this condition (if group)
-
     public static final int FEEDBACK_CONDITION_SELECTED = 0;
 
     private List<ConditionToGroup> mDataset;
@@ -150,9 +146,9 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
 
     private void setBackgroundOnConditionMet(ReviewGroupsConditionsViewHolder holder, ConditionToGroup condition) {
         if (mTimeLogHandler.ifConditionMet(condition)) {
-            // TODO set green color
+            holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
         } else {
-            // TODO set red color
+            holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
         }
     }
 
