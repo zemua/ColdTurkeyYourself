@@ -98,8 +98,6 @@ public class ConfiguracionFragment extends Fragment {
     private Switch mSwitchActivaToqueDeQueda;
     private RecyclerView mImportRecyclerView;
     private Button mButtonPoliticaPrivacidad;
-    //private TextView mTextBroadcast;
-    //private Switch mSwitchBroadcast;
 
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
@@ -129,8 +127,6 @@ public class ConfiguracionFragment extends Fragment {
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication());
         super.onAttach(context);
         mContext = context;
-        //mValueMapViewModel = new ViewModelProvider(this).get(ValueMapViewModel.class);
-        //mImportablesViewModel = new ViewModelProvider(this).get(ImportablesViewModel.class);
         mValueMapViewModel = new ViewModelProvider(this, factory).get(ValueMapViewModel.class);
         mImportablesViewModel = new ViewModelProvider(this, factory).get(ImportablesViewModel.class);
         mMisPreferencias = new MisPreferencias(context);
@@ -164,8 +160,6 @@ public class ConfiguracionFragment extends Fragment {
         mSwitchAvisoToqueDeQueda = (Switch) v.findViewById(R.id.switchAvisoToqueDeQueda);
         mSwitchActivaToqueDeQueda = (Switch) v.findViewById(R.id.switchActivaToque);
         mButtonPoliticaPrivacidad = (Button) v.findViewById(R.id.bPoliticaPrivacidad);
-        //mTextBroadcast = (TextView) v.findViewById(R.id.textBroadcast);
-        //mSwitchBroadcast = (Switch) v.findViewById(R.id.switchBroadcast);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -203,42 +197,6 @@ public class ConfiguracionFragment extends Fragment {
             mImportSwitch.setChecked(false);
         }
 
-        /*
-        LiveData<List<ValueMap>> lvalueExportOnOff = mValueMapViewModel.getValueOf(EXPORT_TXT_YES_NO_KEY);
-        lvalueExportOnOff.observe(this, new Observer<List<ValueMap>>() {
-            @Override
-            public void onChanged(List<ValueMap> valueMaps) {
-                if (mSwitchExportSetted == false) {
-                    mSwitchExportSetted = true;
-                    if (valueMaps.size() > 0) {
-                        if (valueMaps.get(0).getValor().equals(TRUE)) {
-                            mShareSwitch.setChecked(true);
-                        } else if (valueMaps.get(0).getValor().equals(FALSE)) {
-                            mShareSwitch.setChecked(false);
-                        }
-                    }
-                }
-            }
-        }); */
-
-        /*
-        LiveData<List<ValueMap>> lvalueImportOnOff = mValueMapViewModel.getValueOf(IMPORT_TXT_YES_NO_KEY);
-        lvalueImportOnOff.observe(this, new Observer<List<ValueMap>>() {
-            @Override
-            public void onChanged(List<ValueMap> valueMaps) {
-                if (mSwitchImportSetted == false) {
-                    mSwitchImportSetted = true;
-                    if (valueMaps.size() > 0) {
-                        if (valueMaps.get(0).getValor().equals(TRUE)) {
-                            mImportSwitch.setChecked(true);
-                        } else if (valueMaps.get(0).getValor().equals(FALSE)) {
-                            mImportSwitch.setChecked(false);
-                        }
-                    }
-                }
-            }
-        });*/
-
         mShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,11 +212,6 @@ public class ConfiguracionFragment extends Fragment {
                 } else {
                     mMisPreferencias.setExport(false);
                 }
-                /* if (mShareSwitch.isChecked()) {
-                    mValueMapViewModel.insert(new ValueMap(EXPORT_TXT_YES_NO_KEY, TRUE));
-                } else {
-                    mValueMapViewModel.insert(new ValueMap(EXPORT_TXT_YES_NO_KEY, FALSE));
-                } */
             }
         });
 
@@ -271,11 +224,6 @@ public class ConfiguracionFragment extends Fragment {
                 } else {
                     mMisPreferencias.setImport(false);
                 }
-                /*if (mImportSwitch.isChecked()) {
-                    mValueMapViewModel.insert(new ValueMap(IMPORT_TXT_YES_NO_KEY, TRUE));
-                } else {
-                    mValueMapViewModel.insert(new ValueMap(IMPORT_TXT_YES_NO_KEY, FALSE));
-                }*/
             }
         });
 
@@ -442,9 +390,6 @@ public class ConfiguracionFragment extends Fragment {
                         mContext.getString(R.string.toque_de_queda_asecas),
                         mContext.getString(R.string.toque_de_queda_explicacion_dialogo),
                         R.drawable.police_badge);
-
-                // on Activity Result
-                // muestraTimePickerDialog(true);
             }
         });
 
@@ -458,9 +403,6 @@ public class ConfiguracionFragment extends Fragment {
                         mContext.getString(R.string.toque_de_queda_asecas),
                         mContext.getString(R.string.toque_de_queda_explicacion_dialogo),
                         R.drawable.police_badge);
-
-                // on Activity Result
-                // muestraTimePickerDialog(false);
             }
         });
 
@@ -538,27 +480,6 @@ public class ConfiguracionFragment extends Fragment {
             }
         });
 
-        /*if(mMisPreferencias.getBroadcastOn()){
-            mSwitchBroadcast.setChecked(true);
-            mSwitchBroadcast.setText(R.string.enviando);
-        } else {
-            mSwitchBroadcast.setChecked(false);
-            mSwitchBroadcast.setText(R.string.recibiendo);
-        }
-        mSwitchBroadcast.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(mSwitchBroadcast.isChecked()){
-                    mMisPreferencias.setBroadcastOn(true);
-                    mSwitchBroadcast.setText(R.string.enviando);
-                } else {
-                    mMisPreferencias.setBroadcastOn(false);
-                    mSwitchBroadcast.setText(R.string.recibiendo);
-                }
-            }
-        }); */
-
-
         mButtonPoliticaPrivacidad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -599,7 +520,6 @@ public class ConfiguracionFragment extends Fragment {
                         toastYaEsta();
                         return;
                     }
-                    // Log.i(TAG, ("Uri: " + uri.toString()));
                     // Tomar el permiso persistente para leer esta Uri
                     mContext.getContentResolver().takePersistableUriPermission(uri, takeFlags);
                     mLoadedExports = false;
@@ -618,7 +538,6 @@ public class ConfiguracionFragment extends Fragment {
                         toastYaEsta();
                         return;
                     }
-                    // Log.i(TAG, ("Uri: " + uri.toString()));
                     // Tomar el permiso persistente para escribir a esta Uri
                     mContext.getContentResolver().takePersistableUriPermission(uri, takeFlags);
                     mLoadedImports = false;
@@ -669,15 +588,10 @@ public class ConfiguracionFragment extends Fragment {
     }
 
     public void muestraDialogoMolesto(FragmentManager fm, int tipo, String titulo, String mensaje, int iconoResId) {
-        /* if (tipo == REQUEST_CODE_MENOS_PROPORCION) {
-            mensaje = mContext.getString(R.string.dialogo_mensaje_reducir_proporcion);
-        } */
-
         if (titulo != null && mensaje != null && mContext.getDrawable(iconoResId) != null) {
             mDialogo = new DialogWithDelay(iconoResId, titulo, mensaje, 0);
             mDialogo.setTargetFragment(ConfiguracionFragment.this, tipo);
             mDialogo.show(fm, TAG_DIALOGO_CON_DELAY);
-
         }
     }
 
