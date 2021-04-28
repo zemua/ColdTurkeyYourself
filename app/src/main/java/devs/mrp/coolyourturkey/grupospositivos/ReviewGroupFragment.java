@@ -64,7 +64,7 @@ public class ReviewGroupFragment extends Fragment {
     private Integer mGroupId;
     private AppLister mAppLister;
 
-    ViewModelProvider.Factory factory;
+    private ViewModelProvider.Factory factory;
     private AppToGroupViewModel mAppToGroupViewModel;
     private AplicacionListadaViewModel mAplicacionListadaViewModel;
     private List<AplicacionListada> appsPositivas;

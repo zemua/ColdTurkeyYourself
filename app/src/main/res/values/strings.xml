@@ -126,4 +126,7 @@
     <string name="condiciones_no_cumplidas">¡¡ Condiciones NO cumplidas !!</string>
     <string name="avisame_cuando_positiva_no_cumpla_condiciones">Avísame cuando una aplicación positiva no cumpla las condiciones para sumar puntos.</string>
     <string name="conditions_not_met">No cumple las condiciones</string>
+    <string name="sincronizar_con_archivo_txt">Sincronizar Con Archivo TXT</string>
+    <string name="tiempo_de_los_ultimos">tiempo de los últimos</string>
+    <string name="en_el_archivo">en el archivo</string>
 </resources>

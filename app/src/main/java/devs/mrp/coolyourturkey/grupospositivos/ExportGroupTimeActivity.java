@@ -38,6 +38,7 @@ public class ExportGroupTimeActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         ((ExportGroupTimeFragment)fragment).setGroupId(mGroupId);
+        ((ExportGroupTimeFragment)fragment).setGroupName(mGroupName);
         ((ExportGroupTimeFragment)fragment).addFeedbackListener(new FeedbackListener<Object>() {
             @Override
             public void giveFeedback(int tipo, Object feedback, Object... args) {
