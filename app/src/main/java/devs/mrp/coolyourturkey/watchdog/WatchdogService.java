@@ -16,6 +16,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
+import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.comun.SingleExecutor;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -63,6 +65,7 @@ public class WatchdogService extends LifecycleService {
     long now;
     ContadorRepository mContadorRepo;
     Contador mUltimoContador;
+    private GenericTimedToaster mConditionToaster;
     private Exporter mExporter;
     private Importer mImporter;
     private Long mTiempoImportado;
@@ -83,6 +86,7 @@ public class WatchdogService extends LifecycleService {
         mMisPreferencias = new MisPreferencias(this);
         mToqueDeQuedaHandler = new ToqueDeQuedaHandler(this);
         mTimeLogHandler = new TimeLogHandler(this, this.getApplication(), this);
+        mConditionToaster = new GenericTimedToaster(this.getApplication());
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -263,9 +267,8 @@ public class WatchdogService extends LifecycleService {
                                                 if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
                                                     if (mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {
                                                         pushAcumulado(now, lacumula);
-                                                        Log.d(TAG, "positive app and conditions met, summing time");
                                                     } else {
-                                                        Log.d(TAG, "positive app but conditions not met"); // TODO some times when conditions not met still says they are met (variables cruzadas con observers del hilo principal deben ser volatile?)
+                                                        if (mMisPreferencias.getNotifyConditionsNotMet()) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.conditions_not_met));}
                                                     }
                                                     try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 }
