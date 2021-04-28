@@ -184,12 +184,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/avisame_cuando_positiva_no_cumpla_condiciones"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switchAvisoCondiciones"
+                    app:layout_constraintEnd_toStartOf="@+id/switchNotifyConditions"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Switch
-                    android:id="@+id/switchAvisoCondiciones"
+                    android:id="@+id/switchNotifyConditions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no_avisar"

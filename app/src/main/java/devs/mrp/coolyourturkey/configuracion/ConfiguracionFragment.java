@@ -98,6 +98,7 @@ public class ConfiguracionFragment extends Fragment {
     private Switch mSwitchActivaToqueDeQueda;
     private RecyclerView mImportRecyclerView;
     private Button mButtonPoliticaPrivacidad;
+    private Switch mSwitchNotifyConditionsNotMet;
 
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
@@ -160,6 +161,7 @@ public class ConfiguracionFragment extends Fragment {
         mSwitchAvisoToqueDeQueda = (Switch) v.findViewById(R.id.switchAvisoToqueDeQueda);
         mSwitchActivaToqueDeQueda = (Switch) v.findViewById(R.id.switchActivaToque);
         mButtonPoliticaPrivacidad = (Button) v.findViewById(R.id.bPoliticaPrivacidad);
+        mSwitchNotifyConditionsNotMet = (Switch) v.findViewById(R.id.switchNotifyConditions);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -487,8 +489,37 @@ public class ConfiguracionFragment extends Fragment {
                 ppd.show(getActivity().getSupportFragmentManager(), TAG_DIALOGO_POLITICA_PRIVACIDAD);
             }
         });
+
+        if (mMisPreferencias.getNotifyConditionsNotMet()) {
+            mSwitchNotifyConditionsNotMet.setText(R.string.si_avisar);
+            mSwitchNotifyConditionsNotMet.setChecked(true);
+        } else {
+            mSwitchNotifyConditionsNotMet.setText(R.string.no_avisar);
+            mSwitchNotifyConditionsNotMet.setChecked(false);
+        }
+
+        mSwitchNotifyConditionsNotMet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSwitchNotifyConditionsNotMet.isChecked()){
+                    mSwitchNotifyConditionsNotMet.setText(R.string.si_avisar);
+                    mMisPreferencias.setNotifyConditionsNotMet(true);
+                } else {
+                    mSwitchNotifyConditionsNotMet.setText(R.string.no_avisar);
+                    mMisPreferencias.setNotifyConditionsNotMet(false);
+                }
+            }
+        });
+
+
         return v;
     }
+
+    /**
+     *
+     * End of onCreateView
+     *
+     */
 
     private void createFile(String mimeType, String fileName) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
