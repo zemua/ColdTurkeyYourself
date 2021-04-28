@@ -7,17 +7,20 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
+import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 
 public class GrupoPositivoRepository {
 
     private GrupoPositivoDao mDao;
     private LiveData<List<GrupoPositivo>> mAllGrupoPositivo;
     private static GrupoPositivoRepository mRepo;
+    private GrupoExportRepository exportRepo;
 
     private GrupoPositivoRepository(Application application){
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoPositivoDao();
         mAllGrupoPositivo = mDao.findAllGrupoPositivo();
+        exportRepo = GrupoExportRepository.getRepo(application);
     }
 
     public static GrupoPositivoRepository getRepo(Application application){
@@ -45,6 +48,7 @@ public class GrupoPositivoRepository {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(()-> {
             mDao.deleteById(id);
         });
+        exportRepo.deleteByGroupId(id);
     }
 
 }
