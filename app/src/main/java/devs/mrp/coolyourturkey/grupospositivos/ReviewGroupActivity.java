@@ -74,6 +74,9 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
+                case ReviewGroupFragment.FEEDBACK_EXPORT_TXT:
+                    // TODO start new intent to setup the export
+                    break;
             }
         }
     }

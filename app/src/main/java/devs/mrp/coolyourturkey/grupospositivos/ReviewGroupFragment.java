@@ -46,6 +46,7 @@ public class ReviewGroupFragment extends Fragment {
     public static final int FEEDBACK_DELETE_GROUP = 0;
     public static final int FEEDBACK_ADD_CONDITION = 1;
     public static final int FEEDBACK_CLICK_CONDITION = 2;
+    public static final int FEEDBACK_EXPORT_TXT = 3;
 
     private Context mContext;
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
@@ -120,6 +121,12 @@ public class ReviewGroupFragment extends Fragment {
         });
 
         exportButton = v.findViewById(R.id.buttonExp);
+        exportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_EXPORT_TXT, null);
+            }
+        });
 
         /**
          * Apps adapter
