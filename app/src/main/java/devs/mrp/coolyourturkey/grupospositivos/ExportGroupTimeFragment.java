@@ -6,14 +6,19 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
@@ -36,6 +41,12 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
     private Integer mGroupId;
     private String mGroupName;
 
+    private TextView mGroupNameTextView;
+    private EditText mDaysEditText;
+    private TextView mFileNameTextView;
+    private Button mSelectFileButton;
+    private Button mSaveButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState);}
 
@@ -55,6 +66,22 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
         View v = inflater.inflate(R.layout.fragment_exportgrouptime, container, false);
 
+        mGroupNameTextView = v.findViewById(R.id.groupName);
+        mDaysEditText = v.findViewById(R.id.editTextDays);
+        mFileNameTextView = v.findViewById(R.id.textFileName);
+        mSelectFileButton = v.findViewById(R.id.buttonFile);
+        mSaveButton = v.findViewById(R.id.buttonSave);
+
+        mGrupoExportViewModel = new ViewModelProvider(this, factory).get(GrupoExportViewModel.class);
+        mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(this, new Observer<List<GrupoExport>>() {
+            @Override
+            public void onChanged(List<GrupoExport> grupoExports) {
+                if (grupoExports != null && grupoExports.size() > 0) {
+                    // TODO
+                }
+            }
+        });
+
         return v;
     }
 
@@ -71,6 +98,7 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
     public void setGroupName(String name) {
         this.mGroupName = name;
+        mGroupNameTextView.setText(name);
     }
 
     public String getGroupName() {

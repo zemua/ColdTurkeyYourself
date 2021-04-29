@@ -27,6 +27,8 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
 
     public static final String RESULT_DELETE = "result_delete_group";
 
+    private static final int INTENT_RESULT_CODE_EXPORT = 0;
+
     private Fragment fragment;
     private Integer mGroupId;
     private String mGroupName;
@@ -75,7 +77,9 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     startActivity(intent);
                     break;
                 case ReviewGroupFragment.FEEDBACK_EXPORT_TXT:
-                    // TODO start new intent to setup the export
+                    intent = new Intent(ReviewGroupActivity.this, ExportGroupTimeActivity.class);
+                    addGroupDataAsExtra(intent);
+                    startActivityForResult(intent, INTENT_RESULT_CODE_EXPORT);
                     break;
             }
         }
