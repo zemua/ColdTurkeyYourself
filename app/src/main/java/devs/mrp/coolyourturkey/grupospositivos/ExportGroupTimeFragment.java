@@ -78,6 +78,7 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
             public void onChanged(List<GrupoExport> grupoExports) {
                 if (grupoExports != null && grupoExports.size() > 0) {
                     // TODO
+                    //mDaysEditText.setText(grupoExports.get(0).);
                 }
             }
         });

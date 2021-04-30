@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class, GrupoExport.class}, version = 8)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class, GrupoExport.class}, version = 9)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -119,9 +119,9 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     /**
      * Migrate from:
-     * version 5
-     * to
      * version 6
+     * to
+     * version 7
      */
     static final Migration MIGRATION_6_7 = new Migration(6, 7) {
         @Override
@@ -133,14 +133,28 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     /**
      * Migrate from:
-     * version 6
-     * to
      * version 7
+     * to
+     * version 8
      */
     static final Migration MIGRATION_7_8 = new Migration(7, 8) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS 'grupoexport' ('groupid' INTEGER NOT NULL, 'archivo' TEXT NOT NULL, PRIMARY KEY ('groupid'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 8
+     * to
+     * version 9
+     */
+    static final Migration MIGRATION_8_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("DROP TABLE IF EXISTS 'grupoexport'");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'grupoexport' ('groupid' INTEGER NOT NULL, 'archivo' TEXT NOT NULL, 'days' INTEGER NOT NULL, PRIMARY KEY ('groupid'))");
         }
     };
 
@@ -156,7 +170,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9) // add the migration schemas separated by commas
                             .build();
                 }
             }
