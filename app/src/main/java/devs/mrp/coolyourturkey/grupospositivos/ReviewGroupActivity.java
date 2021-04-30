@@ -78,7 +78,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     break;
                 case ReviewGroupFragment.FEEDBACK_EXPORT_TXT:
                     intent = new Intent(ReviewGroupActivity.this, ExportGroupTimeActivity.class);
-                    addGroupDataAsExtra(intent);
+                    addGroupDataAsExtra(intent); // TODO exportActivity receives null values, export with int of ExportGroupTimeActivity, not AddGroupActivity
                     startActivityForResult(intent, INTENT_RESULT_CODE_EXPORT);
                     break;
             }

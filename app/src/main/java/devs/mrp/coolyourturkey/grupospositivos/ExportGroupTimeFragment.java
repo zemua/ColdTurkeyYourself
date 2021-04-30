@@ -1,6 +1,10 @@
 package devs.mrp.coolyourturkey.grupospositivos;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -18,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -33,6 +38,8 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
     public static final int FEEDBACK_DONE = 0;
 
+    private static final int REQUEST_CODE_NEW_FILE = 20;
+
     private Context mContext;
 
     private ViewModelProvider.Factory factory;
@@ -40,6 +47,7 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
     private Integer mGroupId;
     private String mGroupName;
+    private String mFile;
 
     private TextView mGroupNameTextView;
     private EditText mDaysEditText;
@@ -72,18 +80,70 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
         mSelectFileButton = v.findViewById(R.id.buttonFile);
         mSaveButton = v.findViewById(R.id.buttonSave);
 
+        mFile = "";
+        initializeGroupName();
+
         mGrupoExportViewModel = new ViewModelProvider(this, factory).get(GrupoExportViewModel.class);
         mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(this, new Observer<List<GrupoExport>>() {
             @Override
             public void onChanged(List<GrupoExport> grupoExports) {
                 if (grupoExports != null && grupoExports.size() > 0) {
-                    // TODO
-                    //mDaysEditText.setText(grupoExports.get(0).);
+                    mDaysEditText.setText(grupoExports.get(0).getDays());
+                    if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(grupoExports.get(0).getArchivo()))) {
+                        mFile = grupoExports.get(0).getArchivo();
+                        mFileNameTextView.setText(mFile);
+                        mSaveButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+
+        mSelectFileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nam;
+                if (mGroupName != null) {
+                    nam = mGroupName;
+                } else {
+                    nam = "";
+                }
+                FileReader.createTextFile(ExportGroupTimeFragment.this, REQUEST_CODE_NEW_FILE, nam);
+            }
+        });
+
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dataIsCorrect()) {
+                    GrupoExport grupoExport = new GrupoExport(mGroupId, mFile, Integer.parseInt(mDaysEditText.getText().toString()));
+                    mGrupoExportViewModel.insert(grupoExport);
+                    giveFeedback(FEEDBACK_DONE, null);
                 }
             }
         });
 
         return v;
+    }
+
+    private boolean dataIsCorrect() {
+        boolean resultado = true;
+
+        if (mFile.equals("") || !mFile.equals(mFileNameTextView.getText())) {
+            resultado = false;
+            mFileNameTextView.setBackgroundColor(Color.RED);
+        } else {
+            mFileNameTextView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        String days = mDaysEditText.getText().toString();
+        if (!days.matches("[0-9]+")) {
+            resultado = false;
+            mDaysEditText.setBackgroundColor(Color.RED);
+        } else {
+            mDaysEditText.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        return resultado;
     }
 
     public void setGroupId(Integer id) {
@@ -99,7 +159,13 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
     public void setGroupName(String name) {
         this.mGroupName = name;
-        mGroupNameTextView.setText(name);
+        initializeGroupName();
+    }
+
+    private void initializeGroupName() {
+        if (mGroupNameTextView != null && mGroupNameTextView.getText() != mGroupName) {
+            mGroupNameTextView.setText(mGroupName);
+        }
     }
 
     public String getGroupName() {
@@ -116,5 +182,24 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
     @Override
     public void addFeedbackListener(FeedbackListener<Object> listener) {
         feedbackListeners.add(listener);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_NEW_FILE:
+                    if (resultData != null) {
+                        FileReader.getFileReadPermission(mContext, resultData);
+                        Uri uri = resultData.getData();
+                        if (uri != null) {
+                            mSaveButton.setVisibility(View.VISIBLE);
+                            mFile = uri.toString();
+                            mFileNameTextView.setText(mFile);
+                        }
+                    }
+                    break;
+            }
+        }
     }
 }

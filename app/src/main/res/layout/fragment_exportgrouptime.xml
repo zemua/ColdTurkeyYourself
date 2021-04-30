@@ -49,6 +49,8 @@
             android:layout_height="wrap_content"
             android:ems="2"
             android:inputType="number"
+            android:maxLength="2"
+            android:text="0"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/textView17"

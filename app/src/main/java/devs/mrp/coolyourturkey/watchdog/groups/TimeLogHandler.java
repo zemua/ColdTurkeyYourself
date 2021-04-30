@@ -91,7 +91,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
-
         refreshConditionsObserver();
         refreshDayCounting();
     }
