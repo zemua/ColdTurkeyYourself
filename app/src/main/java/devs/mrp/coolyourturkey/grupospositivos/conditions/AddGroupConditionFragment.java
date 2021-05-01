@@ -224,6 +224,7 @@ public class AddGroupConditionFragment extends Fragment {
             }
         });
 
+
         mSelectedFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
