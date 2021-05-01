@@ -12,10 +12,12 @@ public class GrupoExportRepository {
 
     private GrupoExportDao mDao;
     private static GrupoExportRepository mRepo;
+    private static LiveData<List<GrupoExport>> mAllGrupoExport;
 
     private GrupoExportRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoExportDao();
+        mAllGrupoExport = mDao.findAllGrupoExport();
     }
 
     public static GrupoExportRepository getRepo(Application application) {
@@ -35,6 +37,10 @@ public class GrupoExportRepository {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteByGroupId(id);
         });
+    }
+
+    public LiveData<List<GrupoExport>> findAllGrupoExport() {
+        return mAllGrupoExport;
     }
 
     public LiveData<List<GrupoExport>> findGrupoExportByGroupId(Integer id) {

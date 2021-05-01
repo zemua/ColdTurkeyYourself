@@ -16,19 +16,19 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.IntegerWrap;
-import devs.mrp.coolyourturkey.comun.LongWrapper;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
+import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -49,22 +49,30 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
     private Handler mMainHandler;
+
     private TimeLoggerRepository timeLoggerRepository;
     private AppToGroupRepository appToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
+    private GrupoExportRepository mGrupoExportRepository;
 
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to remove and re-add observer only
     private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
-    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObservers; // to clear observers from livedata only
+    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
+
+    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByGroupId; // to clear observers from livedata only
 
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
 
+    private List<GrupoExport> mGrupoExportList;
+    private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
+
     private TimeLogger timeLogger;
     private Long dayRefreshed = 0L;
     private Long mLastFilesChecked;
+    private Long mLastFilesExported;
 
     public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
         mApplication = application;
@@ -72,7 +80,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mLifecycleOwner = lifecycleOwner;
         mMainHandler = new Handler(mContext.getMainLooper());
 
-        mMapOfLoggerLiveDataObservers = new HashMap<>();
+        mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
@@ -89,15 +97,41 @@ public class TimeLogHandler implements Feedbacker<Object> {
             }
         });
 
+        mMapOfLoggerLiveDataObserversByGroupId = new HashMap<>();
+        mTimeLoggersByGroupId = new HashMap<>();
+        mGrupoExportRepository = GrupoExportRepository.getRepo(mApplication);
+        mGrupoExportRepository.findAllGrupoExport().observe(mLifecycleOwner, new Observer<List<GrupoExport>>() {
+            @Override
+            public void onChanged(List<GrupoExport> grupoExports) {
+                try { clearExportObservers(); } catch (Exception e) { e.printStackTrace(); }
+                mGrupoExportList = grupoExports;
+                grupoExports.stream().forEach(export -> {
+                    Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
+                        @Override
+                        public void onChanged(List<TimeLogger> timeLoggers) {
+                            mTimeLoggersByGroupId.put(export.getGroupId(), timeLoggers);
+                        }
+                    };
+                    LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(export.getDays().longValue()), export.getGroupId());
+                    mMapOfLoggerLiveDataObserversByGroupId.put(liveData, observer);
+                    liveData.observe(mLifecycleOwner, observer);
+                });
+            }
+        });
+
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
         refreshConditionsObserver();
         refreshDayCounting();
     }
 
+    /**
+     * Method that is executed periodically in the WatchdogService to keep the object up to date
+     */
     public void watchDog() {
         refreshDayCounting();
         refreshTimeLoggedOnFiles();
+        refreshTimeExportedToFiles();
     }
 
     @Override
@@ -378,11 +412,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private void clearLogObservers() throws Exception {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            if (mMapOfLoggerLiveDataObservers != null) {
-                mMapOfLoggerLiveDataObservers.keySet().stream().forEach(key -> {
-                    key.removeObserver(mMapOfLoggerLiveDataObservers.get(key));
+            if (mMapOfLoggerLiveDataObserversByConditionId != null) {
+                mMapOfLoggerLiveDataObserversByConditionId.keySet().stream().forEach(key -> {
+                    key.removeObserver(mMapOfLoggerLiveDataObserversByConditionId.get(key));
                 });
-                mMapOfLoggerLiveDataObservers.clear();
+                mMapOfLoggerLiveDataObserversByConditionId.clear();
             }
         } else {
             throw new Exception("clearLogObservers to be called in main thread");
@@ -457,7 +491,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
             }
         };
-        mMapOfLoggerLiveDataObservers.put(timeLoggerLD, observer);
+        mMapOfLoggerLiveDataObserversByConditionId.put(timeLoggerLD, observer);
         timeLoggerLD.observe(mLifecycleOwner, observer);
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw new Exception("observeTimeLoggedOnGroup shall be called from main thread");
@@ -532,4 +566,59 @@ public class TimeLogHandler implements Feedbacker<Object> {
             });
         }
     }
+
+
+
+    /**
+     * Of exporter for sync
+     */
+
+    private void refreshTimeExportedToFiles() {
+        if (mLastFilesExported == null) {
+            mLastFilesExported = 0L;
+        }
+        Long now = System.currentTimeMillis();
+        if (now - TIME_BETWEEN_FILES_REFRESH > mLastFilesExported && mGrupoExportList != null) {
+            mLastFilesExported = now;
+            mGrupoExportList.stream().forEach(export -> {
+                if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(export.getArchivo()))) {
+                    Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+                    FileReader.writeTextToUri(mApplication, Uri.parse(export.getArchivo()), daysToFileFormat(export.getDays(), timeMillis));
+                }
+            });
+        }
+    }
+
+    private void clearExportObservers() throws Exception {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            mMapOfLoggerLiveDataObserversByGroupId.keySet().stream().forEach(livedata -> {
+                livedata.removeObserver(mMapOfLoggerLiveDataObserversByGroupId.get(livedata));
+            });
+            mMapOfLoggerLiveDataObserversByGroupId.clear();
+        } else {
+            throw new Exception("clearExportObservers shall be called from the main thread");
+        }
+    }
+
+    private String daysToFileFormat(Integer offsetDays, Long millisToAppend) {
+        // Format is:
+        // YYYY-MM-DD-XXXXX
+
+        Long millis = offsetDayInMillis(offsetDays.longValue());
+
+        Calendar date = Calendar.getInstance();
+        date.setTimeInMillis(millis);
+
+        int year = date.get(Calendar.YEAR);
+        int month = date.get(Calendar.MONTH);
+        int day = date.get(Calendar.DAY_OF_MONTH);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.valueOf(year)).append("-")
+                .append(String.valueOf(month)).append("-")
+                .append(String.valueOf(day)).append("-")
+                .append(String.valueOf(millisToAppend));
+        return builder.toString();
+    }
+
 }

@@ -20,4 +20,7 @@ public interface GrupoExportDao {
     @Query("SELECT * FROM grupoexport WHERE groupid = :id")
     LiveData<List<GrupoExport>> findGrupoExportByGroupId(Integer id);
 
+    @Query("SELECT * FROM grupoexport")
+    LiveData<List<GrupoExport>> findAllGrupoExport();
+
 }
