@@ -52,6 +52,7 @@ public class ReviewGroupFragment extends Fragment {
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
 
     private TextView textApps;
+    private TextView textGroupName;
     private RecyclerView recyclerApps;
     private TextView textConditions;
     private RecyclerView recyclerConditions;
@@ -62,6 +63,7 @@ public class ReviewGroupFragment extends Fragment {
     private ReviewGroupAppsAdapter mAppsAdapter;
     private ReviewGroupsConditionsAdapter mConditionsAdapter;
     private Integer mGroupId;
+    private String mGroupName;
     private AppLister mAppLister;
 
     private ViewModelProvider.Factory factory;
@@ -97,6 +99,7 @@ public class ReviewGroupFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_reviewgroup, container, false);
 
         textApps = v.findViewById(R.id.textapps);
+        textGroupName = v.findViewById(R.id.textGroupNameb);
         recyclerApps = v.findViewById(R.id.recyclerAppsGrupo);
         textConditions = v.findViewById(R.id.textCondiciones);
         recyclerConditions = v.findViewById(R.id.recyclerCondiciones);
@@ -233,6 +236,10 @@ public class ReviewGroupFragment extends Fragment {
             }
         });
 
+        if (!textGroupName.getText().equals(mGroupName)) {
+            textGroupName.setText(mGroupName);
+        }
+
         return v;
     }
 
@@ -251,5 +258,16 @@ public class ReviewGroupFragment extends Fragment {
             return -1;
         }
         return mGroupId;
+    }
+
+    public void setGroupName(String name) {
+        if (textGroupName != null) {
+            textGroupName.setText(name);
+        }
+        this.mGroupName = name;
+    }
+
+    public String getGroupName() {
+        return this.mGroupName;
     }
 }

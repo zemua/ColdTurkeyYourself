@@ -49,6 +49,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         ((ReviewGroupFragment)fragment).setGroupId(mGroupId);
+        ((ReviewGroupFragment)fragment).setGroupName(mGroupName);
     }
 
     @Override
