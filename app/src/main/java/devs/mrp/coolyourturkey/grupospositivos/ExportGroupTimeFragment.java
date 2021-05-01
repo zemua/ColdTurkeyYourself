@@ -88,7 +88,7 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
             @Override
             public void onChanged(List<GrupoExport> grupoExports) {
                 if (grupoExports != null && grupoExports.size() > 0) {
-                    mDaysEditText.setText(grupoExports.get(0).getDays());
+                    mDaysEditText.setText(String.valueOf(grupoExports.get(0).getDays()));
                     if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(grupoExports.get(0).getArchivo()))) {
                         mFile = grupoExports.get(0).getArchivo();
                         mFileNameTextView.setText(mFile);

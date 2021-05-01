@@ -42,7 +42,11 @@ public class ExportGroupTimeActivity extends AppCompatActivity {
         ((ExportGroupTimeFragment)fragment).addFeedbackListener(new FeedbackListener<Object>() {
             @Override
             public void giveFeedback(int tipo, Object feedback, Object... args) {
-
+                switch (tipo) {
+                    case ExportGroupTimeFragment.FEEDBACK_DONE:
+                        finish();
+                        break;
+                }
             }
         });
     }
