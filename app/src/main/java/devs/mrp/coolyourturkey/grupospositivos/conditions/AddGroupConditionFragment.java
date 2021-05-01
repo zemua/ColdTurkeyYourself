@@ -99,6 +99,8 @@ public class AddGroupConditionFragment extends Fragment {
             mGruposPositivos = (List<GrupoPositivo>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST)).getData();
             mConditionForEdit = (ConditionToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
             mIsEditAction = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION);
+        } else {
+            mGruposPositivos = new ArrayList<>();
         }
     }
 
@@ -201,7 +203,9 @@ public class AddGroupConditionFragment extends Fragment {
         grupoRepo.findAllGrupoPositivo().observe(AddGroupConditionFragment.this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                ListIterator<GrupoPositivo> iterator = grupoPositivos.listIterator();
+                mGruposPositivos.clear();
+                mGruposPositivos.addAll(grupoPositivos);
+                ListIterator<GrupoPositivo> iterator = mGruposPositivos.listIterator();
                 while (iterator.hasNext()){
                     GrupoPositivo lGrupo = iterator.next();
                     if (lGrupo.getNombre().equals(getGroupName())){
@@ -209,10 +213,9 @@ public class AddGroupConditionFragment extends Fragment {
                         break;
                     }
                 }
-                mGruposPositivos = grupoPositivos;
                 groupsObjectList.clear();
-                groupsObjectList.addAll(grupoPositivos);
-                List<String> groupNamesList = grupoPositivos.stream().map(g -> g.getNombre()).collect(Collectors.toList());
+                groupsObjectList.addAll(mGruposPositivos);
+                List<String> groupNamesList = mGruposPositivos.stream().map(g -> g.getNombre()).collect(Collectors.toList());
                 groupSpinerAdapter.clear();
                 groupSpinerAdapter.addAll(groupNamesList);
                 groupSpinerAdapter.notifyDataSetChanged();
