@@ -30,6 +30,8 @@ import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -43,6 +45,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private static final String TAG = "TIME_LOG_HANDLER";
 
     private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes
+    private final Long TIME_BETWEEN_NOTIFICATION_REFRESH = 60*1000*5L; // 5 minutes between checks for notifications
     public static final int FEEDBACK_LOGGERS_CHANGED = 0;
 
     private List<FeedbackListener<Object>> feedbackListeners = new ArrayList<>();
@@ -56,6 +59,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private AppToGroupRepository appToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private GrupoExportRepository mGrupoExportRepository;
+    private GrupoPositivoRepository mGrupoPositivoRepository;
 
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to remove and re-add observer only
     private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
@@ -67,6 +71,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
+    private Map<GrupoPositivo, Boolean> mAllGruposPositivosIfConditionsMet;
 
     private List<GrupoExport> mGrupoExportList;
     private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
@@ -75,6 +80,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Long dayRefreshed = 0L;
     private Long mLastFilesChecked;
     private Long mLastFilesExported;
+    private Long mLastNotificationsRefreshed;
 
     public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
         mApplication = application;
@@ -121,6 +127,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
             }
         });
 
+        mAllGruposPositivosIfConditionsMet = new HashMap<>();
+        mGrupoPositivoRepository = GrupoPositivoRepository.getRepo(mApplication);
+        mGrupoPositivoRepository.findAllGrupoPositivo().observe(mLifecycleOwner, new Observer<List<GrupoPositivo>>() {
+            @Override
+            public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                mAllGruposPositivosIfConditionsMet = grupoPositivos.stream().collect(Collectors.toMap((gr)->gr, (gr)->false));
+            }
+        });
+
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
         refreshConditionsObserver();
@@ -134,6 +149,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         refreshDayCounting();
         refreshTimeLoggedOnFiles();
         refreshTimeExportedToFiles();
+        refreshNotifications();
     }
 
     @Override
@@ -438,7 +454,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
         } else if(mFileTimeSummaryMap.containsKey(ts.getKey())) {
             time = mFileTimeSummaryMap.get(ts.getKey()).getSummedTime();
-            Log.d(TAG, "time got from file: " + time);
         } else {
             time = 0L;
             Log.d(TAG, "entry for condition not found");
@@ -640,6 +655,30 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 .append(day).append("-")
                 .append(String.valueOf(millisToAppend));
         return builder.toString();
+    }
+
+    /**
+     * Notifications when new groups are available to sum points
+     */
+
+    private void refreshNotifications() {
+        // TODO
+        if (mLastNotificationsRefreshed == null) {
+            mLastNotificationsRefreshed = 0L;
+        }
+        Long now = System.currentTimeMillis();
+        if (now - TIME_BETWEEN_NOTIFICATION_REFRESH > mLastNotificationsRefreshed) {
+            mLastNotificationsRefreshed = now;
+
+            mAllGruposPositivosIfConditionsMet.keySet().stream().forEach(key -> {
+                if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key.getId())) {
+                    mAllGruposPositivosIfConditionsMet.put(key, true);
+                    // TODO send notification for this group
+
+                }
+            });
+
+        }
     }
 
 }
