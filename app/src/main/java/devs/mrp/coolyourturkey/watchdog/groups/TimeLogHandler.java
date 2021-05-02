@@ -20,10 +20,12 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.IntegerWrap;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
+import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
@@ -81,12 +83,14 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Long mLastFilesChecked;
     private Long mLastFilesExported;
     private Long mLastNotificationsRefreshed;
+    private Notificador mNotificador;
 
     public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
         mApplication = application;
         mContext = context;
         mLifecycleOwner = lifecycleOwner;
         mMainHandler = new Handler(mContext.getMainLooper());
+        mNotificador = new Notificador(application, context);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
 
@@ -135,6 +139,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 mAllGruposPositivosIfConditionsMet = grupoPositivos.stream().collect(Collectors.toMap((gr)->gr, (gr)->false));
             }
         });
+
+        mNotificador.createNotificationChannel(R.string.condition_met_channel_name, R.string.condition_met_channel_description, Notificador.CONDITION_MET_CHANNEL_ID);
 
         conditionToGroupRepository = ConditionToGroupRepository.getRepo(application);
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
@@ -662,7 +668,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
      */
 
     private void refreshNotifications() {
-        // TODO
         if (mLastNotificationsRefreshed == null) {
             mLastNotificationsRefreshed = 0L;
         }
@@ -673,8 +678,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
             mAllGruposPositivosIfConditionsMet.keySet().stream().forEach(key -> {
                 if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key.getId())) {
                     mAllGruposPositivosIfConditionsMet.put(key, true);
-                    // TODO send notification for this group
-
+                    String title = key.getNombre();
+                    String description = mApplication.getString(R.string.cumple_las_condiciones);
+                    mNotificador.createNotification(R.drawable.clock_time_eight, title, description, Notificador.CONDITION_MET_CHANNEL_ID, key.getId());
+                } else if (mAllGruposPositivosIfConditionsMet.get(key) && !ifAllGroupConditionsMet(key.getId())) {
+                    mAllGruposPositivosIfConditionsMet.put(key, false);
                 }
             });
 
