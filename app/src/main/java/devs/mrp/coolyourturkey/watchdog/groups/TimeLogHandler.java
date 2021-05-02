@@ -610,13 +610,27 @@ public class TimeLogHandler implements Feedbacker<Object> {
         date.setTimeInMillis(millis);
 
         int year = date.get(Calendar.YEAR);
-        int month = date.get(Calendar.MONTH);
-        int day = date.get(Calendar.DAY_OF_MONTH);
+        int monthnum = date.get(Calendar.MONTH);
+        int daynum = date.get(Calendar.DAY_OF_MONTH);
+
+        String month;
+        if (monthnum<10) {
+            month = "0"+monthnum;
+        } else {
+            month = String.valueOf(monthnum);
+        }
+
+        String day;
+        if (daynum<10) {
+            day = "0"+daynum;
+        } else {
+            day = String.valueOf(daynum);
+        }
 
         StringBuilder builder = new StringBuilder();
         builder.append(String.valueOf(year)).append("-")
-                .append(String.valueOf(month)).append("-")
-                .append(String.valueOf(day)).append("-")
+                .append(month).append("-")
+                .append(day).append("-")
                 .append(String.valueOf(millisToAppend));
         return builder.toString();
     }
