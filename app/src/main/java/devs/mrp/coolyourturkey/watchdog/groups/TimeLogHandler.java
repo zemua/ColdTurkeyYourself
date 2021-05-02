@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 public class TimeLogHandler implements Feedbacker<Object> {
 
     // TODO test and debug file-conditions are read correctly
+    // TODO send notification when conditions are being un-locked
 
     private static final String TAG = "TIME_LOG_HANDLER";
 
@@ -431,17 +433,20 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     public Long getTimeCountedOnGroupCondition(ConditionToGroup cond) {
         Long time;
+        TimeSummary ts = new TimeSummary(cond.getGroupid(), cond.getConditionalgroupid());
         if (mTimeLoggersByConditionId.containsKey(cond.getId())) {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
+        } else if(mFileTimeSummaryMap.containsKey(ts.getKey())) {
+            time = mFileTimeSummaryMap.get(ts.getKey()).getSummedTime();
+            Log.d(TAG, "time got from file: " + time);
         } else {
             time = 0L;
+            Log.d(TAG, "entry for condition not found");
         }
-        Log.d(TAG, "time counted: " + time);
         return time;
     }
 
     public boolean ifConditionMet(ConditionToGroup cond) {
-        Log.d(TAG, "time needed: " + MilisToTime.getMilisDeMinutos(cond.getConditionalminutes()));
         if (getTimeCountedOnGroupCondition(cond) >= MilisToTime.getMilisDeMinutos(cond.getConditionalminutes())){
             return true;
         } return false;
@@ -538,9 +543,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
                 Calendar.Builder builder = new Calendar.Builder();
                 builder.setDate(year.intValue(), month.intValue(), day.intValue());
+                builder.setTimeZone(TimeZone.getTimeZone("GMT"));
                 Calendar cal = builder.build();
                 Long dateMilis = cal.getTimeInMillis();
-                if (dateMilis >= offsetDayInMillis(condition.getFromlastndays().longValue())) {
+                Long offset = offsetDayInMillis(condition.getFromlastndays().longValue());
+                if (dateMilis >= offset) {
                     TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), consumption);
                     mFileTimeSummaryMap.put(ts.getKey(), ts);
                 }
