@@ -43,6 +43,8 @@ import java.util.List;
 
 public class ConfiguracionFragment extends Fragment {
 
+    // TODO option to enable/disable notifications for conditions met on group
+
     private static String TAG = "CONFIGURACION FRAGMENT";
 
     private static int REQUEST_CODE_WRITE = 20;

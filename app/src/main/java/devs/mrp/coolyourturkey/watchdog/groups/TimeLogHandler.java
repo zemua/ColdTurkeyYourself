@@ -41,9 +41,6 @@ import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class TimeLogHandler implements Feedbacker<Object> {
 
-    // TODO test and debug file-conditions are read correctly
-    // TODO send notification when conditions are being un-locked
-
     private static final String TAG = "TIME_LOG_HANDLER";
 
     private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes

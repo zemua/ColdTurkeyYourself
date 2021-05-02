@@ -37,7 +37,7 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class ReviewGroupFragment extends Fragment {
 
-    // TODO implement export time to file
+    // TODO implement limits on max number of points that can be farmed on a group
 
     private static final String TAG = "FRAGMENT_REVIEW_GROUP";
 
