@@ -48,6 +48,8 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ExportGroupTimeActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

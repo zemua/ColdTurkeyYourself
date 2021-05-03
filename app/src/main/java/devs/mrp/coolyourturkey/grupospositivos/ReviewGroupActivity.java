@@ -14,6 +14,7 @@ import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity;
+import devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class ReviewGroupActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
@@ -28,6 +29,7 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
     public static final String RESULT_DELETE = "result_delete_group";
 
     private static final int INTENT_RESULT_CODE_EXPORT = 0;
+    private static final int INTENT_RESULT_CODE_LIMITS = 1;
 
     private Fragment fragment;
     private Integer mGroupId;
@@ -85,6 +87,10 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     break;
                 case ReviewGroupFragment.FEEDBACK_LIMITS:
                     // TODO start intent for limits
+                    intent = new Intent(ReviewGroupActivity.this, GroupLimitsActivity.class);
+                    intent.putExtra(GroupLimitsActivity.EXTRA_GROUP_ID, mGroupId);
+                    intent.putExtra(GroupLimitsActivity.EXTRA_GROUP_NAME, mGroupName);
+                    startActivityForResult(intent, INTENT_RESULT_CODE_LIMITS);
                     break;
             }
         }

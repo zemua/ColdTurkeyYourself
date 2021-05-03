@@ -134,4 +134,5 @@
     <string name="cumple_las_condiciones">Ahora puede sumar puntos</string>
     <string name="avisame_cuando_un_grupo_recien_cumpla_condiciones">Avísame cuando un grupo pase a cumplir las condiciones para sumar puntos.</string>
     <string name="limites">Límites</string>
+    <string name="establecer_un_limite_de">Establecer un limite para sumar puntos de</string>
 </resources>
