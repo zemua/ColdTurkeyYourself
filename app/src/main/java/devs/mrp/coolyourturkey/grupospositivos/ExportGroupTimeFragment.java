@@ -30,8 +30,6 @@ import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Object> {
 
-    // TODO test turning the screen works
-
     private static final String TAG = "FRAGMENT_REVIEW_GROUP";
 
     private static final String KEY_BUNDLE_NUM_DAYS = "key.bundle.num.days";
