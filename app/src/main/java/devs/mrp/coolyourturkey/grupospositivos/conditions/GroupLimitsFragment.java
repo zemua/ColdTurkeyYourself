@@ -59,6 +59,7 @@ public class GroupLimitsFragment extends Fragment {
         mRecycler = v.findViewById(R.id.limitsrecycler);
 
         // TODO on click añadir do validateFields() y añadir al repositorio... que hay que hacer
+        // TODO repository and db table for limits of each group
 
         // TODO add the repository limits to the recycler view, on click on each item call to delete confirmation dialog
 
