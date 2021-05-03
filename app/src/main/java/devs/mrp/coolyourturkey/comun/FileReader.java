@@ -1,21 +1,26 @@
 package devs.mrp.coolyourturkey.comun;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.UriPermission;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.ListIterator;
@@ -66,7 +71,7 @@ public class FileReader {
         while (iterator.hasNext()) {
             UriPermission perm = iterator.next();
             if (perm.getUri().equals(uri) && perm.isReadPermission()) {
-                return true;
+                return ifContentResolverFileExists(context, uri);
             }
         }
         return false;
@@ -146,9 +151,21 @@ public class FileReader {
         while (iterator.hasNext()) {
             UriPermission perm = iterator.next();
             if (perm.getUri().equals(uri) && perm.isWritePermission()) {
-                return true;
+                return ifContentResolverFileExists(context, uri);
             }
         }
         return false;
+    }
+
+    private static boolean ifContentResolverFileExists(Context context, Uri uri) {
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
+        if (c != null && c.getCount() >= 1) {
+            // already inserted
+            return true;
+        } else {
+            // row does not exist or there is a problem accessing it
+            return false;
+        }
     }
 }
