@@ -43,8 +43,6 @@ import java.util.List;
 
 public class ConfiguracionFragment extends Fragment {
 
-    // TODO option to enable/disable notifications for conditions met on group
-
     private static String TAG = "CONFIGURACION FRAGMENT";
 
     private static int REQUEST_CODE_WRITE = 20;
@@ -99,6 +97,7 @@ public class ConfiguracionFragment extends Fragment {
     private RecyclerView mImportRecyclerView;
     private Button mButtonPoliticaPrivacidad;
     private Switch mSwitchNotifyConditionsNotMet;
+    private Switch mSwitchNotifyConditionsRecentlyMet;
 
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
@@ -162,6 +161,7 @@ public class ConfiguracionFragment extends Fragment {
         mSwitchActivaToqueDeQueda = (Switch) v.findViewById(R.id.switchActivaToque);
         mButtonPoliticaPrivacidad = (Button) v.findViewById(R.id.bPoliticaPrivacidad);
         mSwitchNotifyConditionsNotMet = (Switch) v.findViewById(R.id.switchNotifyConditions);
+        mSwitchNotifyConditionsRecentlyMet = (Switch) v.findViewById(R.id.switchNotifyConditionsMet);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -507,6 +507,27 @@ public class ConfiguracionFragment extends Fragment {
                 } else {
                     mSwitchNotifyConditionsNotMet.setText(R.string.no_avisar);
                     mMisPreferencias.setNotifyConditionsNotMet(false);
+                }
+            }
+        });
+
+        if (mMisPreferencias.getNotifyConditionsJustMet()) {
+            mSwitchNotifyConditionsRecentlyMet.setText(R.string.si_avisar);
+            mSwitchNotifyConditionsRecentlyMet.setChecked(true);
+        } else {
+            mSwitchNotifyConditionsRecentlyMet.setText(R.string.no_avisar);
+            mSwitchNotifyConditionsRecentlyMet.setChecked(false);
+        }
+
+        mSwitchNotifyConditionsRecentlyMet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSwitchNotifyConditionsRecentlyMet.isChecked()) {
+                    mSwitchNotifyConditionsRecentlyMet.setText(R.string.si_avisar);
+                    mMisPreferencias.setNotifyConditionsJustMet(true);
+                } else {
+                    mSwitchNotifyConditionsRecentlyMet.setText(R.string.no_avisar);
+                    mMisPreferencias.setNotifyConditionsJustMet(false);
                 }
             }
         });

@@ -132,4 +132,5 @@
     <string name="condition_met_channel_name">Condición cumplida</string>
     <string name="condition_met_channel_description">Canal usado para enviar notificaciones cuando un grupo cumple las condiciones para sumar puntos</string>
     <string name="cumple_las_condiciones">Ahora puede sumar puntos</string>
+    <string name="avisame_cuando_un_grupo_recien_cumpla_condiciones">Avísame cuando un grupo pase a cumplir las condiciones para sumar puntos.</string>
 </resources>

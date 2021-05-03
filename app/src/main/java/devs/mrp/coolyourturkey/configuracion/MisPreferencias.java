@@ -24,6 +24,7 @@ public class MisPreferencias {
     private static final String WORK_PROFILE_IS_NEGATIVE_SI_NO = "work.profile.is.negative.si.no";
     private static final String BROADCAST_ON_OR_ELSE_RECEIVE = "broadcast.on.or.else.receive";
     private static final String NOTIFY_CONDITIONS_NOT_MET = "notify.conditions.not.met";
+    private static final String NOTIFY_CONDITIONS_JUST_MET = "notify.conditions.just.met";
 
     Context mContext;
     private static SharedPreferences mSharedPreferences;
@@ -253,4 +254,15 @@ public class MisPreferencias {
     public boolean getNotifyConditionsNotMet(){
         return getSharedPreferences().getBoolean(NOTIFY_CONDITIONS_NOT_MET, false);
     }
+
+    public void setNotifyConditionsJustMet(boolean b) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putBoolean(NOTIFY_CONDITIONS_JUST_MET, b);
+        e.apply();
+    }
+
+    public boolean getNotifyConditionsJustMet() {
+        return getSharedPreferences().getBoolean(NOTIFY_CONDITIONS_JUST_MET, true);
+    }
+
 }

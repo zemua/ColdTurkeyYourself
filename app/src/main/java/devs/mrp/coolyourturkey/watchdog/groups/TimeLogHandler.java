@@ -26,6 +26,7 @@ import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.IntegerWrap;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
@@ -81,6 +82,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Long mLastFilesExported;
     private Long mLastNotificationsRefreshed;
     private Notificador mNotificador;
+    private MisPreferencias mMisPreferencias;
 
     public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
         mApplication = application;
@@ -88,6 +90,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mLifecycleOwner = lifecycleOwner;
         mMainHandler = new Handler(mContext.getMainLooper());
         mNotificador = new Notificador(application, context);
+        mMisPreferencias = new MisPreferencias(context);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
 
@@ -682,7 +685,9 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     mAllGruposPositivosIfConditionsMet.put(key, true);
                     String title = key.getNombre();
                     String description = mApplication.getString(R.string.cumple_las_condiciones);
-                    mNotificador.createNotification(R.drawable.clock_time_eight, title, description, Notificador.CONDITION_MET_CHANNEL_ID, key.getId());
+                    if (mMisPreferencias.getNotifyConditionsJustMet()) {
+                        mNotificador.createNotification(R.drawable.clock_time_eight, title, description, Notificador.CONDITION_MET_CHANNEL_ID, key.getId());
+                    }
                 } else if (mAllGruposPositivosIfConditionsMet.get(key) && !ifAllGroupConditionsMet(key.getId())) {
                     mAllGruposPositivosIfConditionsMet.put(key, false);
                 }
