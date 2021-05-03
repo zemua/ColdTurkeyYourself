@@ -568,8 +568,14 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 if (dateMilis >= offset) {
                     TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), consumption);
                     mFileTimeSummaryMap.put(ts.getKey(), ts);
+                } else {
+                    TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), 0L);
+                    mFileTimeSummaryMap.put(ts.getKey(), ts);
+                    Log.d(TAG, "days offset of file doesn't match requirements for " + condition.getFiletarget());
                 }
             } else {
+                TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), 0L);
+                mFileTimeSummaryMap.put(ts.getKey(), ts);
                 Log.d(TAG, "content of file doesn't match requirements for " + condition.getFiletarget());
             }
         } else {
@@ -671,7 +677,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         Long now = System.currentTimeMillis();
         if (now - TIME_BETWEEN_NOTIFICATION_REFRESH > mLastNotificationsRefreshed) {
             mLastNotificationsRefreshed = now;
-
             mAllGruposPositivosIfConditionsMet.keySet().stream().forEach(key -> {
                 if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key.getId())) {
                     mAllGruposPositivosIfConditionsMet.put(key, true);
@@ -682,7 +687,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     mAllGruposPositivosIfConditionsMet.put(key, false);
                 }
             });
-
         }
     }
 
