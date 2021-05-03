@@ -34,6 +34,10 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
 
     private static final String TAG = "FRAGMENT_REVIEW_GROUP";
 
+    private static final String KEY_BUNDLE_NUM_DAYS = "key.bundle.num.days";
+    private static final String KEY_BUNDLE_FILE_NAME = "key.bundle.file.name";
+    private static final String KEY_BUNDLE_FILE_FIELD = "key.bundle.file.field";
+
     private List<FeedbackListener<Object>> feedbackListeners = new ArrayList<>();
 
     public static final int FEEDBACK_DONE = 0;
@@ -84,19 +88,32 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
         initializeGroupName();
 
         mGrupoExportViewModel = new ViewModelProvider(this, factory).get(GrupoExportViewModel.class);
-        mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(this, new Observer<List<GrupoExport>>() {
-            @Override
-            public void onChanged(List<GrupoExport> grupoExports) {
-                if (grupoExports != null && grupoExports.size() > 0) {
-                    mDaysEditText.setText(String.valueOf(grupoExports.get(0).getDays()));
-                    if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(grupoExports.get(0).getArchivo()))) {
-                        mFile = grupoExports.get(0).getArchivo();
-                        mFileNameTextView.setText(mFile);
-                        mSaveButton.setVisibility(View.VISIBLE);
+
+        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
+            mFile = savedInstanceState.getString(KEY_BUNDLE_FILE_NAME);
+            if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(mFile))) {
+                mFileNameTextView.setText(savedInstanceState.getString(KEY_BUNDLE_FILE_FIELD));
+            }
+            mDaysEditText.setText(savedInstanceState.getString(KEY_BUNDLE_NUM_DAYS));
+            if (mFile.equals(mFileNameTextView.getText().toString()) && !mDaysEditText.getText().toString().equals("")) {
+                mSaveButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(this, new Observer<List<GrupoExport>>() {
+                @Override
+                public void onChanged(List<GrupoExport> grupoExports) {
+                    if (grupoExports != null && grupoExports.size() > 0) {
+                        mDaysEditText.setText(String.valueOf(grupoExports.get(0).getDays()));
+                        if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(grupoExports.get(0).getArchivo()))) {
+                            mFile = grupoExports.get(0).getArchivo();
+                            mFileNameTextView.setText(mFile);
+                            mSaveButton.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
 
         mSelectFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,5 +218,13 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
                     break;
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_BUNDLE_NUM_DAYS, mDaysEditText.getText().toString());
+        outState.putString(KEY_BUNDLE_FILE_NAME, mFile);
+        outState.putString(KEY_BUNDLE_FILE_FIELD, mFileNameTextView.getText().toString());
+        super.onSaveInstanceState(outState);
     }
 }
