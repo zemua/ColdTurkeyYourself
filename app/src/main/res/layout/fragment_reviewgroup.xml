@@ -102,10 +102,23 @@
         android:id="@+id/buttonExp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="66dp"
         android:layout_marginBottom="8dp"
         android:text="@string/txt"
         app:icon="@android:drawable/stat_notify_sync"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonLimits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="66dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/limites"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonDelete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

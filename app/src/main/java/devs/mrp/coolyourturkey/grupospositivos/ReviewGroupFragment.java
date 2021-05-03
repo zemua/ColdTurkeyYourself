@@ -47,6 +47,7 @@ public class ReviewGroupFragment extends Fragment {
     public static final int FEEDBACK_ADD_CONDITION = 1;
     public static final int FEEDBACK_CLICK_CONDITION = 2;
     public static final int FEEDBACK_EXPORT_TXT = 3;
+    public static final int FEEDBACK_LIMITS = 4;
 
     private Context mContext;
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
@@ -59,6 +60,7 @@ public class ReviewGroupFragment extends Fragment {
     private Button deleteButton;
     private Button exportButton;
     private Button mAddConditionButton;
+    private Button mLimitsButton;
 
     private ReviewGroupAppsAdapter mAppsAdapter;
     private ReviewGroupsConditionsAdapter mConditionsAdapter;
@@ -128,6 +130,14 @@ public class ReviewGroupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_EXPORT_TXT, null);
+            }
+        });
+
+        mLimitsButton = v.findViewById(R.id.buttonLimits);
+        mLimitsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFeedbackReceiver.receiveFeedback(ReviewGroupFragment.this, FEEDBACK_LIMITS, null);
             }
         });
 

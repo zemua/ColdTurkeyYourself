@@ -22,6 +22,8 @@ import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
     // TODO load list of apps in different thread to not affect UI performance
+    // TODO random check on questions for positive reinforcement
+    // TODO points on steps/walking like a pedometer
 
     private static final String TAG = "Main_Activity";
 
