@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
+import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
+import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 
 public class GrupoPositivoRepository {
@@ -15,12 +17,14 @@ public class GrupoPositivoRepository {
     private LiveData<List<GrupoPositivo>> mAllGrupoPositivo;
     private static GrupoPositivoRepository mRepo;
     private GrupoExportRepository exportRepo;
+    private GroupLimitRepository limitsRepo;
 
     private GrupoPositivoRepository(Application application){
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoPositivoDao();
         mAllGrupoPositivo = mDao.findAllGrupoPositivo();
         exportRepo = GrupoExportRepository.getRepo(application);
+        limitsRepo = GroupLimitRepository.getRepo(application);
     }
 
     public static GrupoPositivoRepository getRepo(Application application){
@@ -49,6 +53,7 @@ public class GrupoPositivoRepository {
             mDao.deleteById(id);
         });
         exportRepo.deleteByGroupId(id);
+        limitsRepo.deleteByGroupId(id);
     }
 
 }

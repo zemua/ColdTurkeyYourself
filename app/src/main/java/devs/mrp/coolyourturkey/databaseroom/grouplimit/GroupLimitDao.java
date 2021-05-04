@@ -17,7 +17,7 @@ public interface GroupLimitDao {
     void deleteById(Integer id);
 
     @Query("DELETE FROM 'grouplimit' WHERE groupid = :groupId")
-    void deleteByGroupId(Integer groupId); // TODO call from delete group
+    void deleteByGroupId(Integer groupId);
 
     @Query("SELECT * FROM 'grouplimit' WHERE groupid = :groupId")
     LiveData<List<GroupLimit>> findByGroupId(Integer groupId);

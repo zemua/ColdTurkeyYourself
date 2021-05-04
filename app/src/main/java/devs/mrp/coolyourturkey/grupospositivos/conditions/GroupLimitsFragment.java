@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
+import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsFragment extends Fragment {
@@ -22,6 +24,8 @@ public class GroupLimitsFragment extends Fragment {
     // TODO check turning the screen works well
 
     private Context mContext;
+
+    private GroupLimitRepository mGroupLimitRepo;
 
     private TextView mGroupTextView;
     private EditText mHorasEdit;
@@ -49,6 +53,8 @@ public class GroupLimitsFragment extends Fragment {
 
         if (mContext==null){mContext=getActivity();}
 
+        mGroupLimitRepo = GroupLimitRepository.getRepo(getActivity().getApplication());
+
         View v = inflater.inflate(R.layout.fragment_grouplimits, container, false);
 
         mGroupTextView = v.findViewById(R.id.limitegroupname);
@@ -58,10 +64,19 @@ public class GroupLimitsFragment extends Fragment {
         mAddButton = v.findViewById(R.id.addbutton);
         mRecycler = v.findViewById(R.id.limitsrecycler);
 
-        // TODO on click añadir do validateFields() y añadir al repositorio... que hay que hacer
-        // TODO repository and db table for limits of each group
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateFields()) {
+                    mGroupLimitRepo.insert(getGroupLimitFromFields());
+                }
+            }
+        });
 
         // TODO add the repository limits to the recycler view, on click on each item call to delete confirmation dialog
+
+
+        // TODO add listener for DELETE actions
 
         updateGroupName();
 
@@ -124,6 +139,14 @@ public class GroupLimitsFragment extends Fragment {
 
     private void removeRed(EditText e) {
         e.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    private GroupLimit getGroupLimitFromFields() {
+        Integer groupId = mGroupId;
+        Integer offsetDays = Integer.parseInt(mDiasEdit.getText().toString());
+        Integer minutesLimit = Integer.parseInt(mMinutosEdit.getText().toString()) + (Integer.parseInt(mHorasEdit.getText().toString()) * 60);
+        GroupLimit limit = new GroupLimit(groupId, offsetDays, minutesLimit);
+        return limit;
     }
 
 }
