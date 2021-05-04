@@ -11,12 +11,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
+import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitViewModel;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsFragment extends Fragment {
@@ -25,7 +31,7 @@ public class GroupLimitsFragment extends Fragment {
 
     private Context mContext;
 
-    private GroupLimitRepository mGroupLimitRepo;
+    private GroupLimitViewModel mGroupLimitViewModel;
 
     private TextView mGroupTextView;
     private EditText mHorasEdit;
@@ -33,10 +39,13 @@ public class GroupLimitsFragment extends Fragment {
     private EditText mDiasEdit;
     private Button mAddButton;
     private RecyclerView mRecycler;
+    private GroupLimitsAdapter mLimitsAdapter;
 
     private Integer mGroupId;
     private String mGroupName;
     private ViewModelProvider.Factory mFactory;
+
+    private boolean viewModelStarted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);}
@@ -53,7 +62,7 @@ public class GroupLimitsFragment extends Fragment {
 
         if (mContext==null){mContext=getActivity();}
 
-        mGroupLimitRepo = GroupLimitRepository.getRepo(getActivity().getApplication());
+        mGroupLimitViewModel = new ViewModelProvider(this, mFactory).get(GroupLimitViewModel.class);
 
         View v = inflater.inflate(R.layout.fragment_grouplimits, container, false);
 
@@ -68,13 +77,18 @@ public class GroupLimitsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (validateFields()) {
-                    mGroupLimitRepo.insert(getGroupLimitFromFields());
+                    mGroupLimitViewModel.insert(getGroupLimitFromFields());
                 }
             }
         });
 
         // TODO add the repository limits to the recycler view, on click on each item call to delete confirmation dialog
+        mLimitsAdapter = new GroupLimitsAdapter(new ArrayList<>(), mContext);
+        LinearLayoutManager layoutLimits = new LinearLayoutManager(mContext);
+        mRecycler.setLayoutManager(layoutLimits);
+        mRecycler.setAdapter(mLimitsAdapter);
 
+        setupViewModelOnGroupId();
 
         // TODO add listener for DELETE actions
 
@@ -84,7 +98,21 @@ public class GroupLimitsFragment extends Fragment {
     }
 
     public void setGroupId(Integer id) {
+        viewModelStarted = false;
         mGroupId = id;
+        setupViewModelOnGroupId();
+    }
+
+    private void setupViewModelOnGroupId() {
+        if (mGroupId != null && mGroupLimitViewModel != null && !viewModelStarted) {
+            viewModelStarted = true;
+            mGroupLimitViewModel.findByGroupId(mGroupId).observe(getViewLifecycleOwner(), new Observer<List<GroupLimit>>() {
+                @Override
+                public void onChanged(List<GroupLimit> groupLimits) {
+                    // TODO update dataset to adapter
+                }
+            });
+        }
     }
 
     public void setGroupName(String name) {
