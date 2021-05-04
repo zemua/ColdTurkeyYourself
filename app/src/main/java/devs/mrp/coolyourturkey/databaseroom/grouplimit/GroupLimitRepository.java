@@ -2,7 +2,10 @@ package devs.mrp.coolyourturkey.databaseroom.grouplimit;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import java.security.acl.Group;
+import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 
@@ -13,7 +16,7 @@ public class GroupLimitRepository {
 
     private GroupLimitRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
-        // mDao = db.GroupLimitDao(); // TODO add to db
+        mDao = db.groupLimitDao();
     }
 
     public static GroupLimitRepository getRepo(Application application) {
@@ -23,6 +26,26 @@ public class GroupLimitRepository {
         return mRepo;
     }
 
-    // TODO complete methods
+    public void insert(GroupLimit groupLimit) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.insert(groupLimit);
+        });
+    }
+
+    public void deleteById(Integer id) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteById(id);
+        });
+    }
+
+    public void deleteByGroupId(Integer id) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteByGroupId(id);
+        });
+    }
+
+    public LiveData<List<GroupLimit>> findGroupLimitByGroupId(Integer groupId) {
+        return mDao.findByGroupId(groupId);
+    }
 
 }
