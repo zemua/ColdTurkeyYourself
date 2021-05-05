@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.watchdog.groups;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -10,7 +11,9 @@ import androidx.lifecycle.Observer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
@@ -19,6 +22,8 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class LimitHandler {
+
+    private static final String TAG = "LIMIT_HANDLER";
 
     private TimeLogHandler mTimeLogHandler;
     private Context mContext;
@@ -38,7 +43,6 @@ public class LimitHandler {
     /**
      * Collections to work with the data
      */
-    private List<GrupoPositivo> mAllGrupos;
     private Map<Integer, List<GroupLimit>> mGroupLimitsByGroupId;
     private Map<Integer, List<TimeLogger>> mTimeLoggersByLimitId;
 
@@ -60,7 +64,6 @@ public class LimitHandler {
         mGrupoPositivoRepository.findAllGrupoPositivo().observe(lifecycleOwner, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                mAllGrupos = grupoPositivos;
                 clearGroupLimitObservers();
                 grupoPositivos.stream().forEach(grupo -> {
                     observeLimitsInGroup(grupo);
@@ -108,6 +111,41 @@ public class LimitHandler {
         };
         liveData.observe(mLifecycleOwner, observer);
         mTimeLoggerObserverMap.put(liveData, observer);
+    }
+
+    public boolean ifLimitsReachedForGroupId(Integer groupId) {
+        BooleanWrap resultado = new BooleanWrap();
+        resultado.set(false);
+        if (!mGroupLimitsByGroupId.containsKey(groupId)) {
+            // There are no limits for this group, so return false
+            return false;
+        }
+        List<GroupLimit> limites = mGroupLimitsByGroupId.get(groupId);
+        limites.stream().forEach(limite -> {
+            if (groupLimitInMillis(limite) >= limitLoggedMillis(limite)) {
+                resultado.set(true);
+            }
+        });
+        Log.d(TAG, "limites reached? " + resultado.get());
+        return resultado.get();
+    }
+
+    private Long groupLimitInMillis(GroupLimit limit) {
+        return limit.getMinutesLimit() * 60 * 1000L;
+    }
+
+    private Long limitLoggedMillis(GroupLimit limit) {
+        if (mTimeLoggersByLimitId.containsKey(limit.getId())) {
+            return mTimeLoggersByLimitId.get(limit.getId()).stream().collect(Collectors.summingLong(logger -> {
+                if (logger.getCountedtimemilis() > 0L && logger.getPositivenegative() == TimeLogger.Type.POSITIVECONDITIONSMET) {
+                    return logger.getCountedtimemilis();
+                } else {
+                    return 0L;
+                }
+            }));
+        }
+        Log.d(TAG, "no timeloggers found for this grouplimit");
+        return 0L;
     }
 
 }

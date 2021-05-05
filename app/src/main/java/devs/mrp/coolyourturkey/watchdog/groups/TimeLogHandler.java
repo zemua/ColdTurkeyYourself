@@ -202,6 +202,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
+    public boolean ifLimitsReachedForAppName(String packageName) {
+        return mLimitHandler.ifLimitsReachedForGroupId(getGroupIdFromPackageName(packageName));
+    }
+
 
     private AppToGroup appsToGroupContainsPackageName(String packageName){
         IntegerWrap id = new IntegerWrap(-1);
@@ -355,12 +359,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     private void assignGroupIdFromPackageName(String name) {
+        timeLogger.setGroupId(getGroupIdFromPackageName(name));
+    }
+
+    private Integer getGroupIdFromPackageName(String name) {
         AppToGroup app = appsToGroupContainsPackageName(name);
         if (app != null) {
-            timeLogger.setGroupId(app.getGroupId());
+            return app.getGroupId();
         } else {
-            //Log.d(TAG, "no package found in appsToGroupsVSpackageNameMap for assignGroupIdFromPackageName");
-            timeLogger.setGroupId(-1);
+            return -1;
         }
     }
 

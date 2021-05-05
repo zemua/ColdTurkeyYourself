@@ -137,4 +137,5 @@
     <string name="establecer_un_limite_de">Establecer un limite para sumar puntos de</string>
     <string name="limite_de">Límite de</string>
     <string name="seguro_que_deseas_borrar_este_limite">¿Seguro que deseas borrar este límite?</string>
+    <string name="has_alcanzado_el_limite_de_puntos">Has alcanzado el límite de puntos.</string>
 </resources>
