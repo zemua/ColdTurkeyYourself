@@ -139,4 +139,5 @@
     <string name="limite_de">Límite de</string>
     <string name="seguro_que_deseas_borrar_este_limite">¿Seguro que deseas borrar este límite?</string>
     <string name="has_alcanzado_el_limite_de_puntos">Has alcanzado el límite de puntos.</string>
+    <string name="avisame_cuando_alcance_el_limite_de_puntos">Avísame cuando alcance el límite de puntos en un grupo</string>
 </resources>

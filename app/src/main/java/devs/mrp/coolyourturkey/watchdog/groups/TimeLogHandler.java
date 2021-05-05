@@ -138,7 +138,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mGrupoPositivoRepository.findAllGrupoPositivo().observe(mLifecycleOwner, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                mAllGruposPositivosIfConditionsMet = grupoPositivos.stream().collect(Collectors.toMap((gr)->gr, (gr)->false));
+                grupoPositivos.stream().forEach(grupo -> {
+                    if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo)) {
+                        mAllGruposPositivosIfConditionsMet.put(grupo, false);
+                    }
+                }); // TODO to avoid re-notification when groups change, need to compare ids, not objects
             }
         });
 

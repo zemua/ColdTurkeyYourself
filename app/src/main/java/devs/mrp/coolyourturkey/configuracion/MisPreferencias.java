@@ -25,6 +25,7 @@ public class MisPreferencias {
     private static final String BROADCAST_ON_OR_ELSE_RECEIVE = "broadcast.on.or.else.receive";
     private static final String NOTIFY_CONDITIONS_NOT_MET = "notify.conditions.not.met";
     private static final String NOTIFY_CONDITIONS_JUST_MET = "notify.conditions.just.met";
+    private static final String NOTIFY_LIMITES_REACHED = "notify.limites.reached";
 
     Context mContext;
     private static SharedPreferences mSharedPreferences;
@@ -263,6 +264,16 @@ public class MisPreferencias {
 
     public boolean getNotifyConditionsJustMet() {
         return getSharedPreferences().getBoolean(NOTIFY_CONDITIONS_JUST_MET, true);
+    }
+
+    public void setNotifyLimitesReached(boolean b) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putBoolean(NOTIFY_LIMITES_REACHED, b);
+        e.apply();
+    }
+
+    public boolean getNotifyLimitesReached() {
+        return getSharedPreferences().getBoolean(NOTIFY_LIMITES_REACHED, true);
     }
 
 }

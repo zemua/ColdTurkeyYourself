@@ -98,6 +98,7 @@ public class ConfiguracionFragment extends Fragment {
     private Button mButtonPoliticaPrivacidad;
     private Switch mSwitchNotifyConditionsNotMet;
     private Switch mSwitchNotifyConditionsRecentlyMet;
+    private Switch mSwitchNotifyLimitesReached;
 
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
@@ -162,6 +163,7 @@ public class ConfiguracionFragment extends Fragment {
         mButtonPoliticaPrivacidad = (Button) v.findViewById(R.id.bPoliticaPrivacidad);
         mSwitchNotifyConditionsNotMet = (Switch) v.findViewById(R.id.switchNotifyConditions);
         mSwitchNotifyConditionsRecentlyMet = (Switch) v.findViewById(R.id.switchNotifyConditionsMet);
+        mSwitchNotifyLimitesReached = (Switch) v.findViewById(R.id.switchNotifyLimites);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -528,6 +530,27 @@ public class ConfiguracionFragment extends Fragment {
                 } else {
                     mSwitchNotifyConditionsRecentlyMet.setText(R.string.no_avisar);
                     mMisPreferencias.setNotifyConditionsJustMet(false);
+                }
+            }
+        });
+
+        if (mMisPreferencias.getNotifyLimitesReached()) {
+            mSwitchNotifyLimitesReached.setText(R.string.si_avisar);
+            mSwitchNotifyLimitesReached.setChecked(true);
+        } else {
+            mSwitchNotifyLimitesReached.setText(R.string.no_avisar);
+            mSwitchNotifyLimitesReached.setChecked(false);
+        }
+
+        mSwitchNotifyLimitesReached.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSwitchNotifyLimitesReached.isChecked()) {
+                    mSwitchNotifyLimitesReached.setText(R.string.si_avisar);
+                    mMisPreferencias.setNotifyLimitesReached(true);
+                } else {
+                    mSwitchNotifyLimitesReached.setText(R.string.no_avisar);
+                    mMisPreferencias.setNotifyLimitesReached(false);
                 }
             }
         });

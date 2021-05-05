@@ -260,19 +260,14 @@ public class WatchdogService extends LifecycleService {
                                                 if (mUltimoContador != null) {
                                                     lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
                                                 }
-                                                //if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                    mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    lupdated = true;
-                                                //} else {
-                                                //    lupdated = false;
-                                                //}
+                                                mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
+                                                lupdated = true;
                                                 if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
                                                     if (mTimeLogHandler.ifAllAppConditionsMet(lnombre) && !mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {
                                                         pushAcumulado(now, lacumula);
                                                     } else {
                                                         if (mMisPreferencias.getNotifyConditionsNotMet() && !mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.conditions_not_met));}
-                                                        // TODO setting for optionally sending toast
-                                                        if (mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
+                                                        else if (mMisPreferencias.getNotifyLimitesReached() && mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
                                                     }
                                                     try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 }
