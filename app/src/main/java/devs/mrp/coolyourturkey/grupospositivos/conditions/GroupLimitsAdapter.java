@@ -19,7 +19,7 @@ import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsAdapter extends RecyclerView.Adapter<GroupLimitsAdapter.GroupLimitsViewHolder> implements Feedbacker<GroupLimit> {
 
-    private static final int FEEDBACK_DELETE = 0;
+    public static final int FEEDBACK_DELETE = 0;
 
     private List<FeedbackListener<GroupLimit>> feedbackListeners = new ArrayList<>();
 

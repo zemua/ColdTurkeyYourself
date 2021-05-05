@@ -23,6 +23,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitViewModel;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsFragment extends Fragment {
@@ -78,11 +79,13 @@ public class GroupLimitsFragment extends Fragment {
             public void onClick(View v) {
                 if (validateFields()) {
                     mGroupLimitViewModel.insert(getGroupLimitFromFields());
+                    mHorasEdit.setText("");
+                    mMinutosEdit.setText("");
+                    mDiasEdit.setText("");
                 }
             }
         });
 
-        // TODO add the repository limits to the recycler view, on click on each item call to delete confirmation dialog
         mLimitsAdapter = new GroupLimitsAdapter(new ArrayList<>(), mContext);
         LinearLayoutManager layoutLimits = new LinearLayoutManager(mContext);
         mRecycler.setLayoutManager(layoutLimits);
@@ -90,7 +93,16 @@ public class GroupLimitsFragment extends Fragment {
 
         setupViewModelOnGroupId();
 
-        // TODO add listener for DELETE actions
+        mLimitsAdapter.addFeedbackListener(new FeedbackListener<GroupLimit>() {
+            @Override
+            public void giveFeedback(int tipo, GroupLimit feedback, Object... args) {
+                switch (tipo) {
+                    case GroupLimitsAdapter.FEEDBACK_DELETE:
+                        mGroupLimitViewModel.deleteById(feedback.getId());
+                        break;
+                }
+            }
+        });
 
         updateGroupName();
 
@@ -109,7 +121,7 @@ public class GroupLimitsFragment extends Fragment {
             mGroupLimitViewModel.findByGroupId(mGroupId).observe(getViewLifecycleOwner(), new Observer<List<GroupLimit>>() {
                 @Override
                 public void onChanged(List<GroupLimit> groupLimits) {
-                    // TODO update dataset to adapter
+                    mLimitsAdapter.updateDataSet(groupLimits);
                 }
             });
         }
@@ -172,7 +184,13 @@ public class GroupLimitsFragment extends Fragment {
     private GroupLimit getGroupLimitFromFields() {
         Integer groupId = mGroupId;
         Integer offsetDays = Integer.parseInt(mDiasEdit.getText().toString());
-        Integer minutesLimit = Integer.parseInt(mMinutosEdit.getText().toString()) + (Integer.parseInt(mHorasEdit.getText().toString()) * 60);
+        Integer minutesLimit = 0;
+        if (!mMinutosEdit.getText().toString().equals("")) {
+            minutesLimit += Integer.parseInt(mMinutosEdit.getText().toString());
+        }
+        if (!mHorasEdit.getText().toString().equals("")) {
+            minutesLimit += Integer.parseInt(mHorasEdit.getText().toString()) * 60;
+        }
         GroupLimit limit = new GroupLimit(groupId, offsetDays, minutesLimit);
         return limit;
     }
