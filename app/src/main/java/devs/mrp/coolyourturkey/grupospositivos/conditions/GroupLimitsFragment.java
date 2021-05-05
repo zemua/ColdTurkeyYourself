@@ -30,8 +30,6 @@ import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsFragment extends Fragment {
 
-    // TODO check turning the screen works well
-
     private Context mContext;
 
     private GroupLimitViewModel mGroupLimitViewModel;
