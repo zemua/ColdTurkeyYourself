@@ -40,13 +40,10 @@ public class Importer implements Feedbacker<Long> {
     private ValueMapRepository mMapRepo;
     private static Long mLastImport = 0L;
     private static Long mResult = 0L;
-    //private static boolean importFlagLoaded;
     private static boolean importablesFlagLoaded;
     private MisPreferencias mMisPreferencias;
 
     private LiveData<List<Importables>> mImportables;
-    //private LiveData<List<ValueMap>> mImportFlag;
-    //private boolean importFlag = false;
     private List<Uri> importUris;
 
 
@@ -59,23 +56,6 @@ public class Importer implements Feedbacker<Long> {
         mImportRepo = ImportablesRepository.getRepo(app);
         importUris = new ArrayList<>();
         mMisPreferencias = new MisPreferencias(app);
-
-        /*
-        mImportFlag = mMapRepo.getValueOf(ConfiguracionFragment.IMPORT_TXT_YES_NO_KEY);
-        mImportFlag.observe(mContext, new Observer<List<ValueMap>>() {
-            @Override
-            public void onChanged(List<ValueMap> valueMaps) {
-                if (valueMaps.size() > 0) {
-                    if (valueMaps.get(0).getValor().equals(ConfiguracionFragment.TRUE)) {
-                        importFlag = true;
-                    } else if (valueMaps.get(0).getValor().equals(ConfiguracionFragment.FALSE)) {
-                        importFlag = false;
-                    }
-                    importFlagLoaded = true;
-                    giveFeedback(FEEDBACK_TIEMPO, importarTiempoTotal());
-                }
-            }
-        }); */
 
         mImportables = mImportRepo.getAllImportables();
         mImportables.observe(mContext, new Observer<List<Importables>>() {
@@ -114,7 +94,6 @@ public class Importer implements Feedbacker<Long> {
                         Long longNum = Long.parseLong(longString);
                         if (longNum != null) {
                             preResult += longNum;
-                            Log.d(TAG, "añadidos a resultado importación " + String.valueOf(longNum) + " ms");
                         }
                     }
                 } catch (Exception e) {

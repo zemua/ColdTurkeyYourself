@@ -128,8 +128,7 @@ public class FileReader {
         try (ParcelFileDescriptor pfd = app.getContentResolver().openFileDescriptor(uri, "w");
              FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
              PrintWriter pw = new PrintWriter(fileOutputStream, false);
-             FileChannel outChan = fileOutputStream.getChannel();
-        ) {
+             FileChannel outChan = fileOutputStream.getChannel();) {
             // El FileOutputStream debería truncar el archivo nada más abrirlo
             // pero esto no está sucediendo en mi teléfono y hay que truncarlo "manualmente"
             outChan.truncate(0);

@@ -38,7 +38,7 @@ public class LimitHandler {
      * Maps for clearing observers on changes
      */
     private Map<LiveData<List<GroupLimit>>, Observer<List<GroupLimit>>> mGroupLimitObserversMap;
-    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mTimeLoggerObserverMap;
+    private Map<Integer, Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>>> mTimeLoggerObserverMap;
 
     /**
      * Collections to work with the data
@@ -76,6 +76,7 @@ public class LimitHandler {
         mGroupLimitObserversMap.keySet().stream().forEach(livedata -> {
             livedata.removeObserver(mGroupLimitObserversMap.get(livedata));
         });
+        mGroupLimitObserversMap.clear();
     }
 
     private void observeLimitsInGroup(GrupoPositivo grupo) {
@@ -83,6 +84,7 @@ public class LimitHandler {
         Observer<List<GroupLimit>> observer = new Observer<List<GroupLimit>>() {
             @Override
             public void onChanged(List<GroupLimit> groupLimits) {
+                clearTimeLoggerObservers(grupo.getId());
                 mGroupLimitsByGroupId.put(grupo.getId(), groupLimits);
                 groupLimits.stream().forEach(limit -> {
                     observeLoggersOnLimit(limit);
@@ -93,14 +95,17 @@ public class LimitHandler {
         mGroupLimitObserversMap.put(liveData, observer);
     }
 
-    private void clearTimeLoggerObservers() {
-        mTimeLoggerObserverMap.keySet().stream().forEach(livedata -> {
-            livedata.removeObserver(mTimeLoggerObserverMap.get(livedata));
-        });
+    private void clearTimeLoggerObservers(Integer groupId) {
+        Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> map = mTimeLoggerObserverMap.get(groupId);
+        if (map != null) {
+            map.keySet().stream().forEach(livedata -> {
+                livedata.removeObserver(map.get(livedata));
+            });
+            map.clear();
+        }
     }
 
     private void observeLoggersOnLimit(GroupLimit limit) {
-        clearTimeLoggerObservers();
         Long newerthan = mTimeLogHandler.offsetDayInMillis(limit.getOffsetDays().longValue());
         LiveData<List<TimeLogger>> liveData = mTimeLoggerRepository.findByNewerThanAndGroupId(newerthan, limit.getGroupId());
         Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
@@ -109,24 +114,25 @@ public class LimitHandler {
                 mTimeLoggersByLimitId.put(limit.getId(), timeLoggers);
             }
         };
+        if (!mTimeLoggerObserverMap.containsKey(limit.getGroupId())) {
+            mTimeLoggerObserverMap.put(limit.getGroupId(), new HashMap<>());
+        }
+        mTimeLoggerObserverMap.get(limit.getGroupId()).put(liveData, observer);
         liveData.observe(mLifecycleOwner, observer);
-        mTimeLoggerObserverMap.put(liveData, observer);
     }
 
     public boolean ifLimitsReachedForGroupId(Integer groupId) {
         BooleanWrap resultado = new BooleanWrap();
         resultado.set(false);
         if (!mGroupLimitsByGroupId.containsKey(groupId)) {
-            // There are no limits for this group, so return false
             return false;
         }
         List<GroupLimit> limites = mGroupLimitsByGroupId.get(groupId);
         limites.stream().forEach(limite -> {
-            if (groupLimitInMillis(limite) >= limitLoggedMillis(limite)) {
+            if (limitLoggedMillis(limite) >= groupLimitInMillis(limite)) {
                 resultado.set(true);
             }
         });
-        Log.d(TAG, "limites reached? " + resultado.get());
         return resultado.get();
     }
 
@@ -136,15 +142,15 @@ public class LimitHandler {
 
     private Long limitLoggedMillis(GroupLimit limit) {
         if (mTimeLoggersByLimitId.containsKey(limit.getId())) {
-            return mTimeLoggersByLimitId.get(limit.getId()).stream().collect(Collectors.summingLong(logger -> {
+            Long count = mTimeLoggersByLimitId.get(limit.getId()).stream().collect(Collectors.summingLong(logger -> {
                 if (logger.getCountedtimemilis() > 0L && logger.getPositivenegative() == TimeLogger.Type.POSITIVECONDITIONSMET) {
                     return logger.getCountedtimemilis();
                 } else {
                     return 0L;
                 }
             }));
+            return count;
         }
-        Log.d(TAG, "no timeloggers found for this grouplimit");
         return 0L;
     }
 
