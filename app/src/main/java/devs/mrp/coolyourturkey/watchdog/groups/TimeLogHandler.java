@@ -54,6 +54,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
     private Handler mMainHandler;
+    private LimitHandler mLimitHandler;
 
     private TimeLoggerRepository timeLoggerRepository;
     private AppToGroupRepository appToGroupRepository;
@@ -91,6 +92,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMainHandler = new Handler(mContext.getMainLooper());
         mNotificador = new Notificador(application, context);
         mMisPreferencias = new MisPreferencias(context);
+        mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
 
