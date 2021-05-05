@@ -368,7 +368,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Long millis(Long days) {return TimeUnit.DAYS.toMillis(days);}
     private Long currentDay() {return days(System.currentTimeMillis());}
     private Long offsetDay(Long nDays) {return currentDay()-nDays;}
-    private Long offsetDayInMillis(Long nDays) {return millis(offsetDay(nDays));}
+    public Long offsetDayInMillis(Long nDays) {return millis(offsetDay(nDays));}
 
 
     /**

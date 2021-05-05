@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.security.acl.Group;
 import java.util.List;
 
 @Dao
@@ -21,5 +22,8 @@ public interface GroupLimitDao {
 
     @Query("SELECT * FROM 'grouplimit' WHERE groupid = :groupId")
     LiveData<List<GroupLimit>> findByGroupId(Integer groupId);
+
+    @Query("SELECT * FROM 'grouplimit'")
+    LiveData<List<GroupLimit>> findAllGroupLimits();
 
 }
