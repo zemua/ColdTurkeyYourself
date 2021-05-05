@@ -136,4 +136,5 @@
     <string name="limites">Límites</string>
     <string name="establecer_un_limite_de">Establecer un limite para sumar puntos de</string>
     <string name="limite_de">Límite de</string>
+    <string name="seguro_que_deseas_borrar_este_limite">¿Seguro que deseas borrar este límite?</string>
 </resources>

@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.grupospositivos.conditions;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -98,7 +100,18 @@ public class GroupLimitsFragment extends Fragment {
             public void giveFeedback(int tipo, GroupLimit feedback, Object... args) {
                 switch (tipo) {
                     case GroupLimitsAdapter.FEEDBACK_DELETE:
-                        mGroupLimitViewModel.deleteById(feedback.getId());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle(R.string.confirmacion);
+                        builder.setMessage(R.string.seguro_que_deseas_borrar_este_limite);
+                        builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mGroupLimitViewModel.deleteById(feedback.getId());
+                            }
+                        });
+                        builder.setNegativeButton(R.string.conservar, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
                         break;
                 }
             }
