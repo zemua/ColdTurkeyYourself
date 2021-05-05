@@ -72,7 +72,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
-    private Map<GrupoPositivo, Boolean> mAllGruposPositivosIfConditionsMet;
+    private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
+    private List<GrupoPositivo> mAllGruposPositivos;
 
     private List<GrupoExport> mGrupoExportList;
     private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
@@ -138,9 +139,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mGrupoPositivoRepository.findAllGrupoPositivo().observe(mLifecycleOwner, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                mAllGruposPositivos = grupoPositivos;
                 grupoPositivos.stream().forEach(grupo -> {
-                    if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo)) {
-                        mAllGruposPositivosIfConditionsMet.put(grupo, false);
+                    if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo.getId())) {
+                        mAllGruposPositivosIfConditionsMet.put(grupo.getId(), false);
                     }
                 }); // TODO to avoid re-notification when groups change, need to compare ids, not objects
             }
@@ -694,14 +696,20 @@ public class TimeLogHandler implements Feedbacker<Object> {
         if (now - TIME_BETWEEN_NOTIFICATION_REFRESH > mLastNotificationsRefreshed) {
             mLastNotificationsRefreshed = now;
             mAllGruposPositivosIfConditionsMet.keySet().stream().forEach(key -> {
-                if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key.getId())) {
+                if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key)) {
                     mAllGruposPositivosIfConditionsMet.put(key, true);
-                    String title = key.getNombre();
+                    StringBuilder builder = new StringBuilder();
+                    mAllGruposPositivos.stream().forEach(grupo -> {
+                        if (grupo.getId() == key) {
+                            builder.append(grupo.getNombre());
+                        }
+                    });
+                    String title = builder.toString();
                     String description = mApplication.getString(R.string.cumple_las_condiciones);
                     if (mMisPreferencias.getNotifyConditionsJustMet()) {
-                        mNotificador.createNotification(R.drawable.clock_time_eight, title, description, Notificador.CONDITION_MET_CHANNEL_ID, key.getId());
+                        mNotificador.createNotification(R.drawable.clock_time_eight, title, description, Notificador.CONDITION_MET_CHANNEL_ID, key);
                     }
-                } else if (mAllGruposPositivosIfConditionsMet.get(key) && !ifAllGroupConditionsMet(key.getId())) {
+                } else if (mAllGruposPositivosIfConditionsMet.get(key) && !ifAllGroupConditionsMet(key)) {
                     mAllGruposPositivosIfConditionsMet.put(key, false);
                 }
             });
