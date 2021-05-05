@@ -271,8 +271,8 @@ public class WatchdogService extends LifecycleService {
                                                         pushAcumulado(now, lacumula);
                                                     } else {
                                                         if (mMisPreferencias.getNotifyConditionsNotMet() && !mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.conditions_not_met));}
-                                                        // TODO setting for optionally sending notification
-                                                        if (!mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
+                                                        // TODO setting for optionally sending toast
+                                                        if (mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
                                                     }
                                                     try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
                                                 }

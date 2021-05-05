@@ -124,6 +124,7 @@
     <string name="guardar">Guardar</string>
     <string name="txt">txt</string>
     <string name="condiciones_no_cumplidas">¡¡ Condiciones NO cumplidas !!</string>
+    <string name="limite_alcanzado">¡¡ Límite Alcanzado !!</string>
     <string name="avisame_cuando_positiva_no_cumpla_condiciones">Avísame cuando una aplicación positiva no cumpla las condiciones para sumar puntos.</string>
     <string name="conditions_not_met">No cumple las condiciones</string>
     <string name="sincronizar_con_archivo_txt">Sincronizar Con Archivo TXT</string>

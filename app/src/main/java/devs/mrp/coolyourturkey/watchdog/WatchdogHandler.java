@@ -117,17 +117,24 @@ public class WatchdogHandler implements Feedbacker<Object> {
         if (mToqueDeQuedaHandler.isToqueDeQueda()){
             mNotificacion = getNotificationToqueDeQueda(paquete);
         }else {
-            if (logger.ifAllAppConditionsMet(paquete)) {
+            if (logger.ifAllAppConditionsMet(paquete) && !logger.ifLimitsReachedForAppName(paquete)) {
                 mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
                         .setContentTitle(packageToLabel(paquete))
                         .setContentText(mContext.getText(R.string.content_notificacion_positiva) + milisToTime(restante / proporcion) + mContext.getText(R.string.y_sumando_tiempo))
                         .setSmallIcon(R.drawable.notificacion_caliente)
                         .setContentIntent(mPendingIntent)
                         .build();
-            } else {
+            } else if (!logger.ifAllAppConditionsMet(paquete)) {
                 mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
                         .setContentTitle(packageToLabel(paquete))
                         .setContentText(mContext.getText(R.string.content_notificacion_positiva) + " " + mContext.getText(R.string.condiciones_no_cumplidas))
+                        .setSmallIcon(R.drawable.notificacion_neutral)
+                        .setContentIntent(mPendingIntent)
+                        .build();
+            } else if (logger.ifLimitsReachedForAppName(paquete)) {
+                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
+                        .setContentTitle(packageToLabel(paquete))
+                        .setContentText(mContext.getText(R.string.content_notificacion_positiva) + " " + mContext.getText(R.string.limite_alcanzado))
                         .setSmallIcon(R.drawable.notificacion_neutral)
                         .setContentIntent(mPendingIntent)
                         .build();

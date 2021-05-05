@@ -263,7 +263,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     public void insertTimeGoodApp(String packageName, Long millis) throws Exception {
         initTimeLogger(packageName, millis);
         increase(millis);
-        if (ifAllAppConditionsMet(packageName)) {
+        if (ifAllAppConditionsMet(packageName) && !ifLimitsReachedForAppName(packageName)) {
             timeLogger.setPositivenegative(TimeLogger.Type.POSITIVECONDITIONSMET);
         } else {
             timeLogger.setPositivenegative(TimeLogger.Type.POSITIVECONDITIONSNOTMET);
