@@ -42,8 +42,6 @@ import static java.lang.Thread.sleep;
 
 public class WatchdogService extends LifecycleService {
 
-    // TODO implement limits on positive apps
-
     // TODO simplify the loop and decentralize in other classes
     // TODO periodically do some cleanup of old registers of ContadorRepository
 

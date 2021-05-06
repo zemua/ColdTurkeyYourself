@@ -144,7 +144,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo.getId())) {
                         mAllGruposPositivosIfConditionsMet.put(grupo.getId(), false);
                     }
-                }); // TODO to avoid re-notification when groups change, need to compare ids, not objects
+                });
             }
         });
 

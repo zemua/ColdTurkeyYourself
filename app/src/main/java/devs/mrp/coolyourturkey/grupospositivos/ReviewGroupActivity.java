@@ -86,7 +86,6 @@ public class ReviewGroupActivity extends AppCompatActivity implements FeedbackRe
                     startActivityForResult(intent, INTENT_RESULT_CODE_EXPORT);
                     break;
                 case ReviewGroupFragment.FEEDBACK_LIMITS:
-                    // TODO start intent for limits
                     intent = new Intent(ReviewGroupActivity.this, GroupLimitsActivity.class);
                     intent.putExtra(GroupLimitsActivity.EXTRA_GROUP_ID, mGroupId);
                     intent.putExtra(GroupLimitsActivity.EXTRA_GROUP_NAME, mGroupName);

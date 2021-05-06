@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -21,7 +22,7 @@ import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
-    // TODO check where the "a resource failed to call close" comes from
+    // TODO check where the "a resource failed to call close" comes from (strict mode?)
 
     // TODO load list of apps in different thread to not affect UI performance
     // TODO random check on questions for positive reinforcement
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
             fragment = new MainFragment();
             fm.beginTransaction().add(R.id.main_fragment_container, fragment).commit();
         }
+
+        /**
+         * Strict mode for some special debugging
+         */
+        /*if(BuildConfig.DEBUG)
+            StrictMode.enableDefaults();*/
     }
 
     @Override

@@ -37,8 +37,6 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class ReviewGroupFragment extends Fragment {
 
-    // TODO implement limits on max number of points that can be farmed on a group
-
     private static final String TAG = "FRAGMENT_REVIEW_GROUP";
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
