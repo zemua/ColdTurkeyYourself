@@ -158,12 +158,15 @@ public class FileReader {
 
     private static boolean ifContentResolverFileExists(Context context, Uri uri) {
         String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
-        if (c != null && c.getCount() >= 1) {
-            // already inserted
-            return true;
-        } else {
-            // row does not exist or there is a problem accessing it
+        try (Cursor c = context.getContentResolver().query(uri, projection, null, null, null);){
+            if (c != null && c.getCount() >= 1) {
+                // already inserted
+                return true;
+            } else {
+                // row does not exist or there is a problem accessing it
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }
