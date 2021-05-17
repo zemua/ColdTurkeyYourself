@@ -65,6 +65,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to remove and re-add observer only
     private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
+    private LiveData<List<GrupoExport>> mGrupoExportLiveData; // to clear observer from exports
+    private Observer<List<GrupoExport>> mGrupoExportObserver; // to clear observer from exports
 
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByGroupId; // to clear observers from livedata only
 
@@ -115,24 +117,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMapOfLoggerLiveDataObserversByGroupId = new HashMap<>();
         mTimeLoggersByGroupId = new HashMap<>();
         mGrupoExportRepository = GrupoExportRepository.getRepo(mApplication);
-        mGrupoExportRepository.findAllGrupoExport().observe(mLifecycleOwner, new Observer<List<GrupoExport>>() {
-            @Override
-            public void onChanged(List<GrupoExport> grupoExports) {
-                try { clearExportObservers(); } catch (Exception e) { e.printStackTrace(); }
-                mGrupoExportList = grupoExports;
-                grupoExports.stream().forEach(export -> {
-                    Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
-                        @Override
-                        public void onChanged(List<TimeLogger> timeLoggers) {
-                            mTimeLoggersByGroupId.put(export.getGroupId(), timeLoggers);
-                        }
-                    };
-                    LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(export.getDays().longValue()), export.getGroupId());
-                    mMapOfLoggerLiveDataObserversByGroupId.put(liveData, observer);
-                    liveData.observe(mLifecycleOwner, observer);
-                });
-            }
-        });
+        mGrupoExportLiveData = mGrupoExportRepository.findAllGrupoExport();
+        setExportObservers();
 
         mAllGruposPositivosIfConditionsMet = new HashMap<>();
         mGrupoPositivoRepository = GrupoPositivoRepository.getRepo(mApplication);
@@ -154,6 +140,39 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mConditionsLiveData = conditionToGroupRepository.findAllConditionToGroup();
         refreshConditionsObserver();
         refreshDayCounting();
+    }
+
+    /**
+     *  Set the observers for the exported group files, to be called on day-change too
+     */
+    private void setExportObservers() {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mGrupoExportObserver != null && mGrupoExportLiveData != null) {
+                    mGrupoExportLiveData.removeObserver(mGrupoExportObserver);
+                }
+                mGrupoExportObserver = new Observer<List<GrupoExport>>() {
+                    @Override
+                    public void onChanged(List<GrupoExport> grupoExports) {
+                        try { clearExportObservers(); } catch (Exception e) { e.printStackTrace(); }
+                        mGrupoExportList = grupoExports;
+                        grupoExports.stream().forEach(export -> {
+                            Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
+                                @Override
+                                public void onChanged(List<TimeLogger> timeLoggers) {
+                                    mTimeLoggersByGroupId.put(export.getGroupId(), timeLoggers);
+                                }
+                            };
+                            LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(export.getDays().longValue()), export.getGroupId());
+                            mMapOfLoggerLiveDataObserversByGroupId.put(liveData, observer);
+                            liveData.observe(mLifecycleOwner, observer);
+                        });
+                    }
+                };
+                mGrupoExportLiveData.observe(mLifecycleOwner, mGrupoExportObserver);
+            }
+        });
     }
 
     /**
@@ -394,6 +413,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         if (!dayRefreshed.equals(currentDay) && mAllConditionsToGroup != null){
             dayRefreshed = currentDay;
             refreshConditionsObserver();
+            setExportObservers();
         }
     }
 
