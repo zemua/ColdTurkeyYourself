@@ -44,11 +44,12 @@ public class TimeAssembler implements Feedbacker<Long> {
             if (tipo == Importer.FEEDBACK_TIEMPO){
                 tiempoImportado = feedback;
                 importadoFlag = true;
-                if (mUltimoContador != null) {
+                /*if (mUltimoContador != null) {
                     giveFeedback(FEEDBACK_SUMATORIO, (mUltimoContador.getAcumulado() + tiempoImportado) / mMisPreferencias.getProporcionTrabajoOcio());
                 } else {
                     giveFeedback(FEEDBACK_SUMATORIO, (tiempoImportado) / mMisPreferencias.getProporcionTrabajoOcio());
-                }
+                }*/
+                giveFeedback(FEEDBACK_SUMATORIO, getLast());
             }
         });
 
@@ -60,7 +61,8 @@ public class TimeAssembler implements Feedbacker<Long> {
                     //tiempoContador = contadors.get(0).getAcumulado();
                     mUltimoContador = contadors.get(0);
                     contadorFlag = true;
-                    giveFeedback(FEEDBACK_SUMATORIO, (mUltimoContador.getAcumulado()+tiempoImportado)/mMisPreferencias.getProporcionTrabajoOcio());
+                    //giveFeedback(FEEDBACK_SUMATORIO, (mUltimoContador.getAcumulado()+tiempoImportado)/mMisPreferencias.getProporcionTrabajoOcio());
+                    giveFeedback(FEEDBACK_SUMATORIO, getLast());
                 }
             }
         });
