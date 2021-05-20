@@ -136,6 +136,21 @@ public class LimitHandler {
         return resultado.get();
     }
 
+    public boolean ifLimitsReachedForGroupIdAndShallBlock(Integer groupId) {
+        BooleanWrap resultado = new BooleanWrap();
+        resultado.set(false);
+        if (!mGroupLimitsByGroupId.containsKey(groupId)) {
+            return false;
+        }
+        List<GroupLimit> limites = mGroupLimitsByGroupId.get(groupId);
+        limites.stream().forEach(limite -> {
+            if (limitLoggedMillis(limite) >= groupLimitInMillis(limite) && limite.getBlocking()) {
+                resultado.set(true);
+            }
+        });
+        return resultado.get();
+    }
+
     private Long groupLimitInMillis(GroupLimit limit) {
         return limit.getMinutesLimit() * 60 * 1000L;
     }
@@ -143,7 +158,7 @@ public class LimitHandler {
     private Long limitLoggedMillis(GroupLimit limit) {
         if (mTimeLoggersByLimitId.containsKey(limit.getId())) {
             Long count = mTimeLoggersByLimitId.get(limit.getId()).stream().collect(Collectors.summingLong(logger -> {
-                if (logger.getCountedtimemilis() > 0L && logger.getPositivenegative() == TimeLogger.Type.POSITIVECONDITIONSMET) {
+                if (logger.getCountedtimemilis() > 0L && (!limit.getSolosicondiciones() || logger.getPositivenegative() == TimeLogger.Type.POSITIVECONDITIONSMET)) {
                     return logger.getCountedtimemilis();
                 } else {
                     return 0L;

@@ -235,6 +235,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return mLimitHandler.ifLimitsReachedForGroupId(getGroupIdFromPackageName(packageName));
     }
 
+    public boolean ifLimitReachedAndShallBlock(String packageName) {
+        return mLimitHandler.ifLimitsReachedForGroupIdAndShallBlock(getGroupIdFromPackageName(packageName));
+    }
+
 
     private AppToGroup appsToGroupContainsPackageName(String packageName){
         IntegerWrap id = new IntegerWrap(-1);

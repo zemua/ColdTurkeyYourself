@@ -284,7 +284,7 @@ public class WatchdogService extends LifecycleService {
                                             lultimanotif = lestanotif;
                                             lupdated = false;
                                         }
-                                        if ((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) {
+                                        if (((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) || (lestanotif == ForegroundAppChecker.POSITIVO && mTimeLogHandler.ifLimitReachedAndShallBlock(lnombre))) {
                                             if (PermisosChecker.checkPermisoAlertas(this)) {
                                                 mScreenBlock.go();
                                             }

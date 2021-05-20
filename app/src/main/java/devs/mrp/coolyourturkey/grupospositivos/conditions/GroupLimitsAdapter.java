@@ -69,6 +69,18 @@ public class GroupLimitsAdapter extends RecyclerView.Adapter<GroupLimitsAdapter.
                 .append(limit.getOffsetDays()).append(" ")
                 .append(mContext.getResources().getString(R.string.d_de_dias));
 
+        if (!limit.getSolosicondiciones()) {
+            builder
+                    .append(" - ")
+                    .append(mContext.getString(R.string.aunqye_no_se_cumplan_las_condiciones_para_sumar));
+        }
+
+        if (limit.getBlocking()) {
+            builder
+                    .append(" - ")
+                    .append(mContext.getString(R.string.bloquea_la_aplicacion_al_cumplirse));
+        }
+
         holder.groupLimit = limit;
         holder.textView.setText(builder.toString());
     }

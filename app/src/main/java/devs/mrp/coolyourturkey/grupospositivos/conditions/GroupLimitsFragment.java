@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -39,6 +40,8 @@ public class GroupLimitsFragment extends Fragment {
     private EditText mMinutosEdit;
     private EditText mDiasEdit;
     private Button mAddButton;
+    private Switch mSoloSiCondiciones;
+    private Switch mBlockSwitch;
     private RecyclerView mRecycler;
     private GroupLimitsAdapter mLimitsAdapter;
 
@@ -72,6 +75,8 @@ public class GroupLimitsFragment extends Fragment {
         mMinutosEdit = v.findViewById(R.id.minutosedit);
         mDiasEdit = v.findViewById(R.id.diasedit);
         mAddButton = v.findViewById(R.id.addbutton);
+        mSoloSiCondiciones = v.findViewById(R.id.switchIfConditionsMet);
+        mBlockSwitch = v.findViewById(R.id.switchBlock);
         mRecycler = v.findViewById(R.id.limitsrecycler);
 
         mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -82,10 +87,13 @@ public class GroupLimitsFragment extends Fragment {
                     mHorasEdit.setText("");
                     mMinutosEdit.setText("");
                     mDiasEdit.setText("");
+                    mBlockSwitch.setChecked(false);
+                    mSoloSiCondiciones.setChecked(true);
                 }
             }
         });
 
+        mSoloSiCondiciones.setChecked(true);
         mLimitsAdapter = new GroupLimitsAdapter(new ArrayList<>(), mContext);
         LinearLayoutManager layoutLimits = new LinearLayoutManager(mContext);
         mRecycler.setLayoutManager(layoutLimits);
@@ -202,7 +210,9 @@ public class GroupLimitsFragment extends Fragment {
         if (!mHorasEdit.getText().toString().equals("")) {
             minutesLimit += Integer.parseInt(mHorasEdit.getText().toString()) * 60;
         }
-        GroupLimit limit = new GroupLimit(groupId, offsetDays, minutesLimit);
+        Boolean blocking = mBlockSwitch.isChecked();
+        Boolean ifCondsMet = mSoloSiCondiciones.isChecked();
+        GroupLimit limit = new GroupLimit(groupId, offsetDays, minutesLimit, blocking, ifCondsMet);
         return limit;
     }
 

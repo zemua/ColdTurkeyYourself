@@ -25,10 +25,20 @@ public class GroupLimit {
     @ColumnInfo(name = "minuteslimit")
     private Integer minutesLimit;
 
-    public GroupLimit(Integer groupId, Integer offsetDays, Integer minutesLimit) {
+    @NonNull
+    @ColumnInfo(name = "blocking")
+    private Boolean blocking;
+
+    @NonNull
+    @ColumnInfo(name = "solosicondiciones")
+    private Boolean solosicondiciones;
+
+    public GroupLimit(Integer groupId, Integer offsetDays, Integer minutesLimit, Boolean blocking, Boolean solosicondiciones) {
         this.groupId = groupId;
         this.offsetDays = offsetDays;
         this.minutesLimit = minutesLimit;
+        this.blocking = blocking;
+        this.solosicondiciones = solosicondiciones;
     }
 
     public Integer getId() {return this.id;}
@@ -42,5 +52,11 @@ public class GroupLimit {
 
     public Integer getMinutesLimit() { return this.minutesLimit; }
     public void setMinutesLimit(Integer limit) {this.minutesLimit = limit;}
+
+    public Boolean getBlocking() { if (blocking != null && blocking == true){return true;} else{return false;} }
+    public void setBlocking(Boolean b) {this.blocking=b;}
+
+    public Boolean getSolosicondiciones() {if(solosicondiciones!=null && solosicondiciones==true){return true;} else {return false;}}
+    public void setSolosicondiciones(Boolean s) {this.solosicondiciones = s;}
 
 }
