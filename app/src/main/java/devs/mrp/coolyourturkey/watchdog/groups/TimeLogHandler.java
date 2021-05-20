@@ -802,10 +802,22 @@ public class TimeLogHandler implements Feedbacker<Object> {
     public Long todayTimeOnAppGroup(String packageName) {
         AppToGroup group = appsToGroupContainsPackageName(packageName);
         if (group.getId() != null) {
-            return mTodayTimeByGroupMap.get(group.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+            return todayTimeOnGroup(group.getGroupId());
         } else {
             return 0L;
         }
+    }
+
+    public Long todayTimeOnGroup(Integer groupId) {
+        if (mTodayTimeByGroupMap.containsKey(groupId)) {
+            return mTodayTimeByGroupMap.get(groupId).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+        } else {
+            return 0L;
+        }
+    }
+
+    public String todayStringTimeOnGroup(GrupoPositivo group) {
+        return MilisToTime.getFormatedHM(todayTimeOnGroup(group.getId()));
     }
 
 }

@@ -57,7 +57,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     @Override
     public void onBindViewHolder(@NonNull GruposPositivosViewHolder holder, int position) {
         holder.grupo = mDataset.get(position);
-        holder.textView.setText(mDataset.get(position).getNombre());
+        holder.textView.setText(mDataset.get(position).getNombre() + " (" + mTimeLogHandler.todayStringTimeOnGroup(mDataset.get(position)) + " " + mContext.getString(R.string.hoy) + ")");
         holder.id = mDataset.get(position).getId();
         setBackgroundOnConditionMet(holder, mDataset.get(position));
     }
