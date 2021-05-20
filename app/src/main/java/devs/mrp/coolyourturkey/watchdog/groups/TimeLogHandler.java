@@ -537,7 +537,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return list;
     }
 
-    private boolean ifAllGroupConditionsMet(Integer groupId) {
+    public boolean ifAllGroupConditionsMet(Integer groupId) {
         BooleanWrap b = new BooleanWrap();
         b.set(true);
         getListOfConditionIdsOfGroup(groupId).stream().forEach(c -> {

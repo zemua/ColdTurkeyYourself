@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivosAdapter.GruposPositivosViewHolder> implements Feedbacker<GrupoPositivo> {
 
@@ -26,12 +28,14 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
 
     private List<GrupoPositivo> mDataset;
     private Context mContext;
+    private TimeLogHandler mTimeLogHandler;
 
     private ArrayList<FeedbackListener<GrupoPositivo>> mFeedbackListener = new ArrayList<>();
 
-    public GruposPositivosAdapter(List<GrupoPositivo> dataset, Context context) {
+    public GruposPositivosAdapter(List<GrupoPositivo> dataset, Context context, TimeLogHandler logger) {
         mDataset = dataset;
         mContext = context;
+        mTimeLogHandler = logger;
     }
 
     @NonNull
@@ -55,6 +59,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
         holder.grupo = mDataset.get(position);
         holder.textView.setText(mDataset.get(position).getNombre());
         holder.id = mDataset.get(position).getId();
+        setBackgroundOnConditionMet(holder, mDataset.get(position));
     }
 
     @Override
@@ -88,5 +93,13 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
         Log.d(TAG, "received updated dataset size: " + grupos.size());
         mDataset = grupos;
         this.notifyDataSetChanged();
+    }
+
+    private void setBackgroundOnConditionMet(GruposPositivosAdapter.GruposPositivosViewHolder holder, GrupoPositivo grupo) {
+        if (mTimeLogHandler.ifAllGroupConditionsMet(grupo.getId())) {
+            holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
+        } else {
+            holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
+        }
     }
 }

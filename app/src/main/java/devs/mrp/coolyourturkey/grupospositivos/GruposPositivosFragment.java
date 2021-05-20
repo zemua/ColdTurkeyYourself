@@ -25,6 +25,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepositor
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class GruposPositivosFragment extends Fragment {
 
@@ -37,6 +38,7 @@ public class GruposPositivosFragment extends Fragment {
     private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
     private GrupoPositivoViewModel mGrupoPositivoViewModel;
     private ViewModelProvider.Factory factory;
+    private TimeLogHandler mTimeLogHandler;
 
     private Button mAddGrupoButton;
     private RecyclerView mGroupsRecyclerView;
@@ -61,6 +63,7 @@ public class GruposPositivosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_grupospositivos, container, false);
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication());
+        mTimeLogHandler = new TimeLogHandler(mContext, getActivity().getApplication(), getViewLifecycleOwner());
 
         mAddGrupoButton = (Button) v.findViewById(R.id.button_add_group);
         mAddGrupoButton.setOnClickListener(new View.OnClickListener(){
@@ -70,7 +73,7 @@ public class GruposPositivosFragment extends Fragment {
             }
         });
 
-        mAdapter = new GruposPositivosAdapter(mGroupList, mContext);
+        mAdapter = new GruposPositivosAdapter(mGroupList, mContext, mTimeLogHandler);
         mGroupsRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_groups);
         layoutManager = new LinearLayoutManager(mContext);
         mGroupsRecyclerView.setLayoutManager(layoutManager);
@@ -81,6 +84,14 @@ public class GruposPositivosFragment extends Fragment {
             public void giveFeedback(int tipo, GrupoPositivo feedback, Object... args) {
                 if (tipo == GruposPositivosAdapter.FEEDBACK_ITEM_CLICKED) {
                     mFeedbackReceiver.receiveFeedback(GruposPositivosFragment.this, FEEDBACK_ITEM_CLICKED, feedback);
+                }
+            }
+        });
+        mTimeLogHandler.addFeedbackListener(new FeedbackListener<Object>() {
+            @Override
+            public void giveFeedback(int tipo, Object feedback, Object... args) {
+                if (tipo == TimeLogHandler.FEEDBACK_LOGGERS_CHANGED) {
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         });
