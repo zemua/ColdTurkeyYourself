@@ -67,8 +67,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
     private LiveData<List<GrupoExport>> mGrupoExportLiveData; // to clear observer from exports
     private Observer<List<GrupoExport>> mGrupoExportObserver; // to clear observer from exports
-
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByGroupId; // to clear observers from livedata only
+    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mTodayTimeByGroupObservers;
 
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
@@ -76,6 +76,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private List<ConditionToGroup> mAllConditionsToGroup;
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
     private List<GrupoPositivo> mAllGruposPositivos;
+    private Map<Integer, List<TimeLogger>> mTodayTimeByGroupMap;
 
     private List<GrupoExport> mGrupoExportList;
     private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
@@ -98,6 +99,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
+        mTodayTimeByGroupMap = new HashMap<>();
+        mTodayTimeByGroupObservers = new HashMap<>();
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
@@ -130,6 +133,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo.getId())) {
                         mAllGruposPositivosIfConditionsMet.put(grupo.getId(), false);
                     }
+                    observeTodayGroupTime(grupo);
                 });
             }
         });
@@ -396,6 +400,18 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
+    public GrupoPositivo getGrupoPositivoFromPackageName(String name) {
+        Integer groupId = getGroupIdFromPackageName(name);
+        GrupoPositivo grupo = new GrupoPositivo("");
+        mAllGruposPositivos.stream().forEach(g -> {
+            if (g.getId() == groupId){
+                grupo.setId(g.getId());
+                grupo.setNombre(g.getNombre());
+            }
+        });
+        return grupo;
+    }
+
     private Long days(Long milliseconds) {return TimeUnit.MILLISECONDS.toDays(milliseconds);}
     private Long millis(Long days) {return TimeUnit.DAYS.toMillis(days);}
     private Long currentDay() {return days(System.currentTimeMillis());}
@@ -414,6 +430,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
             dayRefreshed = currentDay;
             refreshConditionsObserver();
             setExportObservers();
+            refreshTodayGroupObservers();
         }
     }
 
@@ -653,6 +670,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(export.getArchivo()))) {
                     Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                     FileReader.writeTextToUri(mApplication, Uri.parse(export.getArchivo()), daysToFileFormat(export.getDays(), timeMillis));
+                    //Log.d(TAG, "exporting " + daysToFileFormat(export.getDays(), timeMillis) + " ......to..... " + export.getArchivo());
                 }
             });
         }
@@ -733,6 +751,60 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     mAllGruposPositivosIfConditionsMet.put(key, false);
                 }
             });
+        }
+    }
+
+    /**
+     * Various utils
+     */
+
+    public boolean appIsGrouped(String packageName) {
+        BooleanWrap b = new BooleanWrap();
+        b.set(false);
+        mAppToGroups.stream().forEach(app -> {
+            if (app.getAppName().equals(packageName)) {
+                b.set(true);
+            }
+        });
+        return b.get();
+    }
+
+    private void observeTodayGroupTime(GrupoPositivo grupo) {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(millis(currentDay()), grupo.getId());
+                Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
+                    @Override
+                    public void onChanged(List<TimeLogger> timeLoggers) {
+                        mTodayTimeByGroupMap.put(grupo.getId(), timeLoggers);
+                    }
+                };
+                liveData.observe(mLifecycleOwner, observer);
+                mTodayTimeByGroupObservers.put(liveData, observer);
+            }
+        });
+    }
+
+    private void refreshTodayGroupObservers() {
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTodayTimeByGroupObservers.keySet().stream().forEach(key -> {
+                    key.removeObserver(mTodayTimeByGroupObservers.get(key));
+                });
+                mTodayTimeByGroupObservers.clear();
+                mAllGruposPositivos.stream().forEach(grupo -> observeTodayGroupTime(grupo));
+            }
+        });
+    }
+
+    public Long todayTimeOnAppGroup(String packageName) {
+        AppToGroup group = appsToGroupContainsPackageName(packageName);
+        if (group.getId() != null) {
+            return mTodayTimeByGroupMap.get(group.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+        } else {
+            return 0L;
         }
     }
 

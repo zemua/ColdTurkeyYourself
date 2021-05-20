@@ -123,8 +123,8 @@
     <string name="tiempo_importado_de_un_archivo">Tiempo de un archivo</string>
     <string name="guardar">Guardar</string>
     <string name="txt">txt</string>
-    <string name="condiciones_no_cumplidas">¡¡ Condiciones NO cumplidas !!</string>
-    <string name="limite_alcanzado">¡¡ Límite Alcanzado !!</string>
+    <string name="condiciones_no_cumplidas">¡¡Condiciones NO cumplidas!!</string>
+    <string name="limite_alcanzado">¡¡Límite Alcanzado!!</string>
     <string name="avisame_cuando_positiva_no_cumpla_condiciones">Avísame cuando una aplicación positiva no cumpla las condiciones para sumar puntos.</string>
     <string name="conditions_not_met">No cumple las condiciones</string>
     <string name="sincronizar_con_archivo_txt">Sincronizar Con Archivo TXT</string>
@@ -140,4 +140,7 @@
     <string name="seguro_que_deseas_borrar_este_limite">¿Seguro que deseas borrar este límite?</string>
     <string name="has_alcanzado_el_limite_de_puntos">Has alcanzado el límite de puntos.</string>
     <string name="avisame_cuando_alcance_el_limite_de_puntos">Avísame cuando alcance el límite de puntos en un grupo</string>
+    <string name="grupo">Grupo</string>
+    <string name="hoy">Hoy</string>
+    <string name="quedan">Quedan</string>
 </resources>
