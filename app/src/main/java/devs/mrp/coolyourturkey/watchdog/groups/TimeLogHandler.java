@@ -435,6 +435,12 @@ public class TimeLogHandler implements Feedbacker<Object> {
             refreshConditionsObserver();
             setExportObservers();
             refreshTodayGroupObservers();
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mLimitHandler.resetObserversOnDayChange();
+                }
+            });
         }
     }
 

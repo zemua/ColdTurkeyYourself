@@ -37,6 +37,8 @@ public class LimitHandler {
     /**
      * Maps for clearing observers on changes
      */
+    private LiveData<List<GrupoPositivo>> mGruposPositivosLiveData;
+    private Observer<List<GrupoPositivo>> mGruposPositivosObserver;
     private Map<LiveData<List<GroupLimit>>, Observer<List<GroupLimit>>> mGroupLimitObserversMap;
     private Map<Integer, Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>>> mTimeLoggerObserverMap;
 
@@ -61,7 +63,21 @@ public class LimitHandler {
         mTimeLoggerObserverMap = new HashMap<>();
         mTimeLoggersByLimitId = new HashMap<>();
 
-        mGrupoPositivoRepository.findAllGrupoPositivo().observe(lifecycleOwner, new Observer<List<GrupoPositivo>>() {
+        setupGrupoPositivoObservers();
+    }
+
+    private void setupGrupoPositivoObservers() {
+        /**
+         * First remove any older observers
+         */
+        if (mGruposPositivosLiveData!=null && mGruposPositivosObserver!=null) {
+            mGruposPositivosLiveData.removeObserver(mGruposPositivosObserver);
+        }
+        /**
+         * Then setup the new ones
+         */
+        mGruposPositivosLiveData = mGrupoPositivoRepository.findAllGrupoPositivo();
+        mGruposPositivosObserver = new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
                 clearGroupLimitObservers();
@@ -69,7 +85,8 @@ public class LimitHandler {
                     observeLimitsInGroup(grupo);
                 });
             }
-        });
+        };
+        mGruposPositivosLiveData.observe(mLifecycleOwner, mGruposPositivosObserver);
     }
 
     private void clearGroupLimitObservers() {
@@ -167,6 +184,10 @@ public class LimitHandler {
             return count;
         }
         return 0L;
+    }
+
+    public void resetObserversOnDayChange() {
+        setupGrupoPositivoObservers();
     }
 
 }
