@@ -76,6 +76,8 @@ public class AddGroupConditionFragment extends Fragment {
     private boolean mViewReadyForEdit = false;
     private boolean mTargetGroupReadyForEdit = false;
 
+    // TODO add boolean/switch whether the condition should trigger a notification when met
+
     public AddGroupConditionFragment(){ // needed for rotating the screen
         super();
     }
