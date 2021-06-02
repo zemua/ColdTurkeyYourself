@@ -16,6 +16,8 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class AddGroupConditionActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
+    // TODO make conditions for all negative apps, and then for "negative groups" like the ones set up for positive apps
+
     public static final String EXTRA_GROUP_ID = "extra_group_id";
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
 
