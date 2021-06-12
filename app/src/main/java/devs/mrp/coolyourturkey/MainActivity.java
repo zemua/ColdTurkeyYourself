@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
 
     // TODO load list of apps in different thread to not affect UI performance
     // TODO random check on questions for positive reinforcement
+    // TODO conditions on negative apps before allowing to use (like x time used on exercise, etc.)
+    // TODO Set time fragments/days of the week where negatives can be used freely, and/or positive don't sum
     // TODO points on steps/walking like a pedometer
 
     private static final String TAG = "Main_Activity";
