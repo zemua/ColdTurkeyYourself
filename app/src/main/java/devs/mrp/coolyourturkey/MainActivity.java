@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
     // TODO random check on questions for positive reinforcement
     // TODO conditions on negative apps before allowing to use (like x time used on exercise, etc.)
     // TODO Set time fragments/days of the week where negatives can be used freely, and/or positive don't sum
+    // TODO set time fragments/days when toque de queda is not active, or has a different schedule
+    // TODO set a limit on the accumulated points
     // TODO points on steps/walking like a pedometer
 
     private static final String TAG = "Main_Activity";
