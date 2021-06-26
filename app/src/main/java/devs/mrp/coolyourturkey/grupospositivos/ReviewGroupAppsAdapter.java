@@ -80,6 +80,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
     public void onBindViewHolder(@NonNull ReviewGroupAppsAdapter.ReviewGroupAppsViewHolder holder, int position) {
         try {
             String packageName = mDataset.getNombre(position);
+            Log.d(TAG, "nombre del paquete en la posicion " + position + ": " + packageName);
             ApplicationInfo applicationInfo = mContext.getPackageManager().getApplicationInfo(packageName, 0);
             holder.imageView.setImageDrawable(mContext.getPackageManager().getApplicationIcon(applicationInfo));
             holder.textView.setText(mContext.getPackageManager().getApplicationLabel(applicationInfo));
@@ -92,22 +93,32 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
         // set switches according to db
         if (listaAppsSetted != null) {
             String lnombre = mDataset.getNombre(position);
+            Log.d(TAG, "nombre: " + lnombre);
             if (mapDataset.containsKey(lnombre)) {
+                Log.d(TAG, "mapDataset contiene este nombre");
                 if (ifInThisGroup(lnombre)) {
+                    Log.d(TAG, "en este grupo, activamos y rehabilitamos switch");
                     if (!holder.switchView.isChecked()) {
                         holder.switchView.setChecked(true);
+                        holder.switchView.setEnabled(true);
                     }
                 } else {
+                    Log.d(TAG, "no en este grupo, desactivamos switch");
                     if (holder.switchView.isChecked()) {
                         holder.switchView.setChecked(false);
                     }
                     if (ifInOtherGroup(lnombre)) {
+                        Log.d(TAG, "esta en otro grupo, inhabilitamos el switch");
                         holder.switchView.setEnabled(false);
+                    } else {
+                        Log.d(TAG, "no está en otro grupo, rehabilitamos el switch");
+                        holder.switchView.setEnabled(true);
                     }
                 }
             } else {
                 if (holder.switchView.isChecked()) {
                     holder.switchView.setChecked(false);
+                    holder.switchView.setEnabled(true);
                 }
             }
         }
@@ -158,6 +169,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     public void firstGroupDbLoad(List<AppToGroup> appsToGroups) {
         listaAppsSetted = appsToGroups;
+        Log.d(TAG, appsToGroups.toString());
         setMapAppToGroup(listaAppsSetted);
         if (!loaded) {
             loaded = true;
@@ -179,6 +191,8 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
     private void setTextOfSwitch(ReviewGroupAppsViewHolder vh) {
         if (ifInOtherGroup(vh.packageName)){
             vh.switchView.setText(R.string.en_otro_grupo);
+        } else {
+            vh.switchView.setText(R.string.switch_en_esta_lista);
         }
     }
 
@@ -191,6 +205,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     private boolean ifInOtherGroup(String packageName){
         if (mapAppsSetted != null && mapAppsSetted.containsKey(packageName)) {
+            Log.d(TAG, "app's groupId is " + mapAppsSetted.get(packageName).getGroupId() + " and current groupId is " + mThisGroupId);
             return !mapAppsSetted.get(packageName).getGroupId().equals(mThisGroupId);
         }
         return false;
