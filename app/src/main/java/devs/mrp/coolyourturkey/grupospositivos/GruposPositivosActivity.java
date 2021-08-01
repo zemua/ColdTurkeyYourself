@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,6 +20,8 @@ public class GruposPositivosActivity extends AppCompatActivity implements Feedba
     // TODO fix error deleting positive group
     private static final int LAUNCH_ADD = 1;
     private static final int LAUNCH_REVIEW = 2;
+
+    private static String TAG = "GruposPositivosActivity";
 
     private Fragment fragment;
 
@@ -69,6 +72,7 @@ public class GruposPositivosActivity extends AppCompatActivity implements Feedba
             if (resultCode == Activity.RESULT_OK) {
                 if (data.hasExtra(ReviewGroupActivity.RESULT_DELETE)) {
                     Integer groupIdToDelete = data.getIntExtra(ReviewGroupActivity.RESULT_DELETE, -1);
+                    Log.d(TAG, "going to process delete of group with id " + groupIdToDelete.toString());
                     ((GruposPositivosFragment)fragment).removeGrupoPositivoFromDb(groupIdToDelete);
                 }
             }

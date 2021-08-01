@@ -110,20 +110,27 @@ public class GruposPositivosFragment extends Fragment {
     }
 
     public void addGrupoPositivoToDb(GrupoPositivo grupoPositivo) {
+        Log.d(TAG, "to add group " + grupoPositivo.getId() + " " + grupoPositivo.getNombre());
         mGrupoPositivoViewModel.insert(grupoPositivo);
     }
 
     public void removeGrupoPositivoFromDb(Integer id){
         // Delete apps belonging to this group
+        Log.d(TAG, "to start delete");
         AppToGroupRepository appRepo = AppToGroupRepository.getRepo(getActivity().getApplication());
         appRepo.deleteByGroupId(id);
+        Log.d(TAG, "deleted reference of apps to this group");
         // Delete conditions from this group
         ConditionToGroupRepository conditionRepo = ConditionToGroupRepository.getRepo(getActivity().getApplication());
         conditionRepo.deleteByGroupId(id);
+        Log.d(TAG, "deleted conditions of this group");
         // Delete conditions that refer to this group
         conditionRepo.deleteByConditionalGroupId(id);
+        Log.d(TAG, "deleted conditions that refer to this group");
         // Delete this group
-        mGrupoPositivoViewModel.deleteById(id);
+        GrupoPositivoRepository grupoRepo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
+        grupoRepo.deleteById(id);
+        Log.d(TAG, "deleted the group");
     }
 
 }

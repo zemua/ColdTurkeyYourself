@@ -27,6 +27,7 @@ public class GrupoPositivoRepository {
         mAllGrupoPositivo = mDao.findAllGrupoPositivo();
         exportRepo = GrupoExportRepository.getRepo(application);
         limitsRepo = GroupLimitRepository.getRepo(application);
+        conditionRepo = ConditionToGroupRepository.getRepo(application);
     }
 
     public static GrupoPositivoRepository getRepo(Application application){
