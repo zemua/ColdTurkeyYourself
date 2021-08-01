@@ -16,7 +16,7 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.usagestats.StatsFragmentDoble;
 
 public class GruposPositivosActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
-
+    // TODO fix error deleting positive group
     private static final int LAUNCH_ADD = 1;
     private static final int LAUNCH_REVIEW = 2;
 
