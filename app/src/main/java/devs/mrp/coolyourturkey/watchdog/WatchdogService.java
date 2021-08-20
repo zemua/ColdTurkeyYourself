@@ -18,6 +18,7 @@ import androidx.lifecycle.Transformations;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
+import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.comun.SingleExecutor;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -42,7 +43,7 @@ import static java.lang.Thread.sleep;
 
 public class WatchdogService extends LifecycleService {
 
-    // TODO simplify the loop and decentralize in other classes
+    // TODO simplify the loop, reduce spaghetti code and decentralize in other classes
     // TODO periodically do some cleanup of old registers of ContadorRepository
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
@@ -132,184 +133,203 @@ public class WatchdogService extends LifecycleService {
         setEjecuta(true);
 
         if (!ejecutor.isExecuting()) { // si ya hay un servicio checkeando, no vamos
-
-            /**
-             * the following are set before the "execute" because
-             * livedata cannot be observed in a background thread
-             */
-
-            // Si reanudamos los checks después de estar parado, contar tiempo a partir de ahora
-            lastEpoch = System.currentTimeMillis();
-
-            LiveData<Map<String, AplicacionListada>> lGoodMap;
-            LiveData<Map<String, AplicacionListada>> lBadMap;
-            ForegroundAppChecker lchecker;
-
-            AplicacionListadaRepository lRepo = AplicacionListadaRepository.getRepo(getApplication());
-            LiveData<List<AplicacionListada>> lnegativas = lRepo.getAPPsNegativas();
-            lBadMap = Transformations.map(lnegativas, this::listToMap);
-            LiveData<List<AplicacionListada>> lpositivas = lRepo.getAppsPositivas();
-            lGoodMap = Transformations.map(lpositivas, this::listToMap);
-
-            lchecker = new ForegroundAppChecker(this, lGoodMap.getValue(), lBadMap.getValue());
-
-            lBadMap.observe(this, new Observer<Map<String, AplicacionListada>>() {
-                @Override
-                public void onChanged(Map<String, AplicacionListada> aplicacionListadas) {
-                    lchecker.actualizaMalas(aplicacionListadas);
-                }
-            });
-
-            lGoodMap.observe(this, new Observer<Map<String, AplicacionListada>>() {
-                @Override
-                public void onChanged(Map<String, AplicacionListada> aplicacionListadas) {
-                    lchecker.actualizaBuenas(aplicacionListadas);
-                }
-            });
-
-            if (!ejecutor.isExecuting()) { // recheck nothing changed
-
-                ejecutor.singleExecute(() -> {
-
-                    // referencia de la ultima notificacion y la que se mandaría ahora
-                    // para ver si actualizamos o mantenemos
-                    // para no mandar actalizaciones innecesarias
-                    int lultimanotif = ForegroundAppChecker.NULL;
-                    int lestanotif = ForegroundAppChecker.NULL;
-                    String lultimonombre = "";
-                    long lultimoAcumulado = 0L;
-                    boolean lupdated = false;
-
-                    while (getEjecuta()) {
-                        try {
-                            sleeptime = 1000 * 3; // 3 seconds between checks
-                            sleep(sleeptime);
-
-                            mTimeLogHandler.watchDog(); // perform periodic stuff in the handler
-
-                            if (PermisosChecker.checkPermisoEstadisticas(this)) {
-
-                                // tiempo transcurrido desde el último check
-                                now = System.currentTimeMillis();
-                                milisTranscurridos = now - lastEpoch;
-
-                                if (milisTranscurridos < 0) {
-                                    milisTranscurridos = 0;
-                                }
-                                lastEpoch = now;
-                                boolean isScreenOn = mHandler.ifPhoneOnAndUnlocked();
-
-                                synchronized (LOCK_0) {
-                                    if (isScreenOn && ejecuta) {
-                                        ForegroundAppSpec lapp = new ForegroundAppSpec();
-                                        String lnombre;
-
-                                        lchecker.getForegroundApp(lapp, sleeptime);
-                                        lnombre = lapp.packageName;
-
-                                        int ltipo = lapp.appType;
-                                        long lacumula = 0L;
-                                        mTiempoImportado = mImporter.importarTiempoTotal();
-                                        //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
-                                        sProporcion = mMisPreferencias.getProporcionTrabajoOcio();
-                                        switch (ltipo) {
-                                            case ForegroundAppChecker.NEGATIVO:
-                                                lestanotif = ForegroundAppChecker.NEGATIVO;
-                                                if (mUltimoContador != null) {
-                                                    long lproporcionMilisTranscurridos = milisTranscurridos * sProporcion;
-                                                    lacumula = mUltimoContador.getAcumulado() - lproporcionMilisTranscurridos;
-                                                }
-                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                    mNotificacion = mHandler.getNotificacionNegativa(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    lupdated = true;
-                                                } else {
-                                                    lupdated = false;
-                                                }
-                                                if (!mScreenBlock.estamosBloqueando()) {
-                                                    pushAcumulado(now, lacumula);
-                                                    try {mTimeLogHandler.insertTimeBadApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
-                                                }
-                                                new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
-                                                break;
-                                            case ForegroundAppChecker.NEUTRO:
-                                                lestanotif = ForegroundAppChecker.NEUTRO;
-                                                lacumula = mUltimoContador.getAcumulado();
-                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    lupdated = true;
-                                                } else {
-                                                    lupdated = false;
-                                                }
-                                                try {mTimeLogHandler.insertTimeNeutralApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
-                                                break;
-                                            case ForegroundAppChecker.NULL:
-                                                lestanotif = ForegroundAppChecker.NULL;
-                                                lacumula = mUltimoContador.getAcumulado();
-                                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
-                                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                    lupdated = true;
-                                                } else {
-                                                    lupdated = false;
-                                                }
-                                                // no log this time because we don't know which kind of app is it
-                                                break;
-                                            case ForegroundAppChecker.POSITIVO:
-                                                lestanotif = ForegroundAppChecker.POSITIVO;
-                                                if (mUltimoContador != null) {
-                                                    lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
-                                                }
-                                                mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
-                                                lupdated = true;
-                                                if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                                    if (mTimeLogHandler.ifAllAppConditionsMet(lnombre) && !mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {
-                                                        pushAcumulado(now, lacumula);
-                                                    } else {
-                                                        if (mMisPreferencias.getNotifyConditionsNotMet() && !mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.conditions_not_met));}
-                                                        else if (mMisPreferencias.getNotifyLimitesReached() && mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
-                                                    }
-                                                    try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
-                                                }
-                                                break;
-                                        }
-
-                                        if (lestanotif != lultimanotif && mMisPreferencias.getAvisoCambioPositivaNegativaNeutral()) {
-                                            new TimeToaster(this.getApplication()).noticeChanged(lestanotif);
-                                        }
-                                        if (lupdated) {
-                                            wasPausado = false;
-                                            mExporter.export(lacumula);
-                                            actualizaNotificacion(mNotificacion);
-                                            lultimonombre = lnombre;
-                                            lultimoAcumulado = lacumula;
-                                            lultimanotif = lestanotif;
-                                            lupdated = false;
-                                        }
-                                        if (((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) || (lestanotif == ForegroundAppChecker.POSITIVO && mTimeLogHandler.ifLimitReachedAndShallBlock(lnombre))) {
-                                            if (PermisosChecker.checkPermisoAlertas(this)) {
-                                                mScreenBlock.go();
-                                            }
-                                        } else {
-                                            mScreenBlock.desbloquear();
-                                        }
-                                        mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
-                                        if (mToqueDeQuedaHandler.isToqueDeQueda()) {
-                                            if (lestanotif != ForegroundAppChecker.NEGATIVO) {
-                                                // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
-                                                negativeDecreaseCounter();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
+            initialize();
         }
 
         return START_STICKY;
+    }
+
+    private void initialize() {
+        /**
+         * the following are set before the "execute" because
+         * livedata cannot be observed in a background thread
+         */
+
+        // Si reanudamos los checks después de estar parado, contar tiempo a partir de ahora
+        lastEpoch = System.currentTimeMillis();
+
+        LiveData<Map<String, AplicacionListada>> lGoodMap;
+        LiveData<Map<String, AplicacionListada>> lBadMap;
+        ForegroundAppChecker lchecker;
+
+        AplicacionListadaRepository lRepo = AplicacionListadaRepository.getRepo(getApplication());
+        LiveData<List<AplicacionListada>> lnegativas = lRepo.getAPPsNegativas();
+        lBadMap = Transformations.map(lnegativas, this::listToMap);
+        LiveData<List<AplicacionListada>> lpositivas = lRepo.getAppsPositivas();
+        lGoodMap = Transformations.map(lpositivas, this::listToMap);
+
+        lchecker = new ForegroundAppChecker(this, lGoodMap.getValue(), lBadMap.getValue());
+
+        lBadMap.observe(this, new Observer<Map<String, AplicacionListada>>() {
+            @Override
+            public void onChanged(Map<String, AplicacionListada> aplicacionListadas) {
+                lchecker.actualizaMalas(aplicacionListadas);
+            }
+        });
+
+        lGoodMap.observe(this, new Observer<Map<String, AplicacionListada>>() {
+            @Override
+            public void onChanged(Map<String, AplicacionListada> aplicacionListadas) {
+                lchecker.actualizaBuenas(aplicacionListadas);
+            }
+        });
+
+        WatchDogData data = MyBeanFactory.getWatchDogDataFactory().create();
+        data.setForegroundAppChecker(lchecker);
+
+        if (!ejecutor.isExecuting()) { // recheck nothing changed
+            execute(data);
+        }
+    }
+
+    private void execute(WatchDogData data) {
+        ejecutor.singleExecute(() -> {
+
+            // referencia de la ultima notificacion y la que se mandaría ahora
+            // para ver si actualizamos o mantenemos
+            // para no mandar actalizaciones innecesarias
+            int lultimanotif = ForegroundAppChecker.NULL;
+            int lestanotif = ForegroundAppChecker.NULL;
+            String lultimonombre = "";
+            long lultimoAcumulado = 0L;
+            boolean lupdated = false;
+
+            data.setUltimaNotif(lultimanotif)
+                    .setEstaNotif(lestanotif)
+                    .setUltimoNombre(lultimonombre)
+                    .setUltimoAcumulado(lultimoAcumulado)
+                    .setUpdated(lupdated);
+
+            while (getEjecuta()) {
+                doLoopWork(data);
+            }
+        });
+    }
+
+    private void doLoopWork(WatchDogData data) {
+        try {
+            sleeptime = 1000 * 3; // 3 seconds between checks
+            sleep(sleeptime);
+
+            mTimeLogHandler.watchDog(); // perform periodic stuff in the handler
+
+            if (PermisosChecker.checkPermisoEstadisticas(this)) {
+
+                // tiempo transcurrido desde el último check
+                now = System.currentTimeMillis();
+                milisTranscurridos = now - lastEpoch;
+
+                if (milisTranscurridos < 0) {
+                    milisTranscurridos = 0;
+                }
+                lastEpoch = now;
+                boolean isScreenOn = mHandler.ifPhoneOnAndUnlocked();
+
+                synchronized (LOCK_0) {
+                    if (isScreenOn && ejecuta) {
+                        ForegroundAppSpec lapp = new ForegroundAppSpec();
+                        String lnombre;
+
+                        data.getForegroundAppChecker().getForegroundApp(lapp, sleeptime);
+                        lnombre = lapp.packageName;
+
+                        int ltipo = lapp.appType;
+                        long lacumula = 0L;
+                        mTiempoImportado = mImporter.importarTiempoTotal();
+                        //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
+                        sProporcion = mMisPreferencias.getProporcionTrabajoOcio();
+                        switch (ltipo) {
+                            case ForegroundAppChecker.NEGATIVO:
+                                data.setEstaNotif(ForegroundAppChecker.NEGATIVO);
+                                if (mUltimoContador != null) {
+                                    long lproporcionMilisTranscurridos = milisTranscurridos * sProporcion;
+                                    lacumula = mUltimoContador.getAcumulado() - lproporcionMilisTranscurridos;
+                                }
+                                if (data.getEstaNotif() != data.getUltimanotif() || !data.getUltimoNombre().equals(lnombre) || Math.abs(lacumula - data.getUltimoAcumulado()) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                    mNotificacion = mHandler.getNotificacionNegativa(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                    data.setUpdated(true);
+                                } else {
+                                    data.setUpdated(false);
+                                }
+                                if (!mScreenBlock.estamosBloqueando()) {
+                                    pushAcumulado(now, lacumula);
+                                    try {mTimeLogHandler.insertTimeBadApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
+                                }
+                                new TimeToaster(this.getApplication()).noticeTimeLeft((lacumula + mTiempoImportado) / sProporcion);
+                                break;
+                            case ForegroundAppChecker.NEUTRO:
+                                data.setEstaNotif(ForegroundAppChecker.NEUTRO);
+                                lacumula = mUltimoContador.getAcumulado();
+                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                    lupdated = true;
+                                } else {
+                                    lupdated = false;
+                                }
+                                try {mTimeLogHandler.insertTimeNeutralApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
+                                break;
+                            case ForegroundAppChecker.NULL:
+                                lestanotif = ForegroundAppChecker.NULL;
+                                lacumula = mUltimoContador.getAcumulado();
+                                if (lestanotif != lultimanotif || !lultimonombre.equals(lnombre) || Math.abs(lacumula - lultimoAcumulado) > TIME_DIFF_TO_UPDATE || wasPausado) {
+                                    mNotificacion = mHandler.getNotificacionNeutra(lnombre, lacumula + mTiempoImportado, sProporcion);
+                                    lupdated = true;
+                                } else {
+                                    lupdated = false;
+                                }
+                                // no log this time because we don't know which kind of app is it
+                                break;
+                            case ForegroundAppChecker.POSITIVO:
+                                lestanotif = ForegroundAppChecker.POSITIVO;
+                                if (mUltimoContador != null) {
+                                    lacumula = mUltimoContador.getAcumulado() + milisTranscurridos;
+                                }
+                                mNotificacion = mHandler.getNotificacionPositiva(mTimeLogHandler, lnombre, lacumula + mTiempoImportado, sProporcion);
+                                lupdated = true;
+                                if (!mToqueDeQuedaHandler.isToqueDeQueda()) {
+                                    if (mTimeLogHandler.ifAllAppConditionsMet(lnombre) && !mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {
+                                        pushAcumulado(now, lacumula);
+                                    } else {
+                                        if (mMisPreferencias.getNotifyConditionsNotMet() && !mTimeLogHandler.ifAllAppConditionsMet(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.conditions_not_met));}
+                                        else if (mMisPreferencias.getNotifyLimitesReached() && mTimeLogHandler.ifLimitsReachedForAppName(lnombre)) {mConditionToaster.noticeMessage(this.getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
+                                    }
+                                    try {mTimeLogHandler.insertTimeGoodApp(lnombre, milisTranscurridos);} catch (Exception e) {e.printStackTrace();}
+                                }
+                                break;
+                        }
+
+                        if (lestanotif != lultimanotif && mMisPreferencias.getAvisoCambioPositivaNegativaNeutral()) {
+                            new TimeToaster(this.getApplication()).noticeChanged(lestanotif);
+                        }
+                        if (lupdated) {
+                            wasPausado = false;
+                            mExporter.export(lacumula);
+                            actualizaNotificacion(mNotificacion);
+                            lultimonombre = lnombre;
+                            lultimoAcumulado = lacumula;
+                            lultimanotif = lestanotif;
+                            lupdated = false;
+                        }
+                        if (((lestanotif == ForegroundAppChecker.NEGATIVO) && (lacumula + mTiempoImportado <= 0 || mToqueDeQuedaHandler.isToqueDeQueda())) || (lestanotif == ForegroundAppChecker.POSITIVO && mTimeLogHandler.ifLimitReachedAndShallBlock(lnombre))) {
+                            if (PermisosChecker.checkPermisoAlertas(this)) {
+                                mScreenBlock.go();
+                            }
+                        } else {
+                            mScreenBlock.desbloquear();
+                        }
+                        mToqueDeQuedaHandler.avisar(); // notice for all kind of apps positive/negative/neutral
+                        if (mToqueDeQuedaHandler.isToqueDeQueda()) {
+                            if (lestanotif != ForegroundAppChecker.NEGATIVO) {
+                                // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
+                                negativeDecreaseCounter();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void pushAcumulado(long epoch, long acumulado) {
