@@ -28,7 +28,7 @@ public class TimeToaster {
     private MisPreferencias mMisPreferencias;
 
 
-    TimeToaster(Application context) {
+    public TimeToaster(Application context) {
         mContext = context;
         mMisPreferencias = new MisPreferencias(context);
     }
