@@ -4,11 +4,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
@@ -16,7 +13,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
-import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
@@ -27,14 +23,10 @@ import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
-import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.ActionRequestorInterface;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
-import devs.mrp.coolyourturkey.workspace.TurkeyBroadcaster;
-import devs.mrp.coolyourturkey.workspace.TurkeyBroadreader;
-import devs.mrp.coolyourturkey.workspace.WspController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +36,6 @@ import static java.lang.Thread.sleep;
 
 public class WatchdogService extends LifecycleService {
 
-    // TODO simplify the loop, reduce spaghetti code and decentralize in other classes
     // TODO periodically do some cleanup of old registers of ContadorRepository
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
@@ -78,7 +69,6 @@ public class WatchdogService extends LifecycleService {
                 .setWasPausado(true)
                 .setTiempoImportado(0L)
                 .setScreenBlock(new ScreenBlock(this))
-                .setTimePusher(MyBeanFactory.getTimePusherFactory().get(mContadorRepo))
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()));
@@ -116,6 +106,7 @@ public class WatchdogService extends LifecycleService {
             }
         });
 
+        mData.setTimePusher(MyBeanFactory.getTimePusherFactory().get(mContadorRepo));
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         startForeground(WatchdogHandler.TURKEY_NOTIFICATION_ID, mData.getNotification());
     }
@@ -170,11 +161,11 @@ public class WatchdogService extends LifecycleService {
         mData.setForegroundAppChecker(lchecker);
 
         if (!ejecutor.isExecuting()) { // recheck nothing changed
-            execute(mData);
+            setupLoop(mData);
         }
     }
 
-    private void execute(WatchDogData data) {
+    private void setupLoop(WatchDogData data) {
         ejecutor.singleExecute(() -> {
 
             // referencia de la ultima notificacion y la que se mandaría ahora
@@ -218,8 +209,10 @@ public class WatchdogService extends LifecycleService {
 
                 synchronized (LOCK_0) {
                     if (data.ifIsScreenOn() && ejecuta) {
-                        doChooseAction(data);
-                        closeUpCycle(data);
+                        // call to do stuff depending on the situation
+                        doChoosenAction(data);
+                        // close up this loop cycle and prepare for the next
+                        closeUpCurrentLoopCycle(data);
                     }
                 }
             }
@@ -228,7 +221,7 @@ public class WatchdogService extends LifecycleService {
         }
     }
 
-    private void doChooseAction(WatchDogData data) {
+    private void doChoosenAction(WatchDogData data) {
         ForegroundAppSpec lapp = new ForegroundAppSpec();
 
         data.getForegroundAppChecker().getForegroundApp(lapp, data.getSleepTime());
@@ -243,7 +236,7 @@ public class WatchdogService extends LifecycleService {
         actionRequestor.getHandlerChain().receiveRequest(ltipo, data);
     }
 
-    private void closeUpCycle(WatchDogData data) {
+    private void closeUpCurrentLoopCycle(WatchDogData data) {
         // notice change positive/negative/neutral
         if (data.getEstaNotif() != data.getUltimanotif() && data.getMisPreferencias().getAvisoCambioPositivaNegativaNeutral()) {
             new TimeToaster(this.getApplication()).noticeChanged(data.getEstaNotif());

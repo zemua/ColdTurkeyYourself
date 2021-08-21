@@ -26,11 +26,17 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
+import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class FragmentListaOnOff extends Fragment {
     private static final String TAG = "fragment_lista_on_off";
@@ -87,12 +93,27 @@ public class FragmentListaOnOff extends Fragment {
         layoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAppLister = new AppLister(mContext);
-        mAppLister.setNonSystemList(); // listar las aplicaciones que no son del sistema solamente
-        mAdapter = new AppsListAdapter(mAppLister, mContext, tipoActual);
+        // TODO set temporary adapter in the recycler view with loading stuff
+        mAdapter = new AppsListAdapter(mContext, tipoActual);
         mAdapter.resetLoaded();
-        recyclerView.setAdapter(mAdapter);
 
+        ExecutorService servicio = Executors.newFixedThreadPool(1);
+        FutureTask<AppLister> task = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
+            @Override
+            protected void done() {
+                try {
+                    mAppLister = get();
+                    mAdapter.changeToDataset(mAppLister); // TODO in main thread
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        servicio.execute(task);
+
+        recyclerView.setAdapter(mAdapter);
         // observar la db por cambios, y si los hay notificarle al adapter
         mAplicacionViewModel = new ViewModelProvider(this, factory).get(AplicacionListadaViewModel.class);
         mAplicacionViewModel.getAllApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>(){
@@ -103,8 +124,6 @@ public class FragmentListaOnOff extends Fragment {
                 listaAplicaciones = aplicacionesListadas;
             }
         });
-
-        appToGroupRepository = AppToGroupRepository.getRepo(getActivity().getApplication());
         mAdapter.addFeedbackListener(new FeedbackListener<AplicacionListada>(){
             @Override
             public void giveFeedback(int tipo, AplicacionListada feedback, Object... args) {
@@ -131,6 +150,9 @@ public class FragmentListaOnOff extends Fragment {
             }
         });
 
+        appToGroupRepository = AppToGroupRepository.getRepo(getActivity().getApplication());
+
+
         mTextoTitulo = (TextView) v.findViewById(R.id.text_lista_titulo);
         setTitulo(tipoActual);
 
@@ -143,6 +165,10 @@ public class FragmentListaOnOff extends Fragment {
         });
 
         return v;
+    }
+
+    private void setTemporaryAdapter() {
+
     }
 
     @Override
