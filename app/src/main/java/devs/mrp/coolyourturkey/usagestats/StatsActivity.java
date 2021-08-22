@@ -45,20 +45,7 @@ public class StatsActivity extends AppCompatActivity implements FeedbackReceiver
             FragmentManager fm = getSupportFragmentManager();
             fragment = fm.findFragmentById(R.id.fragment_container);
             if (fragment == null) {
-                /* int ltipo;
-                if (tipoActual == TIPO_LISTA_POSITIVA) {
-                    ltipo = StatsFragment.TIPO_POSITIVO;
-                    fragment = new StatsFragment(ltipo);
-                } else if (tipoActual == TIPO_LISTA_NEGATIVA) {
-                    ltipo = StatsFragment.TIPO_NEGATIVO;
-                    fragment = new StatsFragment(ltipo);
-                } else {
-                    ltipo = StatsFragment.TIPO_AMBOS;
-                    fragment = new StatsFragmentDoble();
-                } */
-
                 fragment = new StatsFragmentDoble();
-
                 fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
             }
         }

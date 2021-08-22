@@ -25,7 +25,9 @@ public class PositiveAction extends AbstractHandler{
             if (data.getTimeLogHandler().ifAllAppConditionsMet(data.getPackageName()) && !data.getTimeLogHandler().ifLimitsReachedForAppName(data.getPackageName())) {
                 data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
             } else {
+                // notify if conditions to sum are not met
                 if (data.getMisPreferencias().getNotifyConditionsNotMet() && !data.getTimeLogHandler().ifAllAppConditionsMet(data.getPackageName())) {data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.conditions_not_met));}
+                // notify if limits for today are met
                 else if (data.getMisPreferencias().getNotifyLimitesReached() && data.getTimeLogHandler().ifLimitsReachedForAppName(data.getPackageName())) {data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.has_alcanzado_el_limite_de_puntos));}
             }
             try {data.getTimeLogHandler().insertTimeGoodApp(data.getPackageName(), data.getMilisTranscurridos());} catch (Exception e) {e.printStackTrace();}

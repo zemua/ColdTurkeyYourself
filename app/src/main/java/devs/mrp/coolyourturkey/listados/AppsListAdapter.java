@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.listados;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,17 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
     List<AplicacionListada> listaAppsSetted;
     private boolean loaded = false;
 
+    public AppsListAdapter(AppLister dataset, Context context, String tipo) {
+        mDataset = dataset;
+        mContext = context;
+        tipoActual = tipo;
+    }
+
+    public AppsListAdapter(Context context, String tipo) {
+        mContext = context;
+        tipoActual = tipo;
+    }
+
     @Override
     public void giveFeedback(int tipo, AplicacionListada feedback) {
         mFeedbackList.forEach((item) -> {
@@ -64,7 +76,6 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         public Switch switchView;
         public TextView textView;
         public String packageName;
-        public int hposicion;
 
         public AppsListViewHolder(View v) {
             super(v);
@@ -72,14 +83,7 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
             imageView = v.findViewById(R.id.imageView);
             switchView = v.findViewById(R.id.switch1);
             packageName = null;
-            hposicion = -1;
         }
-    }
-
-    public AppsListAdapter(AppLister dataset, Context context, String tipo) {
-        mDataset = dataset;
-        mContext = context;
-        tipoActual = tipo;
     }
 
     // crear nuevas estructuras de los views (invoked by the layout manager)
@@ -105,11 +109,11 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
                 } else if (toggled && tipoActual.equals(POSITIVA)){
                     // si intentamos activar una positiva pedir confirmación
                     app = new AplicacionListada(vh.packageName, tipoActual);
-                    giveFeedback(FEEDBACK_REQUEST_CONFIRM, app, vh.hposicion);
+                    giveFeedback(FEEDBACK_REQUEST_CONFIRM, app, vh.getAdapterPosition());
                 } else if (!toggled && tipoActual.equals(NEGATIVA)){
                     // si intentamos desactivar una negativa pedir confirmación
                     app = new AplicacionListada(vh.packageName, mContext.getString(R.string.string_tipo_lista_ninguna));
-                    giveFeedback(FEEDBACK_REQUEST_CONFIRM, app, vh.hposicion);
+                    giveFeedback(FEEDBACK_REQUEST_CONFIRM, app, vh.getAdapterPosition());
                 }
             }
         });
@@ -129,7 +133,6 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
             holder.imageView.setImageDrawable(mContext.getPackageManager().getApplicationIcon(applicationInfo));
             holder.textView.setText(mContext.getPackageManager().getApplicationLabel(applicationInfo));
             holder.packageName = packageName;
-            holder.hposicion = posicion;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -192,14 +195,17 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
     // dar tamaño del dataset
     @Override
     public int getItemCount() {
-        //Log.d(TAG, "getItemCount");
+        if (mDataset == null) {
+            return 0;
+        }
+        Log.d(TAG, "getItemCount");
         int s = mDataset.getList().size();
-        //Log.d(TAG, "tamaño del datalist es " + String.valueOf(s));
+        Log.d(TAG, "tamaño del datalist es " + String.valueOf(s));
         return s;
     }
 
     public void changeToDataset(AppLister dset) {
-        //Log.d(TAG, "changeToDataset");
+        Log.d(TAG, "changeToDataset");
         mDataset = dset;
         this.notifyDataSetChanged();
     }

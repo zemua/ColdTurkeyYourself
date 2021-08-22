@@ -66,13 +66,16 @@ public class StatsAdapterDetail extends RecyclerView.Adapter<StatsAdapterDetail.
     }
 
     private void inicializaCosas(Context context) {
-        mAppsInstaladas = new AppLister(context);
-        mAppsInstaladas.setSystemList(); // incluir apps del sistema
-
         mStatsHandler = new StatsHandler(context); // para consultar los tiempos
 
         mContext = context;
         dbLoaded = false;
+    }
+
+    public StatsAdapterDetail inicializaInstalledList(Context context) {
+        mAppsInstaladas = new AppLister(context);
+        mAppsInstaladas.setSystemList(); // incluir apps del sistema
+        return this;
     }
 
     @Override
@@ -118,7 +121,7 @@ public class StatsAdapterDetail extends RecyclerView.Adapter<StatsAdapterDetail.
 
     @Override
     public int getItemCount() {
-        if (mAppPosNegList == null) {
+        if (mAppPosNegList == null || mAppsInstaladas == null) {
             return 0;
         }
         int s = mAppPosNegList.size();

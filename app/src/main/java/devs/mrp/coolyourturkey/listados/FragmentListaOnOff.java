@@ -7,9 +7,11 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +28,17 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
+import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class FragmentListaOnOff extends Fragment {
     private static final String TAG = "fragment_lista_on_off";
@@ -51,6 +59,8 @@ public class FragmentListaOnOff extends Fragment {
     private TextView mTextoTitulo;
     private DialogTimeUpdater mDialogTimeUpdater;
 
+    private Handler mainHandler;
+
     String tipoActual; // Comparar con campo de "AplicacionListada"
     public static final String POSITIVA = AplicacionListada.POSITIVA;
     public static final String NEGATIVA = AplicacionListada.NEGATIVA;
@@ -66,6 +76,7 @@ public class FragmentListaOnOff extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mainHandler = new Handler(context.getMainLooper());
         //mFeedbackReceiver = (FeedbackReceiver) context;
         //mContext = context;
     }
@@ -87,12 +98,44 @@ public class FragmentListaOnOff extends Fragment {
         layoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAppLister = new AppLister(mContext);
-        mAppLister.setNonSystemList(); // listar las aplicaciones que no son del sistema solamente
-        mAdapter = new AppsListAdapter(mAppLister, mContext, tipoActual);
-        mAdapter.resetLoaded();
-        recyclerView.setAdapter(mAdapter);
+        FloatingActionButton botonMostrar = (FloatingActionButton) v.findViewById(R.id.floatingViewButton);
+        botonMostrar.hide();
+        botonMostrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSystemVisible();
+            }
+        });
 
+        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+
+        mAdapter = new AppsListAdapter(mContext, tipoActual);
+        mAdapter.resetLoaded();
+
+        ExecutorService servicio = Executors.newFixedThreadPool(1);
+        FutureTask<AppLister> task = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
+            @Override
+            protected void done() {
+                try {
+                    mAppLister = get();
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            mAdapter.changeToDataset(mAppLister);
+                            botonMostrar.show();
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        servicio.execute(task);
+
+        recyclerView.setAdapter(mAdapter);
         // observar la db por cambios, y si los hay notificarle al adapter
         mAplicacionViewModel = new ViewModelProvider(this, factory).get(AplicacionListadaViewModel.class);
         mAplicacionViewModel.getAllApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>(){
@@ -103,8 +146,6 @@ public class FragmentListaOnOff extends Fragment {
                 listaAplicaciones = aplicacionesListadas;
             }
         });
-
-        appToGroupRepository = AppToGroupRepository.getRepo(getActivity().getApplication());
         mAdapter.addFeedbackListener(new FeedbackListener<AplicacionListada>(){
             @Override
             public void giveFeedback(int tipo, AplicacionListada feedback, Object... args) {
@@ -131,18 +172,17 @@ public class FragmentListaOnOff extends Fragment {
             }
         });
 
+        appToGroupRepository = AppToGroupRepository.getRepo(getActivity().getApplication());
+
+
         mTextoTitulo = (TextView) v.findViewById(R.id.text_lista_titulo);
         setTitulo(tipoActual);
 
-        FloatingActionButton botonMostrar = (FloatingActionButton) v.findViewById(R.id.floatingViewButton);
-        botonMostrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSystemVisible();
-            }
-        });
-
         return v;
+    }
+
+    private void setTemporaryAdapter() {
+
     }
 
     @Override

@@ -66,18 +66,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*
-        if (savedInstanceState != null) {
-            boolean lswitchpos = savedInstanceState.getBoolean(EXTRA_SWITCH_POSITION);
-            if (lswitchpos == false && mServiceSwitch != null && mServiceSwitch.isChecked()) {
-                mServiceSwitch.setChecked(false);
-            } else if (lswitchpos == true && mServiceSwitch != null && !mServiceSwitch.isChecked()) {
-                mServiceSwitch.setChecked(true);
-            }
-        }
-
-         */
     }
 
     @Override
@@ -91,7 +79,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outstate) {
         super.onSaveInstanceState(outstate);
-        //outstate.putBoolean(EXTRA_SWITCH_POSITION, mServiceSwitch.isChecked());
     }
 
     @Override
@@ -109,14 +96,11 @@ public class MainFragment extends Fragment {
         mPositiveButton = (Button) v.findViewById(R.id.positivas);
         mPositiveGroupsButton = (Button) v.findViewById(R.id.grupos_positivos);
         mNegativeButton = (Button) v.findViewById(R.id.negativas);
-        //mPositiveTime = (Button) v.findViewById(R.id.ver_tiempo_positivo);
-        //mNegativeTime = (Button) v.findViewById(R.id.ver_tiempo_negativo);
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
 
         mConfigButton = (Button) v.findViewById(R.id.to_config_button);
-        mWatchDogStarter.startService(); // Se quitó el switch y se pone esto para empezarlo si o si
-        //mServiceSwitch = (Switch) v.findViewById(R.id.switch_servicio);
+        mWatchDogStarter.startService(); // WatchDogService tiene un ejecutor mono-instancia, si ya hay uno ejecutándose lo salta y sale directamente
 
         mPositiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,22 +123,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-        /*
-        mPositiveTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_POSITIVO, mPositiveTime);
-            }
-        });
-
-        mNegativeTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_NEGATIVO, mNegativeTime);
-            }
-        });
-        */
-
         mTiempoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,53 +136,6 @@ public class MainFragment extends Fragment {
                 mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TO_CONFIG, mConfigButton);
             }
         });
-
-        /*
-        mValueMapViewModel = new ViewModelProvider(MainFragment.this).get(ValueMapViewModel.class);
-        mValueMapViewModel.getValueOf(WatchdogHandler.WATCHDOG_ACTIVO_DB_ID).observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
-            @Override
-            public void onChanged(List<ValueMap> valueMaps) {
-                if (valueMaps.size() == 0) {
-                    // todavía no se ha agregado esta entrada, lo agregamos como true y activamos el switch
-                    if (!mServiceSwitch.isChecked()) {
-                        mServiceSwitch.setChecked(true);
-                        mWatchDogStarter.startService();
-                    }
-                    mValueMapViewModel.insert(new ValueMap(WatchdogHandler.WATCHDOG_ACTIVO_DB_ID, ValueMap.VALOR_TRUE));
-                } else if (valueMaps.get(0).getValor().equals(ValueMap.VALOR_FALSE)) {
-                    if (mServiceSwitch.isChecked()) {
-                        mServiceSwitch.setChecked(false);
-                        if (mBound) {
-                            mWatchDogStarter.stopService(mService);
-                        }
-                    }
-                } else {
-                    if (!mServiceSwitch.isChecked()) {
-                        mServiceSwitch.setChecked(true);
-                        mWatchDogStarter.startService();
-                    }
-                }
-            }
-        });
-         */
-
-        /*
-        mServiceSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mServiceSwitch.isChecked()) {
-                    mValueMapViewModel.insert(new ValueMap(WatchdogHandler.WATCHDOG_ACTIVO_DB_ID, ValueMap.VALOR_FALSE));
-                    if (mBound){
-                        mWatchDogStarter.stopService(mService);
-                    }
-                } else {
-                    mValueMapViewModel.insert(new ValueMap(WatchdogHandler.WATCHDOG_ACTIVO_DB_ID, ValueMap.VALOR_TRUE));
-                    mWatchDogStarter.startService();
-                }
-            }
-        });
-
-         */
 
         mTimeAssembler = new TimeAssembler(this.getActivity().getApplication(), this);
         mTimeAssembler.addFeedbackListener((tipo, feedback, args) -> {
