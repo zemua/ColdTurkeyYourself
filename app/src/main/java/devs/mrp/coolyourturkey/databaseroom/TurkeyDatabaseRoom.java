@@ -11,6 +11,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
@@ -34,7 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class}, version = 12)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class}, version = 13)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -45,6 +47,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract GrupoPositivoDao grupoPositivoDao();
     public abstract AppToGroupDao appToGroupDao();
     public abstract ConditionToGroupDao conditionToGroupDao();
+    public abstract ConditionNegativeToGroupDao conditionNegativeToGroupDao();
     public abstract TimeLoggerDao timeLoggerDao();
     public abstract GrupoExportDao grupoExportDao();
     public abstract GroupLimitDao groupLimitDao();
@@ -201,6 +204,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 12
+     * to
+     * version 13
+     */
+    static final Migration MIGRATION_12_13 = new Migration(12, 13) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'conditionnegativetogroup' ('id' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'filetarget' TEXT, 'conditionalgroupid' INTEGER, 'conditionalminutes' INTEGER, 'fromlastndays' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -212,7 +228,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13) // add the migration schemas separated by commas
                             .build();
                 }
             }

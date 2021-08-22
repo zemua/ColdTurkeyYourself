@@ -29,6 +29,7 @@ import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
@@ -218,6 +219,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
         Integer getGroupId() { return groupId; }
         Integer getConditionGroupId() { return conditionGroupId; }
         Long getSummedTime() { return summedTime; }
+    }
+
+    private class NegativeTimeSummary {
+
     }
 
     public boolean ifAllAppConditionsMet(String packageName) {

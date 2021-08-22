@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
+import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity;

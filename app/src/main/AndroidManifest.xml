@@ -50,6 +50,8 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >
