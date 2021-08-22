@@ -7,9 +7,11 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,8 @@ public class FragmentListaOnOff extends Fragment {
     private TextView mTextoTitulo;
     private DialogTimeUpdater mDialogTimeUpdater;
 
+    private Handler mainHandler;
+
     String tipoActual; // Comparar con campo de "AplicacionListada"
     public static final String POSITIVA = AplicacionListada.POSITIVA;
     public static final String NEGATIVA = AplicacionListada.NEGATIVA;
@@ -72,6 +76,7 @@ public class FragmentListaOnOff extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mainHandler = new Handler(context.getMainLooper());
         //mFeedbackReceiver = (FeedbackReceiver) context;
         //mContext = context;
     }
@@ -93,7 +98,17 @@ public class FragmentListaOnOff extends Fragment {
         layoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        // TODO set temporary adapter in the recycler view with loading stuff
+        FloatingActionButton botonMostrar = (FloatingActionButton) v.findViewById(R.id.floatingViewButton);
+        botonMostrar.hide();
+        botonMostrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSystemVisible();
+            }
+        });
+
+        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+
         mAdapter = new AppsListAdapter(mContext, tipoActual);
         mAdapter.resetLoaded();
 
@@ -103,7 +118,14 @@ public class FragmentListaOnOff extends Fragment {
             protected void done() {
                 try {
                     mAppLister = get();
-                    mAdapter.changeToDataset(mAppLister); // TODO in main thread
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            mAdapter.changeToDataset(mAppLister);
+                            botonMostrar.show();
+                        }
+                    });
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -155,14 +177,6 @@ public class FragmentListaOnOff extends Fragment {
 
         mTextoTitulo = (TextView) v.findViewById(R.id.text_lista_titulo);
         setTitulo(tipoActual);
-
-        FloatingActionButton botonMostrar = (FloatingActionButton) v.findViewById(R.id.floatingViewButton);
-        botonMostrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSystemVisible();
-            }
-        });
 
         return v;
     }
