@@ -2,9 +2,11 @@ package devs.mrp.coolyourturkey.usagestats;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,10 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 public class StatsFragmentDoble extends Fragment {
 
@@ -37,6 +43,8 @@ public class StatsFragmentDoble extends Fragment {
     private RecyclerView.LayoutManager neutralLayoutManager;
     private AplicacionListadaViewModel mAplicacionViewModel;
 
+    private Handler mainHandler;
+
     private StatsListHandler mHandler;
 
     ViewModelProvider.Factory factory;
@@ -52,6 +60,7 @@ public class StatsFragmentDoble extends Fragment {
 
         mContext = context;
         mFeedbackReceiver = (FeedbackReceiver) context;
+        mainHandler = new Handler(context.getMainLooper());
     }
 
     @Override
@@ -74,44 +83,107 @@ public class StatsFragmentDoble extends Fragment {
         StatsAdapterDetail neutralAdapter;
 
         positiveAdapter = StatsAdapterDetail.createDetailedStatsAdapter(mContext);
+        ProgressBar spinnerPos = (ProgressBar) v.findViewById(R.id.spinner1);
+
         negativeadapter = StatsAdapterDetail.createDetailedStatsAdapter(mContext);
+        ProgressBar spinnerNeg = (ProgressBar) v.findViewById(R.id.spinner2);
+
         neutralAdapter = StatsAdapterDetail.createDetailedStatsAdapter(mContext);
+        ProgressBar spinnerNeut = (ProgressBar) v.findViewById(R.id.spinner3);
 
         mHandler = new StatsListHandler(mContext);
         // observar la db por cambios, y si los hay notificarle al adapter
         mAplicacionViewModel = new ViewModelProvider(this, factory).get(AplicacionListadaViewModel.class);
 
-        mAplicacionViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+        // POSITIVE ADAPTER
+        ExecutorService servicio = Executors.newFixedThreadPool(3);
+        FutureTask<StatsAdapterDetail> positivetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
             @Override
-            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
-                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
-                apps = mHandler.quitaSinTiempo(apps);
-                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
-                positiveAdapter.fitToDb(apps);
+            public StatsAdapterDetail call() throws Exception {
+                return positiveAdapter.inicializaInstalledList(mContext);
             }
-        });
-
-        mAplicacionViewModel.getNegativeApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+        }){
             @Override
-            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
-                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
-                apps = mHandler.quitaSinTiempo(apps);
-                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
-                negativeadapter.fitToDb(apps);
+            public void done() {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        positiveAdapter.notifyDataSetChanged();
+                        mAplicacionViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                            @Override
+                            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
+                                spinnerPos.setVisibility(View.GONE);
+                                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
+                                apps = mHandler.quitaSinTiempo(apps);
+                                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
+                                positiveAdapter.fitToDb(apps);
+                            }
+                        });
+                    }
+                });
             }
-        });
+        };
 
-        mAplicacionViewModel.getmAppsPositivasNegativas().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+        // NEGATIVE ADAPTER
+        FutureTask<StatsAdapterDetail> negativetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
             @Override
-            public void onChanged(List<AplicacionListada> aplicacionListadas) {
-                List<AplicacionListada> app = mHandler.quitarDesinstaladas(aplicacionListadas);
-                app = mHandler.dameTodasLasNeutras(app);
-                app = mHandler.quitaSinTiempo(app);
-                app = mHandler.ordenaPorTiempo(app, mHandler.getTimeComparator());
-                neutralAdapter.fitToDb(app);
+            public StatsAdapterDetail call() throws Exception {
+                return negativeadapter.inicializaInstalledList(mContext);
             }
-        });
+        }){
+            @Override
+            public void done() {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        negativeadapter.notifyDataSetChanged();
+                        mAplicacionViewModel.getNegativeApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                            @Override
+                            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
+                                spinnerNeg.setVisibility(View.GONE);
+                                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
+                                apps = mHandler.quitaSinTiempo(apps);
+                                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
+                                negativeadapter.fitToDb(apps);
+                            }
+                        });
+                    }
+                });
+            }
+        };
 
+        // NEUTRAL ADAPTER
+        FutureTask<StatsAdapterDetail> neutraltask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
+            @Override
+            public StatsAdapterDetail call() throws Exception {
+                return neutralAdapter.inicializaInstalledList(mContext);
+            }
+        }){
+            @Override
+            public void done() {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        neutralAdapter.notifyDataSetChanged();
+                        mAplicacionViewModel.getmAppsPositivasNegativas().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                            @Override
+                            public void onChanged(List<AplicacionListada> aplicacionListadas) {
+                                spinnerNeut.setVisibility(View.GONE);
+                                List<AplicacionListada> app = mHandler.quitarDesinstaladas(aplicacionListadas);
+                                app = mHandler.dameTodasLasNeutras(app);
+                                app = mHandler.quitaSinTiempo(app);
+                                app = mHandler.ordenaPorTiempo(app, mHandler.getTimeComparator());
+                                neutralAdapter.fitToDb(app);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        servicio.execute(positivetask);
+        servicio.execute(negativetask);
+        servicio.execute(neutraltask);
 
         positiveRecyclerView.setAdapter(positiveAdapter);
         negativeRecyclerView.setAdapter(negativeadapter);
