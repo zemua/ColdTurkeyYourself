@@ -100,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     Intent intento = new Intent(MainActivity.this, GruposPositivosActivity.class);
                     startActivity(intento);
                     break;
+                case MainFragment.FEEDBACK_CONDICIONES_NEGATIVAS:
+                    Intent intentob = new Intent(MainActivity.this, CondicionesNegativasActivity.class);
+                    startActivity(intentob);
+                    break;
             }
         }
     }

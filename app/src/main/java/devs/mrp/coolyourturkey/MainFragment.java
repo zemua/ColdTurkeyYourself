@@ -42,6 +42,7 @@ public class MainFragment extends Fragment {
     public static final int FEEDBACK_REQ_PERMISO_ALERTA = 8;
     public static final int FEEDBACK_TIEMPO_DOBLE = 9;
     public static final int FEEDBACK_GRUPOS_POSITIVOS = 10;
+    public static final int FEEDBACK_CONDICIONES_NEGATIVAS = 11;
 
     private static final String EXTRA_SWITCH_POSITION = "extra switch position";
 
@@ -51,6 +52,7 @@ public class MainFragment extends Fragment {
     private Button mPositiveButton;
     private Button mPositiveGroupsButton;
     private Button mNegativeButton;
+    private Button mNegativeConditionsButton;
     private Button mTiempoButton;
     private Button mPositiveTime;
     private Button mNegativeTime;
@@ -96,6 +98,7 @@ public class MainFragment extends Fragment {
         mPositiveButton = (Button) v.findViewById(R.id.positivas);
         mPositiveGroupsButton = (Button) v.findViewById(R.id.grupos_positivos);
         mNegativeButton = (Button) v.findViewById(R.id.negativas);
+        mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
 
@@ -120,6 +123,13 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_NEGATIVAS, mNegativeButton);
+            }
+        });
+
+        mNegativeConditionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton);
             }
         });
 
