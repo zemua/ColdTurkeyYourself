@@ -48,6 +48,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
         mApplication = application;
         mLifecycleOwner = lifecycleOwner;
 
+        timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         conditionNegativeRepository = ConditionNegativeToGroupRepository.getRepo(mApplication);
         mTimeByConditionIdMap = new HashMap<>();
 
@@ -88,7 +89,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
             timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid()).observe(mLifecycleOwner, new Observer<List<TimeLogger>>() {
                 @Override
                 public void onChanged(List<TimeLogger> timeLoggers) {
-                    Long totalTime = timeLoggers.stream().mapToLong(t -> -t.getUsedtimemilis()).sum();
+                    Long totalTime = timeLoggers.stream().mapToLong(t -> t.getUsedtimemilis()).sum();
                     mTimeByConditionIdMap.put(c.getId(), totalTime);
                     giveFeedback(FEEDBACK_TIMES_LOADED, mConditions);
                 }

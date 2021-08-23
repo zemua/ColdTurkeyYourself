@@ -9,24 +9,34 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
-public class CondicionesNegativasFragment extends Fragment implements MyObservable<Object> {
+public class CondicionesNegativasFragment extends Fragment implements MyObservable<ConditionNegativeToGroup> {
 
-    private List<MyObserver<Object>> observers = new ArrayList<>();
+    public static final String CALLBACK_ADD_CONDITION = "callback_add_condition";
+    public static final String CALLBACK_EDIT_EXISTING_CONDITION = "callback_edit_existing_condition";
+
+    private List<MyObserver<ConditionNegativeToGroup>> observers = new ArrayList<>();
     private Context mContext;
     private ViewModelProvider.Factory factory;
     private Handler mainHandler;
@@ -35,12 +45,12 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
     private RecyclerView recycler;
 
     @Override
-    public void addObserver(MyObserver<Object> observer) {
+    public void addObserver(MyObserver<ConditionNegativeToGroup> observer) {
         observers.add(observer);
     }
 
     @Override
-    public void doCallBack(String tipo, Object feedback) {
+    public void doCallBack(String tipo, ConditionNegativeToGroup feedback) {
         observers.stream().forEach(o -> {
             o.callback(tipo, feedback);
         });
@@ -70,6 +80,15 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         NegativeConditionTimeChecker timeChecker = new NegativeConditionTimeChecker(mContext, this.getActivity().getApplication(), this);
         CondicionesNegativasAdapter adapter = new CondicionesNegativasAdapter(mContext, timeChecker);
 
+        GrupoPositivoRepository gruposRepo = GrupoPositivoRepository.getRepo(requireActivity().getApplication());
+        gruposRepo.findAllGrupoPositivo().observe(this, new Observer<List<GrupoPositivo>>() {
+            @Override
+            public void onChanged(List<GrupoPositivo> grupoPositivos) {
+                Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
+                adapter.setGrupos(mapaGrupos);
+            }
+        });
+
         timeChecker.addFeedbackListener(new FeedbackListener<List<ConditionNegativeToGroup>>() {
             @Override
             public void giveFeedback(int tipo, List<ConditionNegativeToGroup> feedback, Object... args) {
@@ -89,21 +108,22 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
             public void giveFeedback(int tipo, ConditionNegativeToGroup feedback, Object... args) {
                 switch (tipo) {
                     case CondicionesNegativasAdapter.FEEDBACK_CONDITION_SELECTED:
-                        // TODO start activity to edit current condition
+                        doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, feedback);
                         break;
                 }
             }
         });
 
         recycler.setAdapter(adapter);
+        LinearLayoutManager layout = new LinearLayoutManager(mContext);
+        recycler.setLayoutManager(layout);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO start activity to add a new condition
+                doCallBack(CALLBACK_ADD_CONDITION, null);
             }
         });
-
 
         return v;
     }

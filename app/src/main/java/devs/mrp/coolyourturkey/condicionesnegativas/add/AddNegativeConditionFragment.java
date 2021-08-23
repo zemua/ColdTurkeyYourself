@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.condicionesnegativas.add;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,18 +23,22 @@ import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FileReader;
+import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
-import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
-public class AddGroupConditionFragment extends Fragment {
+public class AddNegativeConditionFragment extends Fragment implements Feedbacker<ConditionNegativeToGroup> {
+
+    private List<FeedbackListener<ConditionNegativeToGroup>> listeners = new ArrayList<>();
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
     private static final String KEY_BUNDLE_NAME_ACTUAL = "key.bundle.name.actual";
@@ -49,57 +52,40 @@ public class AddGroupConditionFragment extends Fragment {
     public static final int FEEDBACK_DELETE_CONDITION = 1;
     private static final int REQUEST_CODE_READ = 10;
 
-    private Context mContext;
-    private FeedbackReceiver<Fragment, Object> mFeedbackReceiver;
-    private Integer mGroupId;
-    private String mGroupName;
+    private boolean mIsEditAction = false;
+    private ConditionNegativeToGroup mConditionForEdit;
+    private boolean mViewReadyForEdit = false; // view items already initialized?
+    private boolean mTargetGroupReadyForEdit = false; // groups already loaded from the db?
     private Uri mFileUri;
-    private ConditionToGroup.ConditionType mConditionType;
+    private Integer mConditionId;
+    private ConditionNegativeToGroup.ConditionType mConditionType;
+    private List<GrupoPositivo> mGruposPositivos;
+    private Context mContext;
 
-    private TextView mGroupNameTextView;
     private Spinner mTypeSpinner;
     private Spinner mTargetGroupSpinner;
     private TextView mSelectedFileTextView;
+    private TextView mUsedHoursEditText;
+    private TextView mUsedMinutesEditText;
+    private TextView mLapsedDaysEditText;
     private Button mSelectedFileButton;
-    private EditText mUsedHoursEditText;
-    private EditText mUsedMinutesEditText;
-    private EditText mLapsedDaysEditText;
     private Button mSaveButton;
     private Button mButtonBorrar;
 
     private ConstraintLayout mGroupsLayout;
     private ConstraintLayout mFileSourceLayout;
 
-    private List<GrupoPositivo> mGruposPositivos;
-    private ConditionToGroup mConditionForEdit;
-    private boolean mIsEditAction = false;
-    private boolean mViewReadyForEdit = false;
-    private boolean mTargetGroupReadyForEdit = false;
-
-    // TODO add boolean/switch whether the condition should trigger a notification when met
-
-    public AddGroupConditionFragment(){ // needed for rotating the screen
-        super();
-    }
-
-    AddGroupConditionFragment(Integer groupId, String groupName){
-        super();
-        mGroupId = groupId;
-        mGroupName = groupName;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null){
-            setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
-            setGroupName(savedInstanceState.getString(KEY_BUNDLE_NAME_ACTUAL));
-            if (savedInstanceState.containsKey(KEY_BUNDLE_URI)){
+        if (savedInstanceState != null) {
+            mConditionId = savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL);
+            if (savedInstanceState.containsKey(KEY_BUNDLE_URI)) {
                 mFileUri = Uri.parse(savedInstanceState.getString(KEY_BUNDLE_URI));
             }
-            mConditionType = (ConditionToGroup.ConditionType) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_CONDITION_TYPE)).getData();
+            mConditionType = (ConditionNegativeToGroup.ConditionType) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_CONDITION_TYPE)).getData();
             mGruposPositivos = (List<GrupoPositivo>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST)).getData();
-            mConditionForEdit = (ConditionToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
+            mConditionForEdit = (ConditionNegativeToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
             mIsEditAction = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION);
         } else {
             mGruposPositivos = new ArrayList<>();
@@ -107,12 +93,8 @@ public class AddGroupConditionFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) { super.onAttach(context);}
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
-        outState.putString(KEY_BUNDLE_NAME_ACTUAL, getGroupName());
+        outState.putInt(KEY_BUNDLE_ID_ACTUAL, mConditionId);
         if (mFileUri != null) {
             outState.putString(KEY_BUNDLE_URI, mFileUri.toString());
         }
@@ -123,40 +105,16 @@ public class AddGroupConditionFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void setGroupId(Integer groupId) {
-        this.mGroupId = groupId;
-    }
-
-    public Integer getGroupId() {
-        if (mGroupId == null) {
-            return -1;
-        }
-        return mGroupId;
-    }
-
-    public void setGroupName(String groupName) {
-        this.mGroupName = groupName;
-    }
-
-    public String getGroupName(){
-        if (mGroupName == null){
-            return "";
-        }
-        return mGroupName;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mFeedbackReceiver = (FeedbackReceiver) getActivity();
         mContext = getActivity();
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()){
-            setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
+            mConditionId = savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL);
         }
 
         View v = inflater.inflate(R.layout.fragment_addcondition, container, false);
 
-        mGroupNameTextView = v.findViewById(R.id.textGroupName);
         mTypeSpinner = v.findViewById(R.id.spinnerType);
         mTargetGroupSpinner = v.findViewById(R.id.spinnerTargetGroup);
         mSelectedFileTextView = v.findViewById(R.id.textSelectedFile);
@@ -170,7 +128,7 @@ public class AddGroupConditionFragment extends Fragment {
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
 
-        mGroupNameTextView.setText(mGroupName);
+        v.findViewById(R.id.textGroupName).setVisibility(View.GONE); // this view is gone for negative conditions
 
         List<String> typesList = ConditionToGroup.getTypesList().stream().map(s -> getResources().getString(s)).collect(Collectors.toList());
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, typesList);
@@ -182,17 +140,17 @@ public class AddGroupConditionFragment extends Fragment {
                 String selected = (String)parent.getItemAtPosition(position);
                 if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.GROUP.getResourceId()))) {
                     showGroupLayout();
-                    mConditionType = ConditionToGroup.ConditionType.GROUP;
+                    mConditionType = ConditionNegativeToGroup.ConditionType.GROUP;
                 } else if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.FILE.getResourceId()))) {
                     showFileLayout();
-                    mConditionType = ConditionToGroup.ConditionType.FILE;
+                    mConditionType = ConditionNegativeToGroup.ConditionType.FILE;
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 showGroupLayout();
-                mConditionType = ConditionToGroup.ConditionType.GROUP;
+                mConditionType = ConditionNegativeToGroup.ConditionType.GROUP;
             }
         });
 
@@ -202,19 +160,11 @@ public class AddGroupConditionFragment extends Fragment {
         groupSpinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTargetGroupSpinner.setAdapter(groupSpinerAdapter);
         GrupoPositivoRepository grupoRepo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
-        grupoRepo.findAllGrupoPositivo().observe(AddGroupConditionFragment.this, new Observer<List<GrupoPositivo>>() {
+        grupoRepo.findAllGrupoPositivo().observe(AddNegativeConditionFragment.this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
                 mGruposPositivos.clear();
                 mGruposPositivos.addAll(grupoPositivos);
-                ListIterator<GrupoPositivo> iterator = mGruposPositivos.listIterator();
-                while (iterator.hasNext()){
-                    GrupoPositivo lGrupo = iterator.next();
-                    if (lGrupo.getNombre().equals(getGroupName())){
-                        iterator.remove(); // remove self-group from selection
-                        break;
-                    }
-                }
                 groupsObjectList.clear();
                 groupsObjectList.addAll(mGruposPositivos);
                 List<String> groupNamesList = mGruposPositivos.stream().map(g -> g.getNombre()).collect(Collectors.toList());
@@ -237,9 +187,9 @@ public class AddGroupConditionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
-                    ConditionToGroup condition = new ConditionToGroup();
+                    ConditionNegativeToGroup condition = MyBeanFactory.getNewNegativeCondition();
 
-                    condition.setGroupid(getGroupId());
+                    condition.setId(mConditionId);
                     condition.setType(mConditionType);
                     if (mFileUri != null) {
                         condition.setFiletarget(mFileUri.toString());
@@ -263,7 +213,7 @@ public class AddGroupConditionFragment extends Fragment {
                         condition.setId(mConditionForEdit.getId());
                     }
 
-                    mFeedbackReceiver.receiveFeedback(AddGroupConditionFragment.this, FEEDBACK_SAVE, condition);
+                    giveFeedback(FEEDBACK_SAVE, condition);
                 }
             }
         });
@@ -279,7 +229,7 @@ public class AddGroupConditionFragment extends Fragment {
                     builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mFeedbackReceiver.receiveFeedback(AddGroupConditionFragment.this, FEEDBACK_DELETE_CONDITION, mConditionForEdit);
+                            giveFeedback(FEEDBACK_DELETE_CONDITION, mConditionForEdit);
                         }
                     });
                     builder.setNegativeButton(R.string.conservar, null);
@@ -308,7 +258,7 @@ public class AddGroupConditionFragment extends Fragment {
     }
 
     private void openFile() {
-        FileReader.openTextFile(AddGroupConditionFragment.this, REQUEST_CODE_READ);
+        FileReader.openTextFile(AddNegativeConditionFragment.this, REQUEST_CODE_READ);
     }
 
     @Override
@@ -321,8 +271,10 @@ public class AddGroupConditionFragment extends Fragment {
         }
     }
 
-    public ConditionToGroup.ConditionType getConditionType(){
-        return mConditionType;
+    public void setConditionForEdit(ConditionNegativeToGroup condition) {
+        mIsEditAction = true;
+        mConditionForEdit = condition;
+        setupEditExistingCondition(condition);
     }
 
     private boolean verifyConditionalTime(){
@@ -364,7 +316,7 @@ public class AddGroupConditionFragment extends Fragment {
     }
 
     private boolean checkEmptyFileUri(){
-        if (mConditionType != ConditionToGroup.ConditionType.FILE) {
+        if (mConditionType != ConditionNegativeToGroup.ConditionType.FILE) {
             mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
             return false;
         }
@@ -376,27 +328,21 @@ public class AddGroupConditionFragment extends Fragment {
         return false;
     }
 
-    public void setConditionForEdit(ConditionToGroup condition) {
-        mIsEditAction = true;
-        mConditionForEdit = condition;
-        setupEditExistingCondition(mConditionForEdit);
-    }
-
-    private void setupEditExistingCondition(ConditionToGroup condition){
-        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
+    private void setupEditExistingCondition(ConditionNegativeToGroup condition) {
+        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionNegativeToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
 
             switch (condition.getType()) {
                 case GROUP:
-                    mTypeSpinner.setSelection(ConditionToGroup.ConditionType.GROUP.getPosition());
+                    mTypeSpinner.setSelection(ConditionNegativeToGroup.ConditionType.GROUP.getPosition());
                     break;
                 case FILE:
-                    mTypeSpinner.setSelection(ConditionToGroup.ConditionType.FILE.getPosition());
+                    mTypeSpinner.setSelection(ConditionNegativeToGroup.ConditionType.FILE.getPosition());
                     break;
             }
 
-            //mTargetGroupSpinner
+            // groups spinner
             if (mGruposPositivos != null) {
-                for (int i = 0; i < mGruposPositivos.size(); i++) {
+                for (int i=0; i<mGruposPositivos.size(); i++) {
                     if (mGruposPositivos.get(i).getId() == condition.getConditionalgroupid()) {
                         mTargetGroupSpinner.setSelection(i);
                     }
@@ -409,17 +355,20 @@ public class AddGroupConditionFragment extends Fragment {
             }
 
             mUsedHoursEditText.setText(String.valueOf(condition.getConditionalminutes() / 60));
-
             mUsedMinutesEditText.setText(String.valueOf(condition.getConditionalminutes() % 60));
-
             mLapsedDaysEditText.setText(String.valueOf(condition.getFromlastndays()));
         }
     }
 
-    public void setupClearEditMode(){
-        mIsEditAction = false;
-        mConditionForEdit = null;
-        mButtonBorrar.setVisibility(View.GONE);
+    @Override
+    public void giveFeedback(int tipo, ConditionNegativeToGroup feedback) {
+        listeners.stream().forEach(l -> {
+            l.giveFeedback(tipo, feedback);
+        });
     }
 
+    @Override
+    public void addFeedbackListener(FeedbackListener<ConditionNegativeToGroup> listener) {
+        listeners.add(listener);
+    }
 }
