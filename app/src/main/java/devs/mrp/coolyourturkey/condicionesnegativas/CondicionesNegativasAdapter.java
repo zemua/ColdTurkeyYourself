@@ -19,7 +19,6 @@ import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNe
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class CondicionesNegativasAdapter extends RecyclerView.Adapter<CondicionesNegativasAdapter.CondicionesNegativasViewHolder> implements Feedbacker<ConditionNegativeToGroup> {
 
@@ -30,9 +29,9 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
     private Context mContext;
     private List<ConditionNegativeToGroup> mDataset;
     private Map<Integer, GrupoPositivo> mGrupos;
-    private NegativeTimeLogHandler mTimeLogHandler;
+    private NegativeConditionTimeChecker mTimeLogHandler;
 
-    public CondicionesNegativasAdapter(Context context, NegativeTimeLogHandler logger) {
+    public CondicionesNegativasAdapter(Context context, NegativeConditionTimeChecker logger) {
         mContext = context;
         mDataset = new ArrayList<>();
         mGrupos = new HashMap<>();

@@ -576,6 +576,9 @@ public class TimeLogHandler implements Feedbacker<Object> {
      */
 
     private void observeTimeLoggedOnGroup(ConditionToGroup c) throws Exception {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new Exception("observeTimeLoggedOnGroup shall be called from main thread");
+        }
         LiveData<List<TimeLogger>> timeLoggerLD = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid());
         Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
             @Override
@@ -586,9 +589,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         };
         mMapOfLoggerLiveDataObserversByConditionId.put(timeLoggerLD, observer);
         timeLoggerLD.observe(mLifecycleOwner, observer);
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new Exception("observeTimeLoggedOnGroup shall be called from main thread");
-        }
     }
 
 
