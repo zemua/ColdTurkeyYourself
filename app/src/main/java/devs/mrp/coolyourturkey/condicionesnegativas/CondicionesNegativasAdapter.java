@@ -63,7 +63,10 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
 
     @Override
     public int getItemCount() {
-        return 0;
+        if (mDataset == null) {
+            return 0;
+        }
+        return mDataset.size();
     }
 
     @Override
@@ -134,13 +137,13 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
     }
 
     private Integer getLoggerMinutes(ConditionNegativeToGroup condition) {
-        Long millis = mTimeLogHandler.getTimeCountedOnNegativeCondition(condition);
+        Long millis = mTimeLogHandler.getTimeCountedOnCondition(condition);
         Long minutes = millis / 60 / 1000;
         return minutes.intValue();
     }
 
     private void setBackgroundOnConditionMet(CondicionesNegativasAdapter.CondicionesNegativasViewHolder holder, ConditionNegativeToGroup condition) {
-        if (mTimeLogHandler.ifNegativeConditionMet(condition)) {
+        if (mTimeLogHandler.ifConditionMet(condition)) {
             holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
         } else {
             holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);

@@ -20,6 +20,8 @@ import java.util.List;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class CondicionesNegativasFragment extends Fragment implements MyObservable<Object> {
@@ -65,7 +67,42 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
 
         // TODO when deleting a positive group, delete all negative conditions depending on it
 
-        TimeLogHandler logger = new TimeLogHandler(mContext, this.getActivity().getApplication(), this);
+        NegativeConditionTimeChecker timeChecker = new NegativeConditionTimeChecker(mContext, this.getActivity().getApplication(), this);
+        CondicionesNegativasAdapter adapter = new CondicionesNegativasAdapter(mContext, timeChecker);
+
+        timeChecker.addFeedbackListener(new FeedbackListener<List<ConditionNegativeToGroup>>() {
+            @Override
+            public void giveFeedback(int tipo, List<ConditionNegativeToGroup> feedback, Object... args) {
+                switch (tipo){
+                    case NegativeConditionTimeChecker.FEEDBACK_CONDITIONS_LOADED:
+                        adapter.setDataset(feedback);
+                        break;
+                    case NegativeConditionTimeChecker.FEEDBACK_TIMES_LOADED:
+                        adapter.notifyDataSetChanged();
+                        break;
+                }
+            }
+        });
+
+        adapter.addFeedbackListener(new FeedbackListener<ConditionNegativeToGroup>() {
+            @Override
+            public void giveFeedback(int tipo, ConditionNegativeToGroup feedback, Object... args) {
+                switch (tipo) {
+                    case CondicionesNegativasAdapter.FEEDBACK_CONDITION_SELECTED:
+                        // TODO start activity to edit current condition
+                        break;
+                }
+            }
+        });
+
+        recycler.setAdapter(adapter);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO start activity to add a new condition
+            }
+        });
 
 
         return v;
