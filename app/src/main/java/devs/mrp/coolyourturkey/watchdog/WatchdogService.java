@@ -17,6 +17,7 @@ import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.comun.SingleExecutor;
+import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
@@ -71,7 +72,8 @@ public class WatchdogService extends LifecycleService {
                 .setScreenBlock(new ScreenBlock(this))
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
-                .setConditionToaster(new GenericTimedToaster(this.getApplication()));
+                .setConditionToaster(new GenericTimedToaster(this.getApplication()))
+                .setNegativeConditionTimeChecker(new NegativeConditionTimeChecker(this, this.getApplication(), this));
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -252,7 +254,7 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
         // check if we need to block
-        if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda())) ||
+        if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !data.getNegativeConditionTimeChecker().ifAllConditionsMet())) ||
                 (data.getEstaNotif() == ForegroundAppChecker.POSITIVO && data.getTimeLogHandler().ifLimitReachedAndShallBlock(data.getPackageName()))) {
             if (PermisosChecker.checkPermisoAlertas(this)) {
                 data.getScreenBlock().go();
