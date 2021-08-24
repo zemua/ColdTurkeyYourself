@@ -150,7 +150,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         sendResult(Activity.RESULT_CANCELED, false);
     }
 
-    public void pulsadoAceptar() {
+    private void pulsadoAceptar() {
         sendResult(Activity.RESULT_OK, true);
     }
 

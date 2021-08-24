@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
@@ -33,8 +34,12 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class CondicionesNegativasFragment extends Fragment implements MyObservable<ConditionNegativeToGroup> {
 
+    private static String TAG_DIALOGO_CON_DELAY = "Dialogo.con.delay.condiciones.negativas.fragment.java";
+
     public static final String CALLBACK_ADD_CONDITION = "callback_add_condition";
     public static final String CALLBACK_EDIT_EXISTING_CONDITION = "callback_edit_existing_condition";
+
+    private static final Integer RESULT_CONFIRM_EDIT_CONDITION = 20;
 
     private List<MyObserver<ConditionNegativeToGroup>> observers = new ArrayList<>();
     private Context mContext;
@@ -108,6 +113,9 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
             public void giveFeedback(int tipo, ConditionNegativeToGroup feedback, Object... args) {
                 switch (tipo) {
                     case CondicionesNegativasAdapter.FEEDBACK_CONDITION_SELECTED:
+                        DialogWithDelay dialog = new DialogWithDelay(R.drawable.bug, mContext.getString(R.string.apps_malas), mContext.getString(R.string.seguro_debes_modificar_esta_condicion), RESULT_CONFIRM_EDIT_CONDITION);
+                        dialog.setTargetFragment(CondicionesNegativasFragment.this, RESULT_CONFIRM_EDIT_CONDITION);
+                        dialog.show(getActivity().getSupportFragmentManager(), TAG_DIALOGO_CON_DELAY);
                         doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, feedback);
                         break;
                 }
