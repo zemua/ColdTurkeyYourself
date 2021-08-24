@@ -80,8 +80,6 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         addButton = v.findViewById(R.id.addNegCond);
         recycler = v.findViewById(R.id.recyclerNegCond);
 
-        // TODO when deleting a positive group, delete all negative conditions depending on it
-
         NegativeConditionTimeChecker timeChecker = new NegativeConditionTimeChecker(mContext, this.getActivity().getApplication(), this);
         CondicionesNegativasAdapter adapter = new CondicionesNegativasAdapter(mContext, timeChecker);
 

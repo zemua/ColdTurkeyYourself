@@ -47,44 +47,66 @@
                     android:text="@string/activado" />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginVertical="16dp"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="16dp"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textToqueDeQuedaDescripcion"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_weight="10"
-                    android:text="@string/texto_toque_de_queda_desde" />
+                    android:text="@string/texto_toque_de_queda_desde"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/buttonInicioToqueDeQueda"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/guideline3" />
 
                 <Button
                     android:id="@+id/buttonInicioToqueDeQueda"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/cero_horas" />
+                    android:text="@string/cero_horas"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textToqueDeQuedaMinutosAviso"
+                    app:layout_constraintTop_toBottomOf="@id/guideline3" />
 
                 <TextView
                     android:id="@+id/textToqueDeQuedaMinutosAviso"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center_vertical"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/guion" />
+                    android:text="@string/guion"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonFinToqueDeQueda"
+                    app:layout_constraintTop_toBottomOf="@id/guideline3" />
 
                 <Button
                     android:id="@+id/buttonFinToqueDeQueda"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/cero_horas" />
-            </LinearLayout>
+                    android:text="@string/cero_horas"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/guideline3" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

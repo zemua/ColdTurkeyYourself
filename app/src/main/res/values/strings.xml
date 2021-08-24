@@ -153,4 +153,9 @@
     <string name="bloques_de_tiempo">Bloques de tiempo</string>
     <string name="positive_checks">Controles positivos</string>
     <string name="negative_checks">Controles negativos</string>
+    <string name="escribe_la_pregunta_a_evaluar">Escribe la pregunta a evaluar</string>
+    <string name="random_check_positive_question_hint">¿Has estado trabajando con tu editor de texto durante los últimos 15 minutos?</string>
+    <string name="random_check_positive_name_hint">Escribiendo mi novela</string>
+    <string name="multiplicador_de_recompensa">Multiplicador de recompensa</string>
+    <string name="uno_numeral">1</string>
 </resources>
