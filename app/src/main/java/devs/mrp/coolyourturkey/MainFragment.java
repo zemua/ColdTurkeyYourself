@@ -33,16 +33,17 @@ public class MainFragment extends Fragment {
     private static final String DIALOG_PERMISOS = "DialogPermisos";
     public static final int FEEDBACK_POSITIVAS = 0;
     public static final int FEEDBACK_NEGATIVAS = 1;
+    public static final int REQUEST_PERMISO_USO = 2;
+    public static final int FEEDBACK_REQ_PERMISO_USAGE = 3;
     public static final int FEEDBACK_TIEMPO_POSITIVO = 4;
     public static final int FEEDBACK_TIEMPO_NEGATIVO = 5;
-    public static final int REQUEST_PERMISO_USO = 2;
-    public static final int REQUEST_PERMISO_ALERTA = 7;
-    public static final int FEEDBACK_REQ_PERMISO_USAGE = 3;
     public static final int FEEDBACK_TO_CONFIG = 6;
+    public static final int REQUEST_PERMISO_ALERTA = 7;
     public static final int FEEDBACK_REQ_PERMISO_ALERTA = 8;
     public static final int FEEDBACK_TIEMPO_DOBLE = 9;
     public static final int FEEDBACK_GRUPOS_POSITIVOS = 10;
     public static final int FEEDBACK_CONDICIONES_NEGATIVAS = 11;
+    public static final int FEEDBACK_RANDOM_CHECK = 12;
 
     private static final String EXTRA_SWITCH_POSITION = "extra switch position";
 
@@ -51,6 +52,7 @@ public class MainFragment extends Fragment {
 
     private Button mPositiveButton;
     private Button mPositiveGroupsButton;
+    private Button mRandomCheckButton;
     private Button mNegativeButton;
     private Button mNegativeConditionsButton;
     private Button mTiempoButton;
@@ -101,6 +103,7 @@ public class MainFragment extends Fragment {
         mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
+        mRandomCheckButton = (Button) v.findViewById(R.id.buttonRandomCheck);
 
         mConfigButton = (Button) v.findViewById(R.id.to_config_button);
         mWatchDogStarter.startService(); // WatchDogService tiene un ejecutor mono-instancia, si ya hay uno ejecutándose lo salta y sale directamente
@@ -116,6 +119,13 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_GRUPOS_POSITIVOS, mPositiveGroupsButton);
+            }
+        });
+
+        mRandomCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_RANDOM_CHECK, mRandomCheckButton);
             }
         });
 

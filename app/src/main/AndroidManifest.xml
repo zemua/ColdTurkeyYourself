@@ -54,6 +54,10 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity">
+        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

@@ -149,4 +149,8 @@
     <string name="condiciones_negativas">Condiciones negativas</string>
     <string name="condiciones_para_poder_usar_las_aplicaciones">Condiciones para poder usar las aplicaciones</string>
     <string name="seguro_debes_modificar_esta_condicion">¿Seguro que debes modificar esta condición?</string>
+    <string name="controles_aleatorios">Controles aleatorios</string>
+    <string name="bloques_de_tiempo">Bloques de tiempo</string>
+    <string name="positive_checks">Controles positivos</string>
+    <string name="negative_checks">Controles negativos</string>
 </resources>

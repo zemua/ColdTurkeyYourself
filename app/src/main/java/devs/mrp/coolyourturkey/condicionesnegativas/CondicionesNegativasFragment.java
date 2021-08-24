@@ -47,8 +47,6 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
     Map<Integer, GrupoPositivo> mMapaGrupos;
     Map<Integer, ConditionNegativeToGroup> mMapaConditions;
     private Context mContext;
-    private ViewModelProvider.Factory factory;
-    private Handler mainHandler;
 
     private FloatingActionButton addButton;
     private RecyclerView recycler;
@@ -76,8 +74,6 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication());
-        mainHandler = new Handler(mContext.getMainLooper());
 
         View v = inflater.inflate(R.layout.fragment_condiciones_negativas, container, false);
 

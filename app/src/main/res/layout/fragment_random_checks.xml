@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/buttonTimeBlocks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bloques_de_tiempo"
+        app:icon="@drawable/clock_time_eight"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPositiveChecks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonPositiveChecks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/positive_checks"
+        app:icon="@drawable/plus_circle_multiple"
+        app:layout_constraintBottom_toTopOf="@id/buttonNegativeChecks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonTimeBlocks" />
+
+    <Button
+        android:id="@+id/buttonNegativeChecks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/negative_checks"
+        app:icon="@drawable/bug"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonPositiveChecks" />
+</androidx.constraintlayout.widget.ConstraintLayout>

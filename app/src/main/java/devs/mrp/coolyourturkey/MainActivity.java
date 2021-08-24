@@ -19,17 +19,16 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
+import devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity;
 import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
-    // TODO load list of apps in different thread to not affect UI performance
     // TODO random check on questions for positive reinforcement
-    // TODO conditions on negative apps before allowing to use (like x time used on exercise, etc.)
+    // TODO points on steps/walking like a pedometer
     // TODO Set time fragments/days of the week where negatives can be used freely, and/or positive don't sum
     // TODO set time fragments/days when toque de queda is not active, or has a different schedule
     // TODO set a limit on the accumulated points
-    // TODO points on steps/walking like a pedometer
 
     private static final String TAG = "Main_Activity";
 
@@ -104,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                 case MainFragment.FEEDBACK_CONDICIONES_NEGATIVAS:
                     Intent intentob = new Intent(MainActivity.this, CondicionesNegativasActivity.class);
                     startActivity(intentob);
+                    break;
+                case MainFragment.FEEDBACK_RANDOM_CHECK:
+                    Intent intentoc = new Intent(MainActivity.this, RandomChecksActivity.class);
+                    startActivity(intentoc);
                     break;
             }
         }
