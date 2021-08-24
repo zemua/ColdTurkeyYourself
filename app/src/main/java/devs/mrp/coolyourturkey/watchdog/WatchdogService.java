@@ -259,7 +259,7 @@ public class WatchdogService extends LifecycleService {
             if (PermisosChecker.checkPermisoAlertas(this)) {
                 data.getScreenBlock().go();
             }
-        } else { // or else unblock
+        } else { // or else unblock if it is blocked
             data.getScreenBlock().desbloquear();
         }
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
