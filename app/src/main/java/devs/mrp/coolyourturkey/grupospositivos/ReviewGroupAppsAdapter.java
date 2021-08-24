@@ -52,6 +52,11 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
         this.mThisGroupId = thisGroupId;
     }
 
+    public ReviewGroupAppsAdapter(Context context, Integer thisGroupId) {
+        this.mContext = context;
+        this.mThisGroupId = thisGroupId;
+    }
+
     @NonNull
     @Override
     public ReviewGroupAppsAdapter.ReviewGroupAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -85,7 +90,6 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
             holder.imageView.setImageDrawable(mContext.getPackageManager().getApplicationIcon(applicationInfo));
             holder.textView.setText(mContext.getPackageManager().getApplicationLabel(applicationInfo));
             holder.packageName = packageName;
-            holder.hposicion = position;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -127,6 +131,9 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     @Override
     public int getItemCount() {
+        if (mDataset == null) {
+            return 0;
+        }
         return mDataset.getList().size();
     }
 
@@ -148,7 +155,6 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
         public Switch switchView;
         public TextView textView;
         public String packageName;
-        public int hposicion;
 
         public ReviewGroupAppsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -156,15 +162,22 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
             imageView = itemView.findViewById(R.id.imageView);
             switchView = itemView.findViewById(R.id.switch1);
             packageName = null;
-            hposicion = -1;
         }
     }
 
-    public void updateDataSet(List<AplicacionListada> positiveApps) {
-        mDataset.setPositiveList(positiveApps);
+    public void setAppLister(AppLister lister) {
+        this.mDataset = lister;
         setMapDataset(mDataset.getList());
         this.notifyDataSetChanged();
-        Log.d(TAG, "updateDataSet done");
+    }
+
+    public void updateDataSet(List<AplicacionListada> positiveApps) {
+        if (mDataset != null) {
+            mDataset.setPositiveList(positiveApps);
+            setMapDataset(mDataset.getList());
+            this.notifyDataSetChanged();
+            Log.d(TAG, "updateDataSet done");
+        }
     }
 
     public void firstGroupDbLoad(List<AppToGroup> appsToGroups) {

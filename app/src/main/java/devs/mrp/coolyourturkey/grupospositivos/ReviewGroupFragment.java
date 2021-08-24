@@ -4,11 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -31,6 +37,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.listados.AppLister;
+import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -66,6 +73,8 @@ public class ReviewGroupFragment extends Fragment {
     private String mGroupName;
     private AppLister mAppLister;
 
+    private Handler mainHandler;
+
     private ViewModelProvider.Factory factory;
     private AppToGroupViewModel mAppToGroupViewModel;
     private AplicacionListadaViewModel mAplicacionListadaViewModel;
@@ -91,6 +100,7 @@ public class ReviewGroupFragment extends Fragment {
 
         mFeedbackReceiver = (FeedbackReceiver) getActivity();
         mContext = getActivity();
+        mainHandler = new Handler(mContext.getMainLooper());
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()){
             setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
@@ -143,22 +153,44 @@ public class ReviewGroupFragment extends Fragment {
          * Apps adapter
          */
 
-        mAppLister = new AppLister(mContext);
-        mAppsAdapter = new ReviewGroupAppsAdapter(mAppLister, mContext, getGroupId());
+        mAppsAdapter = new ReviewGroupAppsAdapter(mContext, getGroupId());
         mAppsAdapter.resetLoaded();
+        ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
+
+        ExecutorService servicio = Executors.newFixedThreadPool(1);
+        FutureTask<AppLister> task = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
+            @Override
+            protected void done() {
+                try {
+                    mAppLister = get();
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAppsAdapter.setAppLister(mAppLister);
+                            mAplicacionListadaViewModel = new ViewModelProvider(ReviewGroupFragment.this, factory).get(AplicacionListadaViewModel.class);
+                            mAplicacionListadaViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                                @Override
+                                public void onChanged(List<AplicacionListada> aplicacionListadas) {
+                                    spinner.setVisibility(View.GONE);
+                                    mAppsAdapter.updateDataSet(aplicacionListadas);
+                                    appsPositivas = aplicacionListadas;
+                                    Log.d(TAG, "updateDataSet with register qty: " + aplicacionListadas.size());
+                                }
+                            });
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        servicio.execute(task);
+
         recyclerApps.setAdapter(mAppsAdapter);
         LinearLayoutManager layoutApps = new LinearLayoutManager(mContext);
         recyclerApps.setLayoutManager(layoutApps);
-
-        mAplicacionListadaViewModel = new ViewModelProvider(this, factory).get(AplicacionListadaViewModel.class);
-        mAplicacionListadaViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
-            @Override
-            public void onChanged(List<AplicacionListada> aplicacionListadas) {
-                mAppsAdapter.updateDataSet(aplicacionListadas);
-                appsPositivas = aplicacionListadas;
-                Log.d(TAG, "updateDataSet with register qty: " + aplicacionListadas.size());
-            }
-        });
 
         mAppToGroupViewModel = new ViewModelProvider(this, factory).get(AppToGroupViewModel.class);
         mAppToGroupViewModel.getAllAppToGroup().observe(getViewLifecycleOwner(), new Observer<List<AppToGroup>>() {

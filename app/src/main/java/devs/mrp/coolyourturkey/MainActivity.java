@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
+import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity;
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                 case MainFragment.FEEDBACK_GRUPOS_POSITIVOS:
                     Intent intento = new Intent(MainActivity.this, GruposPositivosActivity.class);
                     startActivity(intento);
+                    break;
+                case MainFragment.FEEDBACK_CONDICIONES_NEGATIVAS:
+                    Intent intentob = new Intent(MainActivity.this, CondicionesNegativasActivity.class);
+                    startActivity(intentob);
                     break;
             }
         }

@@ -146,4 +146,6 @@
     <string name="bloquea_la_aplicacion_al_cumplirse">Bloquea la aplicación al haberse usado este tiempo</string>
     <string name="solamente_contar_tiempo_que_la_app_cumpla_las_condiciones">Solamente contar tiempo que la app cumpla las condiciones</string>
     <string name="aunqye_no_se_cumplan_las_condiciones_para_sumar">Aunque no se cumplan las condiciones para sumar</string>
+    <string name="condiciones_negativas">Condiciones negativas</string>
+    <string name="condiciones_para_poder_usar_las_aplicaciones">Condiciones para poder usar las aplicaciones</string>
 </resources>

@@ -41,9 +41,14 @@ public class AddGroupConditionActivity extends AppCompatActivity implements Feed
         fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = new AddGroupConditionFragment(mGroupId, mGroupName);
+            loadCondition(intent);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+        } else {
+            loadCondition(intent);
         }
+    }
 
+    private void loadCondition(Intent intent) {
         if (intent.hasExtra(ReviewGroupActivity.EXTRA_CONDITION)){
             ConditionToGroup lCondition = (ConditionToGroup) ((ObjectWrapperForBinder)getIntent().getExtras().getBinder(ReviewGroupActivity.EXTRA_CONDITION)).getData();
             ((AddGroupConditionFragment)fragment).setConditionForEdit(lCondition);

@@ -34,6 +34,15 @@
             app:layout_constraintStart_toEndOf="@+id/textapps"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ProgressBar
+            android:id="@+id/groupAppSpinner"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textGroupNameb" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerAppsGrupo"
             android:layout_width="match_parent"
@@ -49,6 +58,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonDelete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/const2">
 
         <TextView
@@ -59,10 +70,10 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/condiciones_para_sumar"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonAddCondition"
             app:layout_constraintEnd_toStartOf="@+id/buttonAddCondition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/buttonAddCondition"
-            app:layout_constraintBottom_toBottomOf="@+id/buttonAddCondition"/>
+            app:layout_constraintTop_toTopOf="@+id/buttonAddCondition" />
 
         <Button
             android:id="@+id/buttonAddCondition"
@@ -73,8 +84,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/plus"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerCondiciones"
