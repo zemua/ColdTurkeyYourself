@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.condicionesnegativas;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -42,6 +44,8 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
     private static final Integer RESULT_CONFIRM_EDIT_CONDITION = 20;
 
     private List<MyObserver<ConditionNegativeToGroup>> observers = new ArrayList<>();
+    Map<Integer, GrupoPositivo> mMapaGrupos;
+    Map<Integer, ConditionNegativeToGroup> mMapaConditions;
     private Context mContext;
     private ViewModelProvider.Factory factory;
     private Handler mainHandler;
@@ -89,8 +93,8 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         gruposRepo.findAllGrupoPositivo().observe(this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
-                adapter.setGrupos(mapaGrupos);
+                mMapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
+                adapter.setGrupos(mMapaGrupos);
             }
         });
 
@@ -100,6 +104,7 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
                 switch (tipo){
                     case NegativeConditionTimeChecker.FEEDBACK_CONDITIONS_LOADED:
                         adapter.setDataset(feedback);
+                        mMapaConditions = feedback.stream().collect(Collectors.toMap(ConditionNegativeToGroup::getId, c -> c));
                         break;
                     case NegativeConditionTimeChecker.FEEDBACK_TIMES_LOADED:
                         adapter.notifyDataSetChanged();
@@ -113,10 +118,9 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
             public void giveFeedback(int tipo, ConditionNegativeToGroup feedback, Object... args) {
                 switch (tipo) {
                     case CondicionesNegativasAdapter.FEEDBACK_CONDITION_SELECTED:
-                        DialogWithDelay dialog = new DialogWithDelay(R.drawable.bug, mContext.getString(R.string.apps_malas), mContext.getString(R.string.seguro_debes_modificar_esta_condicion), RESULT_CONFIRM_EDIT_CONDITION);
+                        DialogWithDelay dialog = new DialogWithDelay(R.drawable.bug, mContext.getString(R.string.apps_malas), mContext.getString(R.string.seguro_debes_modificar_esta_condicion), feedback.getId());
                         dialog.setTargetFragment(CondicionesNegativasFragment.this, RESULT_CONFIRM_EDIT_CONDITION);
                         dialog.show(getActivity().getSupportFragmentManager(), TAG_DIALOGO_CON_DELAY);
-                        doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, feedback);
                         break;
                 }
             }
@@ -134,6 +138,15 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         });
 
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == RESULT_CONFIRM_EDIT_CONDITION) {
+                doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, mMapaConditions.get(resultData.getIntExtra(DialogWithDelay.EXTRA_REPLY_VALUE, -1)));
+            }
+        }
     }
 
 }
