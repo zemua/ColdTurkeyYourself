@@ -128,7 +128,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
 
-        v.findViewById(R.id.textGroupName).setVisibility(View.GONE); // this view is gone for negative conditions
+        ((TextView)v.findViewById(R.id.textGroupName)).setText(R.string.apps_malas);
 
         List<String> typesList = ConditionToGroup.getTypesList().stream().map(s -> getResources().getString(s)).collect(Collectors.toList());
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, typesList);

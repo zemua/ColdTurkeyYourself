@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.condicionesnegativas;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -10,8 +11,11 @@ import androidx.fragment.app.FragmentManager;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
+import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity;
+import devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionFragment;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 
 public class CondicionesNegativasActivity extends AppCompatActivity {
 
@@ -19,6 +23,8 @@ public class CondicionesNegativasActivity extends AppCompatActivity {
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
     public static final String EXTRA_CONDITION_ID = "extra_condition_id";
     public static final String EXTRA_CONDITION = "extra_condition";
+
+    public static final String RESULT_DELETE = "result_delete_negative_condition";
 
     private Fragment fragment;
 
@@ -44,7 +50,12 @@ public class CondicionesNegativasActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case CondicionesNegativasFragment.CALLBACK_EDIT_EXISTING_CONDITION:
-                        // TODO create activity to edit condition
+                        intent = new Intent(CondicionesNegativasActivity.this, AddNegativeConditionActivity.class);
+                        final ConditionNegativeToGroup objSent = (ConditionNegativeToGroup) feedback;
+                        final Bundle bundle = new Bundle();
+                        bundle.putBinder(EXTRA_CONDITION, new ObjectWrapperForBinder(objSent));
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                         break;
                 }
             }

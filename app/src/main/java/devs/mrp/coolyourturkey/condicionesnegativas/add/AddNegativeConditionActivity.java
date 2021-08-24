@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.condicionesnegativas.add;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -54,6 +55,10 @@ public class AddNegativeConditionActivity extends AppCompatActivity {
                         finish();
                         break;
                     case AddNegativeConditionFragment.FEEDBACK_DELETE_CONDITION:
+                        repository = ConditionNegativeToGroupRepository.getRepo(AddNegativeConditionActivity.this.getApplication());
+                        repository.deleteById(feedback.getId());
+                        setResult(RESULT_DELETE);
+                        finish();
                         break;
                 }
             }
