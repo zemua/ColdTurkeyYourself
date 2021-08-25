@@ -196,6 +196,7 @@ public class WatchdogService extends LifecycleService {
             sleep(data.getSleepTime());
 
             data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
+            data.getNegativeConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {
 

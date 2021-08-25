@@ -36,6 +36,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
     private List<FeedbackListener<List<ConditionNegativeToGroup>>> listeners = new ArrayList<>();
 
     private List<LiveData<List<TimeLogger>>> timeLoggerLiveDatas;
+    private Long dayRefreshed;
 
     private TimeLoggerRepository timeLoggerRepository;
     private ConditionNegativeToGroupRepository conditionNegativeRepository;
@@ -56,6 +57,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
 
         mMainHandler = new Handler(context.getMainLooper());
 
+        dayRefreshed = currentDay();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         conditionNegativeRepository = ConditionNegativeToGroupRepository.getRepo(mApplication);
         mTimeByConditionIdMap = new HashMap<>();
@@ -149,5 +151,20 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
             }
         }
         return true;
+    }
+
+    public void refreshDayCounting() {
+        Long currentDay = currentDay();
+        if (dayRefreshed == null || !dayRefreshed.equals(currentDay)) {
+            dayRefreshed = currentDay;
+            if (mConditions != null) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadTimes(mConditions);
+                    }
+                });
+            }
+        }
     }
 }
