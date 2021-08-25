@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.chainclick.PositiveChecksChainComander;
 
 public class PositiveChecksListActivity extends AppCompatActivity {
 

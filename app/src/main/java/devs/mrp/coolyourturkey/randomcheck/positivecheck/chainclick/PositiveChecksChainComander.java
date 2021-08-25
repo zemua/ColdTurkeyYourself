@@ -1,9 +1,8 @@
-package devs.mrp.coolyourturkey.randomcheck.positivecheck;
-
-import android.content.Context;
+package devs.mrp.coolyourturkey.randomcheck.positivecheck.chainclick;
 
 import devs.mrp.coolyourturkey.comun.ChainComander;
 import devs.mrp.coolyourturkey.comun.ChainHandler;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.ContextAndCheckFacade;
 
 public class PositiveChecksChainComander implements ChainComander {
 
