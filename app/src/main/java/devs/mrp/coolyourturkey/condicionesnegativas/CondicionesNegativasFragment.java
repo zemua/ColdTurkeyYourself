@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,11 +25,9 @@ import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class CondicionesNegativasFragment extends Fragment implements MyObservable<ConditionNegativeToGroup> {
 
@@ -77,8 +72,8 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
 
         View v = inflater.inflate(R.layout.fragment_condiciones_negativas, container, false);
 
-        addButton = v.findViewById(R.id.addNegCond);
-        recycler = v.findViewById(R.id.recyclerNegCond);
+        addButton = v.findViewById(R.id.add);
+        recycler = v.findViewById(R.id.recycler);
 
         NegativeConditionTimeChecker timeChecker = new NegativeConditionTimeChecker(mContext, this.getActivity().getApplication(), this);
         CondicionesNegativasAdapter adapter = new CondicionesNegativasAdapter(mContext, timeChecker);

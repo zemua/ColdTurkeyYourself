@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.randomcheck.positivecheck;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +29,7 @@ public class PositiveChecksListActivity extends AppCompatActivity {
         ((PositiveChecksListFragment)mFragment).addObserver(new MyObserver<Object>() {
             @Override
             public void callback(String tipo, Object feedback) {
-                // TODO implements callbacks
+                new PositiveChecksChainComander().getHandlerChain().receiveRequest(tipo, PositiveChecksListActivity.this);
             }
         });
     }

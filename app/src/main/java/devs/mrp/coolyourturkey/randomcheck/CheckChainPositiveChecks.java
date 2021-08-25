@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.ChainHandler;
 import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksListActivity;
 
 public class CheckChainPositiveChecks extends ChainHandler<Context> {
     @Override
@@ -17,7 +18,7 @@ public class CheckChainPositiveChecks extends ChainHandler<Context> {
 
     @Override
     protected void handle(Context data) {
-        Intent intent = new Intent(data, PositiveChecksActivity.class);
+        Intent intent = new Intent(data, PositiveChecksListActivity.class);
         data.startActivity(intent);
     }
 }

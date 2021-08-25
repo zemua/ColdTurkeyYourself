@@ -58,6 +58,8 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksListActivity">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >
