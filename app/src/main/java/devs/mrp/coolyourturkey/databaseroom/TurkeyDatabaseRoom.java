@@ -25,6 +25,8 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoDao;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaDao;
+import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
+import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckDao;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerDao;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
@@ -36,7 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class}, version = 13)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class}, version = 14)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -51,6 +53,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract TimeLoggerDao timeLoggerDao();
     public abstract GrupoExportDao grupoExportDao();
     public abstract GroupLimitDao groupLimitDao();
+    public abstract RandomCheckDao randomCheckDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -217,6 +220,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 13
+     * to
+     * version 14
+     */
+    static final Migration MIGRATION_13_14 = new Migration(13, 14) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'randomcheck' ('id' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'name' TEXT NOT NULL, 'question' TEXT NOT NULL, 'multiplicador' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -228,7 +244,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14) // add the migration schemas separated by commas
                             .build();
                 }
             }

@@ -1,14 +1,15 @@
 package devs.mrp.coolyourturkey.randomcheck.positivecheck;
 
-import android.content.Context;
 import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.ChainHandler;
+import devs.mrp.coolyourturkey.comun.TransferWithBinders;
+import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 
-public class PositiveChecksChainAdd extends ChainHandler<ContextAndCheckFacade> {
+public class PositiveChecksChainClick extends ChainHandler<ContextAndCheckFacade> {
     @Override
     protected boolean canHandle(String tipo) {
-        if (tipo.equals(PositiveChecksListFragment.CALLBACK_ADD_CONDITION)) {
+        if (tipo.equals(PositiveChecksListFragment.CALLBACK_CLICK_ELEMENT)) {
             return true;
         }
         return false;
@@ -17,6 +18,7 @@ public class PositiveChecksChainAdd extends ChainHandler<ContextAndCheckFacade> 
     @Override
     protected void handle(ContextAndCheckFacade data) {
         Intent intent = new Intent(data.getContext(), PositiveChecksActivity.class);
+        TransferWithBinders.addToSend(intent, PositiveChecksActivity.KEY_FOR_RECEIVED_CHECK, data.getCheck());
         data.getContext().startActivity(intent);
     }
 }

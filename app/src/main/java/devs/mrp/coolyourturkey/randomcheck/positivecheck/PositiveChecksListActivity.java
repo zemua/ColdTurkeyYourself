@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.randomcheck.positivecheck;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
+import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 
 public class PositiveChecksListActivity extends AppCompatActivity {
 
@@ -26,10 +26,10 @@ public class PositiveChecksListActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
         }
 
-        ((PositiveChecksListFragment)mFragment).addObserver(new MyObserver<Object>() {
+        ((PositiveChecksListFragment)mFragment).addObserver(new MyObserver<PositiveCheck>() {
             @Override
-            public void callback(String tipo, Object feedback) {
-                new PositiveChecksChainComander().getHandlerChain().receiveRequest(tipo, PositiveChecksListActivity.this);
+            public void callback(String tipo, PositiveCheck feedback) {
+                new PositiveChecksChainComander().getHandlerChain().receiveRequest(tipo, new ContextAndCheckFacade(PositiveChecksListActivity.this, feedback));
             }
         });
     }

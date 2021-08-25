@@ -9,7 +9,10 @@ public class PositiveChecksChainComander implements ChainComander {
 
     @Override
     public ChainHandler getHandlerChain() {
-        ChainHandler<Context> add = new PositiveChecksChainAdd();
+        ChainHandler<ContextAndCheckFacade> add = new PositiveChecksChainAdd();
+        ChainHandler<ContextAndCheckFacade> click = new PositiveChecksChainClick();
+
+        add.setNextHandler(click);
 
         return add;
     }
