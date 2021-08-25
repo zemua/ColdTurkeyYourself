@@ -158,4 +158,5 @@
     <string name="random_check_positive_name_hint">Escribiendo mi novela</string>
     <string name="multiplicador_de_recompensa">Multiplicador de recompensa</string>
     <string name="uno_numeral">1</string>
+    <string name="estos_son_tus_positive_checks">Estos son tus controles positivos</string>
 </resources>
