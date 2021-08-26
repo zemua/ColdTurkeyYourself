@@ -14,6 +14,7 @@ import devs.mrp.coolyourturkey.comun.TransferWithBinders;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.chainfeedback.PositiveCheckFeedbackComander;
 
 public class PositiveChecksActivity extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class PositiveChecksActivity extends AppCompatActivity {
         ((PositiveChecksFragment)mFragment).addObserver(new MyObserver<PositiveCheck>() {
             @Override
             public void callback(String tipo, PositiveCheck feedback) {
-                // TODO call chain of responsibility
+                new PositiveCheckFeedbackComander(PositiveChecksActivity.this).getHandlerChain().receiveRequest(tipo, feedback);
             }
         });
     }

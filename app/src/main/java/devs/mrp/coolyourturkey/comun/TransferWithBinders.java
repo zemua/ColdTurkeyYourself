@@ -19,7 +19,7 @@ public class TransferWithBinders {
     public static Optional<Object> receiveAndRead(Intent intent, String key) {
         Optional<Object> optional = Optional.empty();
         if (intent.hasExtra(key)) {
-            optional = Optional.of(((ObjectWrapperForBinder) intent.getExtras().getBinder(CondicionesNegativasActivity.EXTRA_CONDITION)).getData());
+            optional = Optional.of(((ObjectWrapperForBinder) intent.getExtras().getBinder(key)).getData());
         }
         return optional;
     }

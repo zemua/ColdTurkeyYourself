@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.randomcheck.positivecheck;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
 
     public static final String FEEDBACK_SAVE_NEW = "nuevo";
     public static final String FEEDBACK_SAVE_EXISTING = "existente";
+    public static final String FEEDBACK_DELETE_THIS = "delete";
 
     private final int MAX_MULTIPLIER = 4;
 
@@ -42,6 +45,7 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
     private Button mPlusButton;
     private TextView mMultiplierText;
     private Button mSaveButton;
+    private Button mDeleteButton;
 
     @Override
     public void doCallBack(String tipo, PositiveCheck feedback) {
@@ -71,14 +75,17 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
         mPlusButton = v.findViewById(R.id.buttonPlus);
         mMultiplierText = v.findViewById(R.id.textMultiplier);
         mSaveButton = v.findViewById(R.id.buttonGuardar);
+        mDeleteButton = v.findViewById(R.id.buttonDel);
 
         if (mCheck == null) {
             mCurrent = FEEDBACK_SAVE_NEW;
             CheckFactory factory = new CheckFactory();
             mCheck = factory.newPositive();
             mMultiplierText.setText("1");
+            mDeleteButton.setVisibility(View.GONE);
         } else {
             mCurrent = FEEDBACK_SAVE_EXISTING;
+            mDeleteButton.setVisibility(View.VISIBLE);
             fillFields();
         }
         if (mCheck.getMultiplicador() == null) {
@@ -106,6 +113,24 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
             }
         });
 
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle(R.string.confirmacion);
+                builder.setMessage(R.string.seguro_que_deseas_borrar_este_control);
+                builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        doCallBack(FEEDBACK_DELETE_THIS, mCheck);
+                    }
+                });
+                builder.setNegativeButton(R.string.conservar, null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
 
         return v;
     }
@@ -117,7 +142,7 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
     private void fillFields() {
         mNameText.setText(mCheck.getName());
         mQuestionText.setText(mCheck.getQuestion());
-        mMultiplierText.setText(mCheck.getMultiplicador());
+        mMultiplierText.setText(String.valueOf(mCheck.getMultiplicador()));
     }
 
     private void increase() {

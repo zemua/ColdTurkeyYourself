@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.randomcheck.positivecheck.chainfeedback;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,9 +12,9 @@ import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksFragment;
 
 public class PositiveCheckFeedbackSaveNew extends ChainHandler<PositiveCheck> {
 
-    private AppCompatActivity activity;
+    private Activity activity;
 
-    public PositiveCheckFeedbackSaveNew(AppCompatActivity c) {
+    public PositiveCheckFeedbackSaveNew(Activity c) {
         activity = c;
     }
 
