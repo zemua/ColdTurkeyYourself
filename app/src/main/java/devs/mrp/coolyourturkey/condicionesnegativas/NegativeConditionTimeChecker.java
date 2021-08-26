@@ -18,7 +18,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
+import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
@@ -33,6 +36,9 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
     public static final int FEEDBACK_CONDITIONS_LOADED = 1;
     public static final int FEEDBACK_TIMES_LOADED = 2;
 
+    private final Long TIME_BETWEEN_NOTIFICATION_REFRESH = 5L * 60 * 1000;
+    private final int NOTIFICATION_ID = -32;
+
     private List<FeedbackListener<List<ConditionNegativeToGroup>>> listeners = new ArrayList<>();
 
     private List<LiveData<List<TimeLogger>>> timeLoggerLiveDatas;
@@ -45,6 +51,10 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
     private Map<Integer, Long> mTimeByConditionIdMap;
 
     private Handler mMainHandler;
+    private Notificador mNotificador;
+    private Long mLastNotificationRefreshed;
+    private MisPreferencias mMisPreferencias;
+    private boolean mAllConditionsMet;
 
     private Context mContext;
     private Application mApplication;
@@ -56,6 +66,10 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
         mLifecycleOwner = lifecycleOwner;
 
         mMainHandler = new Handler(context.getMainLooper());
+        mNotificador = new Notificador(application, context);
+        mNotificador.createNotificationChannel(R.string.condition_met_channel_name, R.string.condition_met_channel_description, Notificador.CONDITION_MET_CHANNEL_ID);
+        mMisPreferencias = new MisPreferencias(context);
+        mAllConditionsMet = false;
 
         dayRefreshed = currentDay();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
@@ -165,6 +179,27 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
                     }
                 });
             }
+        }
+    }
+
+    public void refreshNotifications() {
+        if (mLastNotificationRefreshed == null) {
+            mLastNotificationRefreshed = 0L;
+        }
+        Long now = System.currentTimeMillis();
+        if (now - TIME_BETWEEN_NOTIFICATION_REFRESH > mLastNotificationRefreshed) {
+            mLastNotificationRefreshed = now;
+            if (!mAllConditionsMet && ifAllConditionsMet()){
+                mAllConditionsMet = true;
+                if (mMisPreferencias.getNotifyConditionsJustMet()) {
+                    String title = mApplication.getString(R.string.apps_malas);
+                    String description = mApplication.getString(R.string.ahora_se_pueden_usar);
+                    mNotificador.createNotification(R.drawable.bug, title, description, Notificador.CONDITION_MET_CHANNEL_ID, NOTIFICATION_ID);
+                }
+            } else if(mAllConditionsMet && !ifAllConditionsMet()) {
+                mAllConditionsMet = false;
+            }
+
         }
     }
 }

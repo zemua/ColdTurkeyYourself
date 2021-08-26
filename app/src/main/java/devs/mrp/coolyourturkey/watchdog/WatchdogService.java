@@ -197,6 +197,7 @@ public class WatchdogService extends LifecycleService {
 
             data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
             data.getNegativeConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
+            data.getNegativeConditionTimeChecker().refreshNotifications(); // send notification if proceeds
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
