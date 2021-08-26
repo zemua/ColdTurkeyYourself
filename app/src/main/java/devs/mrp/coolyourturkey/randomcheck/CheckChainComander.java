@@ -7,12 +7,15 @@ import devs.mrp.coolyourturkey.comun.ChainHandler;
 
 public class CheckChainComander implements ChainComander {
 
-    ChainHandler<Context> timeBlocks;
+    ChainHandler<Context> positiveHandler;
 
     @Override
     public ChainHandler getHandlerChain() {
-        timeBlocks = new CheckChainPositiveChecks();
+        positiveHandler = new CheckChainPositiveChecks();
+        ChainHandler<Context> negativeHandler = new CheckChainNegativeChecks();
 
-        return timeBlocks;
+        positiveHandler.setNextHandler(negativeHandler);
+
+        return positiveHandler;
     }
 }

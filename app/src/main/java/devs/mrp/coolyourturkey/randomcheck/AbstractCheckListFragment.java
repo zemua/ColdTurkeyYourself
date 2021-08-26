@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +40,7 @@ public abstract class AbstractCheckListFragment<T extends Check> extends Fragmen
 
     protected FloatingActionButton mAddButton;
     protected RecyclerView mRecycler;
+    protected TextView mTitle;
 
     @Override
     public void addObserver(MyObserver<T> observer) {
@@ -61,14 +64,16 @@ public abstract class AbstractCheckListFragment<T extends Check> extends Fragmen
 
         mAddButton = v.findViewById(R.id.add);
         mRecycler = v.findViewById(R.id.recycler);
+        mTitle = v.findViewById(R.id.textView15);
+        setTile(mTitle);
 
         LinearLayoutManager layout = new LinearLayoutManager(mContext);
         mRecycler.setLayoutManager(layout);
 
         CheckFactory factory = new CheckFactory();
         mRepo = RandomCheckRepository.getRepo(this.getActivity().getApplication());
-        CheckListAdapter<T> adapter = new CheckListAdapter(mContext, CheckListAdapter.BACKGROUND_GREEN);
-        mRepo.getPositiveChecks().observe(this, new Observer<List<RandomCheck>>() {
+        CheckListAdapter<T> adapter = new CheckListAdapter(mContext, getColor());
+        getChecks(mRepo).observe(this, new Observer<List<RandomCheck>>() {
             @Override
             public void onChanged(List<RandomCheck> randomChecks) {
                 List<T> checks = getCheckFromExisting(randomChecks);
@@ -98,4 +103,10 @@ public abstract class AbstractCheckListFragment<T extends Check> extends Fragmen
     }
 
     protected abstract List<T> getCheckFromExisting(List<RandomCheck> rcs);
+
+    protected abstract String getColor();
+
+    protected abstract LiveData<List<RandomCheck>> getChecks(RandomCheckRepository repo);
+
+    protected abstract void setTile(TextView v);
 }
