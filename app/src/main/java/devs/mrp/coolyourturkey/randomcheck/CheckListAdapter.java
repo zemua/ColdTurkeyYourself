@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.randomcheck.positivecheck;
+package devs.mrp.coolyourturkey.randomcheck;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,7 +17,7 @@ import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 
-public class PositiveCheckListAdapter<T extends Check> extends RecyclerView.Adapter<PositiveCheckListAdapter.PositiveCheckListViewHolder<T>> implements MyObservable<T> {
+public class CheckListAdapter<T extends Check> extends RecyclerView.Adapter<CheckListAdapter.CheckListViewHolder<T>> implements MyObservable<T> {
 
     public static final String FEEDBACK_CHECK_SELECTED = "check selected";
 
@@ -30,16 +30,16 @@ public class PositiveCheckListAdapter<T extends Check> extends RecyclerView.Adap
     private Context mContext;
     private String mColor;
 
-    public PositiveCheckListAdapter(Context c, String color) {
+    public CheckListAdapter(Context c, String color) {
         mContext = c;
         mColor = color;
     }
 
-    public static class PositiveCheckListViewHolder<S extends Check> extends RecyclerView.ViewHolder {
+    public static class CheckListViewHolder<S extends Check> extends RecyclerView.ViewHolder {
         public TextView textView;
         public S check;
 
-        public PositiveCheckListViewHolder(@NonNull View itemView) {
+        public CheckListViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.templateTextView);
         }
@@ -47,9 +47,9 @@ public class PositiveCheckListAdapter<T extends Check> extends RecyclerView.Adap
 
     @NonNull
     @Override
-    public PositiveCheckListAdapter.PositiveCheckListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CheckListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_simple_text, parent, false);
-        PositiveCheckListViewHolder<T> vh = new PositiveCheckListViewHolder<>(v);
+        CheckListViewHolder<T> vh = new CheckListViewHolder<>(v);
 
         setBackground(vh.textView);
         vh.textView.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +62,7 @@ public class PositiveCheckListAdapter<T extends Check> extends RecyclerView.Adap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PositiveCheckListAdapter.PositiveCheckListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CheckListViewHolder holder, int position) {
         holder.check = mDataset.get(position);
         holder.textView.setText(holder.check.getName());
     }

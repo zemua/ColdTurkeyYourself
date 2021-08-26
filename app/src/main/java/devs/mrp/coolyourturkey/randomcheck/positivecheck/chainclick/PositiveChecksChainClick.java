@@ -4,10 +4,9 @@ import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.ChainHandler;
 import devs.mrp.coolyourturkey.comun.TransferWithBinders;
-import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.ContextAndCheckFacade;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.ContextAndCheckFacade;
 import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksListFragment;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListFragment;
 
 public class PositiveChecksChainClick extends ChainHandler<ContextAndCheckFacade> {
     @Override

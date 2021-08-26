@@ -2,7 +2,7 @@ package devs.mrp.coolyourturkey.randomcheck.positivecheck.chainclick;
 
 import devs.mrp.coolyourturkey.comun.ChainComander;
 import devs.mrp.coolyourturkey.comun.ChainHandler;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.ContextAndCheckFacade;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.ContextAndCheckFacade;
 
 public class PositiveChecksChainComander implements ChainComander {
 

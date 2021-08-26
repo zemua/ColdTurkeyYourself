@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.randomcheck.positivecheck;
+package devs.mrp.coolyourturkey.randomcheck;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,30 +21,31 @@ import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
+import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.CheckFactory;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 
-public class PositiveChecksListFragment extends Fragment implements MyObservable<PositiveCheck> {
+public abstract class AbstractCheckListFragment<T extends Check> extends Fragment implements MyObservable<T> {
 
     public static final String CALLBACK_ADD_CONDITION = "callback_add_condition";
     public static final String CALLBACK_CLICK_ELEMENT = "clicked a check from the list";
 
-    private List<MyObserver<PositiveCheck>> observers = new ArrayList<>();
+    protected List<MyObserver<T>> observers = new ArrayList<>();
 
-    private Context mContext;
+    protected Context mContext;
 
-    private RandomCheckRepository mRepo;
+    protected RandomCheckRepository mRepo;
 
-    private FloatingActionButton mAddButton;
-    private RecyclerView mRecycler;
+    protected FloatingActionButton mAddButton;
+    protected RecyclerView mRecycler;
 
     @Override
-    public void addObserver(MyObserver<PositiveCheck> observer) {
+    public void addObserver(MyObserver<T> observer) {
         observers.add(observer);
     }
 
     @Override
-    public void doCallBack(String tipo, PositiveCheck feedback) {
+    public void doCallBack(String tipo, T feedback) {
         observers.stream().forEach(o -> o.callback(tipo, feedback));
     }
 
@@ -66,19 +67,19 @@ public class PositiveChecksListFragment extends Fragment implements MyObservable
 
         CheckFactory factory = new CheckFactory();
         mRepo = RandomCheckRepository.getRepo(this.getActivity().getApplication());
-        PositiveCheckListAdapter<PositiveCheck> adapter = new PositiveCheckListAdapter(mContext, PositiveCheckListAdapter.BACKGROUND_GREEN);
+        CheckListAdapter<T> adapter = new CheckListAdapter(mContext, CheckListAdapter.BACKGROUND_GREEN);
         mRepo.getPositiveChecks().observe(this, new Observer<List<RandomCheck>>() {
             @Override
             public void onChanged(List<RandomCheck> randomChecks) {
-                List<PositiveCheck> checks = factory.positiveFrom(randomChecks);
+                List<T> checks = getCheckFromExisting(randomChecks);
                 adapter.updateDataset(checks);
             }
         });
 
-        adapter.addObserver(new MyObserver<PositiveCheck>() {
+        adapter.addObserver(new MyObserver<T>() {
             @Override
-            public void callback(String tipo, PositiveCheck feedback) {
-                if (tipo.equals(PositiveCheckListAdapter.FEEDBACK_CHECK_SELECTED)) {
+            public void callback(String tipo, T feedback) {
+                if (tipo.equals(CheckListAdapter.FEEDBACK_CHECK_SELECTED)) {
                     observers.stream().forEach(o -> o.callback(CALLBACK_CLICK_ELEMENT, feedback));
                 }
             }
@@ -95,4 +96,6 @@ public class PositiveChecksListFragment extends Fragment implements MyObservable
 
         return v;
     }
+
+    protected abstract List<T> getCheckFromExisting(List<RandomCheck> rcs);
 }

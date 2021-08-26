@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.ChainHandler;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksListActivity;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity;
 
 public class CheckChainPositiveChecks extends ChainHandler<Context> {
     @Override
