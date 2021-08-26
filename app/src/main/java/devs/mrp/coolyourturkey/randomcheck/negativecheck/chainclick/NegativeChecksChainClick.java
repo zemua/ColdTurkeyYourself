@@ -6,7 +6,7 @@ import android.content.Intent;
 import devs.mrp.coolyourturkey.comun.ChainHandler;
 import devs.mrp.coolyourturkey.comun.TransferWithBinders;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
-import devs.mrp.coolyourturkey.randomcheck.negativecheck.NegativeChecksActivity;
+import devs.mrp.coolyourturkey.randomcheck.negativecheck.review.NegativeChecksActivity;
 import devs.mrp.coolyourturkey.randomcheck.negativecheck.lists.NegativeCheckListFragment;
 
 public class NegativeChecksChainClick extends ChainHandler<Check> {

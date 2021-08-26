@@ -11,6 +11,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
@@ -38,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class}, version = 14)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockWithChecks.class}, version = 15)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -54,6 +57,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract GrupoExportDao grupoExportDao();
     public abstract GroupLimitDao groupLimitDao();
     public abstract RandomCheckDao randomCheckDao();
+    public abstract CheckTimeBlockDao checkTimeBlockDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -229,6 +233,20 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS 'randomcheck' ('id' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'name' TEXT NOT NULL, 'question' TEXT NOT NULL, 'multiplicador' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 14
+     * to
+     * version 15
+     */
+    static final Migration MIGRATION_14_15 = new Migration(14, 15) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'checktimeblock' ('blockid' INTEGER NOT NULL, 'name' TEXT NOT NULL, 'fromtime' INTEGER NOT NULL, 'totime' INTEGER NOT NULL, 'minlapse' INTEGER NOT NULL, 'maxlapse' INTEGER NOT NULL, 'monday' INTEGER NOT NULL DEFAULT(0), 'tuesday' INTEGER NOT NULL DEFAULT(0), 'wednesday' INTEGER NOT NULL DEFAULT(0), 'thursday' INTEGER NOT NULL DEFAULT(0), 'friday' INTEGER NOT NULL DEFAULT(0), 'saturday' INTEGER NOT NULL DEFAULT(0), 'sunday' INTEGER NOT NULL DEFAULT(0), PRIMARY KEY('blockid'))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblockandcheckcrossref' ('blockid' INTEGER NOT NULL, 'id' INTEGER NOT NULL, PRIMARY KEY('blockid'))");
         }
     };
 

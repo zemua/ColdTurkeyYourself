@@ -5,7 +5,7 @@ import android.app.Activity;
 import devs.mrp.coolyourturkey.comun.ChainHandler;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
-import devs.mrp.coolyourturkey.randomcheck.negativecheck.NegativeChecksFragment;
+import devs.mrp.coolyourturkey.randomcheck.negativecheck.review.NegativeChecksFragment;
 
 public class NegativeCheckFeedbackSaveExisting extends ChainHandler<Check> {
 

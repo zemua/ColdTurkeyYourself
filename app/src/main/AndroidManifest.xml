@@ -56,13 +56,13 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksActivity">
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksActivity">
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity">
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.lists.NegativeCheckListActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.NegativeChecksActivity">
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.review.NegativeChecksActivity">
         </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"

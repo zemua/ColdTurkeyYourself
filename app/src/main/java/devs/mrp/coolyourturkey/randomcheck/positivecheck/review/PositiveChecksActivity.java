@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.randomcheck.positivecheck;
+package devs.mrp.coolyourturkey.randomcheck.positivecheck.review;
 
 import android.os.Bundle;
 
@@ -11,9 +11,7 @@ import java.util.Optional;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.comun.TransferWithBinders;
-import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
-import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.randomcheck.positivecheck.chainfeedback.PositiveCheckFeedbackComander;
 
 public class PositiveChecksActivity extends AppCompatActivity {

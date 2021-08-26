@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.randomcheck.positivecheck;
+package devs.mrp.coolyourturkey.randomcheck.positivecheck.review;
 
 import android.app.AlertDialog;
 import android.content.Context;

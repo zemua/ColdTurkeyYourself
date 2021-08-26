@@ -5,7 +5,7 @@ import android.app.Activity;
 import devs.mrp.coolyourturkey.comun.ChainHandler;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
-import devs.mrp.coolyourturkey.randomcheck.positivecheck.PositiveChecksFragment;
+import devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksFragment;
 
 public class PositiveCheckFeedbackDelete extends ChainHandler<PositiveCheck> {
 

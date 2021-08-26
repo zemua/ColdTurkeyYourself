@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.randomcheck.negativecheck;
+package devs.mrp.coolyourturkey.randomcheck.negativecheck.review;
 
 import android.os.Bundle;
 

@@ -160,6 +160,7 @@
     <string name="uno_numeral">1</string>
     <string name="estos_son_tus_positive_checks">Estos son tus controles positivos</string>
     <string name="estos_son_tus_negative_checks">Estos son tus controles negativos</string>
+    <string name="estos_son_tus_bloques_de_tiempo">Estos son tus bloques de tiempo</string>
     <string name="ahora_se_pueden_usar">Ahora se pueden usar</string>
     <string name="seguro_que_deseas_borrar_este_control">¿Seguro que deseas borrar este control?</string>
 </resources>
