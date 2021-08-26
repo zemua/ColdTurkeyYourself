@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -24,74 +25,54 @@ import devs.mrp.coolyourturkey.dtos.randomcheck.CheckFactory;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.randomcheck.AbstractChecksFragment;
 
-public class PositiveChecksFragment extends Fragment implements MyObservable<PositiveCheck> {
+public class PositiveChecksFragment extends AbstractChecksFragment<PositiveCheck> {
 
-    private List<MyObserver<PositiveCheck>> listeners = new ArrayList<>();
+    protected final int MAX_MULTIPLIER = 4;
 
-    public static final String FEEDBACK_SAVE_NEW = "nuevo";
-    public static final String FEEDBACK_SAVE_EXISTING = "existente";
-    public static final String FEEDBACK_DELETE_THIS = "delete";
-
-    private final int MAX_MULTIPLIER = 4;
-
-    private Context mContext;
-    private PositiveCheck mCheck;
-    private String mCurrent;
-
-    private EditText mNameText;
-    private EditText mQuestionText;
     private Button mMinusButton;
     private Button mPlusButton;
     private TextView mMultiplierText;
-    private Button mSaveButton;
-    private Button mDeleteButton;
 
     @Override
-    public void doCallBack(String tipo, PositiveCheck feedback) {
-        listeners.stream().forEach(l -> {
-            l.callback(tipo, feedback);
-        });
-    }
-
-    @Override
-    public void addObserver(MyObserver<PositiveCheck> listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = context;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_positive_checks, container, false);
-
-        mNameText = v.findViewById(R.id.editTextName);
-        mQuestionText = v.findViewById(R.id.editTextPregunta);
+    protected void initializeOtherFields(View v) {
+        mMultiplierText = v.findViewById(R.id.textMultiplier);
         mMinusButton = v.findViewById(R.id.buttonMinus);
         mPlusButton = v.findViewById(R.id.buttonPlus);
-        mMultiplierText = v.findViewById(R.id.textMultiplier);
-        mSaveButton = v.findViewById(R.id.buttonGuardar);
-        mDeleteButton = v.findViewById(R.id.buttonDel);
 
-        if (mCheck == null) {
-            mCurrent = FEEDBACK_SAVE_NEW;
-            CheckFactory factory = new CheckFactory();
-            mCheck = factory.newPositive();
-            mMultiplierText.setText("1");
-            mDeleteButton.setVisibility(View.GONE);
-        } else {
-            mCurrent = FEEDBACK_SAVE_EXISTING;
-            mDeleteButton.setVisibility(View.VISIBLE);
-            fillFields();
-        }
-        if (mCheck.getMultiplicador() == null) {
-            mCheck.setMultiplicador(1);
-        }
+        ConstraintLayout positiveStuff = v.findViewById(R.id.positiveStuff);
+        positiveStuff.setVisibility(View.VISIBLE);
+    }
 
+    @Override
+    protected void doStuffIfNew() {
+        mCheck.setMultiplicador(1);
+        mMultiplierText.setText("1");
+    }
+
+    @Override
+    protected void doStuffIfExisting() {
+
+    }
+
+    @Override
+    protected void fillOtherFields(View v) {
+        mMultiplierText.setText(String.valueOf(mCheck.getMultiplicador()));
+    }
+
+    @Override
+    protected boolean assertOtherValidFields() {
+        return true;
+    }
+
+    @Override
+    protected PositiveCheck getNewCheck() {
+        return new CheckFactory().newPositive();
+    }
+
+    @Override
+    protected void setupOtherObservers() {
         mPlusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,44 +86,6 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
                 decrease();
             }
         });
-
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                guardar();
-            }
-        });
-
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(R.string.confirmacion);
-                builder.setMessage(R.string.seguro_que_deseas_borrar_este_control);
-                builder.setPositiveButton(R.string.borrar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        doCallBack(FEEDBACK_DELETE_THIS, mCheck);
-                    }
-                });
-                builder.setNegativeButton(R.string.conservar, null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
-
-
-        return v;
-    }
-
-    public void setCheck(PositiveCheck c) {
-        mCheck = c;
-    }
-
-    private void fillFields() {
-        mNameText.setText(mCheck.getName());
-        mQuestionText.setText(mCheck.getQuestion());
-        mMultiplierText.setText(String.valueOf(mCheck.getMultiplicador()));
     }
 
     private void increase() {
@@ -163,38 +106,5 @@ public class PositiveChecksFragment extends Fragment implements MyObservable<Pos
         }
         mMultiplierText.setText(String.valueOf(i-1));
         mCheck.setMultiplicador(i-1);
-    }
-
-    private void guardar() {
-        mCheck.setName(mNameText.getText().toString());
-        mCheck.setQuestion(mQuestionText.getText().toString());
-        if (assertValid()) {
-            doCallBack(mCurrent, mCheck);
-        }
-    }
-
-    private boolean assertValid() {
-        boolean valid = true;
-        if (mCheck.getName().isEmpty()){
-            red(mNameText);
-            valid = false;
-        } else {
-            green(mNameText);
-        }
-        if(mCheck.getQuestion().isEmpty()) {
-            red(mQuestionText);
-            valid = false;
-        } else {
-            green(mQuestionText);
-        }
-        return valid;
-    }
-
-    private void red(View v) {
-        v.setBackgroundColor(Color.RED);
-    }
-
-    private void green(View v) {
-        v.setBackgroundColor(Color.TRANSPARENT);
     }
 }
