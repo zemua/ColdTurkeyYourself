@@ -156,6 +156,8 @@
     <string name="escribe_la_pregunta_a_evaluar">Escribe la pregunta a evaluar</string>
     <string name="random_check_positive_question_hint">¿Has estado trabajando con tu editor de texto durante los últimos 15 minutos?</string>
     <string name="random_check_positive_name_hint">Escribiendo mi novela</string>
+    <string name="random_check_negative_name_hint">Sin distracciones</string>
+    <string name="random_check_negative_question_hint">¿Has mirado mensajes del móvil en los últimos 15 minutos?</string>
     <string name="multiplicador_de_recompensa">Multiplicador de recompensa</string>
     <string name="uno_numeral">1</string>
     <string name="estos_son_tus_positive_checks">Estos son tus controles positivos</string>

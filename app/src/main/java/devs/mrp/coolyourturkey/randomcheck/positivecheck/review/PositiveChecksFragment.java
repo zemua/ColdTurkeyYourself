@@ -67,6 +67,16 @@ public class PositiveChecksFragment extends AbstractChecksFragment<PositiveCheck
     }
 
     @Override
+    protected void setNameHint(EditText name) {
+        name.setHint(R.string.random_check_positive_name_hint);
+    }
+
+    @Override
+    protected void setQuestionHint(EditText question) {
+        question.setHint(R.string.random_check_positive_question_hint);
+    }
+
+    @Override
     protected PositiveCheck getNewCheck() {
         return new CheckFactory().newPositive();
     }

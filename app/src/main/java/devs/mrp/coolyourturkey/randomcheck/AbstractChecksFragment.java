@@ -71,6 +71,9 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
         mDeleteButton = mView.findViewById(R.id.buttonDel);
         initializeOtherFields(mView);
 
+        setNameHint(mNameText);
+        setQuestionHint(mQuestionText);
+
         if (mCheck == null) {
             mCurrent = FEEDBACK_SAVE_NEW;
             mCheck = getNewCheck();
@@ -160,6 +163,10 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
     }
 
     protected abstract boolean assertOtherValidFields();
+
+    protected abstract void setNameHint(EditText name);
+
+    protected abstract void setQuestionHint(EditText question);
 
     private void red(View v) {
         v.setBackgroundColor(Color.RED);
