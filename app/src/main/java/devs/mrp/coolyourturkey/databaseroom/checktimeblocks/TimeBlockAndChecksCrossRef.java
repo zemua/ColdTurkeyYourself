@@ -9,4 +9,22 @@ public class TimeBlockAndChecksCrossRef {
     public Integer blockid;
     @NonNull
     public Integer id;
+
+    @NonNull
+    public Integer getBlockid() {
+        return blockid;
+    }
+
+    public void setBlockid(@NonNull Integer blockid) {
+        this.blockid = blockid;
+    }
+
+    @NonNull
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(@NonNull Integer id) {
+        this.id = id;
+    }
 }

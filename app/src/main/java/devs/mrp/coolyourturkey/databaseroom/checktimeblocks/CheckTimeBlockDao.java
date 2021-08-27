@@ -15,9 +15,17 @@ public interface CheckTimeBlockDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CheckTimeBlock checkTimeBlock);
 
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertWithChecks(TimeBlockWithChecks timeBlockWithChecks);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(TimeBlockAndChecksCrossRef crossRef);
+
+    @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid")
+    void deleteAllCheckReferencesOfBlock(Integer blockid);
+
+    @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid AND id = :id")
+    void deleteCrossReference(Integer blockid, Integer id);
+
+    @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid AND id NOT IN (:id)")
+    void deleteCrossReferenceNotPresentIn(Integer blockid, List<Integer> id);
 
     @Query("DELETE FROM checktimeblock WHERE blockid = :blockid")
     void deleteById(Integer blockid);
