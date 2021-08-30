@@ -36,7 +36,7 @@ public class RandomCheckRepository {
 
     public void insertNewPositive(PositiveCheck check) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.insert(factory.newPositiveFrom(check));
+            mDao.insert(factory.exportPositiveFrom(check));
         });
     }
 

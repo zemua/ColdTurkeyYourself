@@ -33,4 +33,6 @@ public class TimeBlockWithChecks {
     public void setChecks(List<RandomCheck> checks) {
         this.checks = checks;
     }
+
+
 }

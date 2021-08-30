@@ -1,14 +1,13 @@
 package devs.mrp.coolyourturkey.dtos.randomcheck;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
 
 public class CheckFactory {
 
-    public PositiveCheck getPositiveFrom(RandomCheck rc) throws Exception {
+    public PositiveCheck importPositiveFrom(RandomCheck rc) throws Exception {
         if (rc.getType() != RandomCheck.CheckType.POSITIVE) {throw new Exception("Retrieved RandomCheck is the wrong type");}
         PositiveCheck pc = new PositiveCheckImpl();
         pc.setMultiplicador(rc.getMultiplicador());
@@ -18,7 +17,7 @@ public class CheckFactory {
         return pc;
     }
 
-    public Check getNegativeFrom(RandomCheck rc) throws Exception {
+    public Check importNegativeFrom(RandomCheck rc) throws Exception {
         if (rc.getType() != RandomCheck.CheckType.NEGATIVE) {throw new Exception("Retrieved RandomCheck is the wrong type");}
         Check nc = new NegativeCheck();
         nc.setId(rc.getId());
@@ -27,7 +26,7 @@ public class CheckFactory {
         return nc;
     }
 
-    public RandomCheck newPositiveFrom(PositiveCheck pc) {
+    public RandomCheck exportPositiveFrom(PositiveCheck pc) {
         RandomCheck rc = new RandomCheck();
         rc.setMultiplicador(pc.getMultiplicador());
         rc.setType(RandomCheck.CheckType.POSITIVE);
@@ -76,7 +75,7 @@ public class CheckFactory {
     public List<PositiveCheck> positiveFrom(List<RandomCheck> checks) {
         return checks.stream().map(c -> {
             try {
-                return getPositiveFrom(c);
+                return importPositiveFrom(c);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -84,10 +83,21 @@ public class CheckFactory {
         }).collect(Collectors.toList());
     }
 
-    public List<Check> negativeFrom(List<RandomCheck> checks) {
+    public List<Check> importNegativesFrom(List<RandomCheck> checks) {
         return checks.stream().map(c -> {
             try {
-                return getNegativeFrom(c);
+                return importNegativeFrom(c);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }).collect(Collectors.toList());
+    }
+
+    public List<PositiveCheck> importPositivesFrom(List<RandomCheck> checks) {
+        return checks.stream().map(c -> {
+            try {
+                return importPositiveFrom(c);
             } catch (Exception e) {
                 e.printStackTrace();
             }

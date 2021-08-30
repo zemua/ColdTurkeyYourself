@@ -64,7 +64,7 @@ public class TimeBlockFactory {
                 .filter(c -> c.getType().equals(RandomCheck.CheckType.POSITIVE))
                 .map(c -> {
                     try {
-                        return factory.getPositiveFrom(c);
+                        return factory.importPositiveFrom(c);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -78,7 +78,7 @@ public class TimeBlockFactory {
                 .filter(c -> c.getType().equals(RandomCheck.CheckType.NEGATIVE))
                 .map(c -> {
                     try {
-                        return factory.getNegativeFrom(c);
+                        return factory.importNegativeFrom(c);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -89,7 +89,7 @@ public class TimeBlockFactory {
 
     private List<RandomCheck> sendAllChecks(AbstractTimeBlock atb) {
         List<RandomCheck> list = new ArrayList<>();
-        list.addAll(atb.getPositiveChecks().stream().map(c -> factory.newPositiveFrom(c)).collect(Collectors.toList()));
+        list.addAll(atb.getPositiveChecks().stream().map(c -> factory.exportPositiveFrom(c)).collect(Collectors.toList()));
         list.addAll(atb.getPositiveChecks().stream().map(c -> factory.newNegativeFrom(c)).collect(Collectors.toList()));
         return list;
     }

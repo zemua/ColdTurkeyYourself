@@ -17,7 +17,7 @@ import devs.mrp.coolyourturkey.randomcheck.CheckListAdapter;
 public class NegativeCheckListFragment extends AbstractCheckListFragment<Check> {
     @Override
     protected List<Check> getCheckFromExisting(List<RandomCheck> rcs) {
-        return new CheckFactory().negativeFrom(rcs);
+        return new CheckFactory().importNegativesFrom(rcs);
     }
 
     @Override
