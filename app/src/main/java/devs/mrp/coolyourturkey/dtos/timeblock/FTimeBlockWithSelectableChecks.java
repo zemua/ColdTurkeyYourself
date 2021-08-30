@@ -1,8 +1,15 @@
-package devs.mrp.coolyourturkey.dtos.randomcheck;
+package devs.mrp.coolyourturkey.dtos.timeblock;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import devs.mrp.coolyourturkey.dtos.randomcheck.ANegativeCheckSelectable;
+import devs.mrp.coolyourturkey.dtos.randomcheck.APositiveCheckSelectable;
+import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
+import devs.mrp.coolyourturkey.dtos.randomcheck.NegativeCheckSelectable;
+import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
+import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheckSelectable;
 
 public class FTimeBlockWithSelectableChecks {
 

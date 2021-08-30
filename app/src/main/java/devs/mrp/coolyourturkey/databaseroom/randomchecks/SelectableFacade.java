@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.dtos.randomcheck;
+package devs.mrp.coolyourturkey.databaseroom.randomchecks;
 
 import android.app.Application;
 
@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
-import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
 
-public class SelectableFacade extends ASelectablesFacade{
+public class SelectableFacade extends ASelectablesFacade {
 
     public SelectableFacade(Application app, LifecycleOwner owner) {
         super(app, owner);

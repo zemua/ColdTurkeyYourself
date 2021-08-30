@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.dtos.randomcheck;
+package devs.mrp.coolyourturkey.databaseroom.randomchecks;
 
 import android.app.Application;
 
@@ -11,6 +11,10 @@ import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockRepository;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckRepository;
+import devs.mrp.coolyourturkey.dtos.randomcheck.ANegativeCheckSelectable;
+import devs.mrp.coolyourturkey.dtos.randomcheck.APositiveCheckSelectable;
+import devs.mrp.coolyourturkey.dtos.randomcheck.CheckFactory;
+import devs.mrp.coolyourturkey.dtos.timeblock.FTimeBlockWithSelectableChecks;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
