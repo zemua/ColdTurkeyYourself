@@ -179,4 +179,5 @@
     <string name="domingo">domingo</string>
     <string name="controles_negativos">Controles negativos</string>
     <string name="controles_positivos">Controles positivos</string>
+    <string name="seguro_que_deseas_borrar_este_bloque_de_tiempo">¿Seguro que deseas borrar este bloque de tiempo?</string>
 </resources>

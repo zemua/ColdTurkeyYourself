@@ -45,7 +45,7 @@ public class NegativeChecksActivity extends AppCompatActivity {
 
     private void addReceivedCheck(NegativeChecksFragment f) {
         Optional<Object> optional = (Optional<Object>) TransferWithBinders.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_CHECK);
-        if (optional.isPresent()) {
+        if (optional.filter(o -> o instanceof Check).isPresent()) {
             f.setCheck((Check) optional.get());
         }
     }

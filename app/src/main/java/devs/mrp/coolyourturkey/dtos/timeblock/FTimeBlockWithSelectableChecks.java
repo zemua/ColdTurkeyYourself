@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import devs.mrp.coolyourturkey.dtos.randomcheck.ANegativeCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.randomcheck.APositiveCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
+import devs.mrp.coolyourturkey.dtos.randomcheck.NegativeCheck;
 import devs.mrp.coolyourturkey.dtos.randomcheck.NegativeCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheckSelectable;
@@ -40,6 +41,14 @@ public class FTimeBlockWithSelectableChecks {
     public List<ANegativeCheckSelectable> negativeSelectablesFrom(List<Check> allNegChecks, List<Check> selected) {
         Set<Integer> selSet = selected.stream().map(c -> c.getId()).collect(Collectors.toSet());
         return allNegChecks.stream().map(c -> negativeSelectableFrom(c, selSet.contains(c.getId()))).collect(Collectors.toList());
+    }
+
+    public List<APositiveCheckSelectable> positiveSelectablesFrom(List<PositiveCheck> allchecks) {
+        return allchecks.stream().map(c -> positiveSelectableFrom(c, false)).collect(Collectors.toList());
+    }
+
+    public List<ANegativeCheckSelectable> negativeSelectablesFrom(List<Check> allchecks) {
+        return allchecks.stream().map(c -> negativeSelectableFrom(c, false)).collect(Collectors.toList());
     }
 
 }

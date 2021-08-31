@@ -19,7 +19,11 @@
         <entry key="app/src/main/res/layout/fragment_stats_ambos.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_time_block.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_apps_list_adapter_texto.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_imports.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_simple_image.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_simple_text.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_stats_adapter.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_text_and_switch.xml" value="0.2265625" />
       </map>
     </option>
   </component>
