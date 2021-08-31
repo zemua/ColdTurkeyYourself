@@ -165,4 +165,18 @@
     <string name="estos_son_tus_bloques_de_tiempo">Estos son tus bloques de tiempo</string>
     <string name="ahora_se_pueden_usar">Ahora se pueden usar</string>
     <string name="seguro_que_deseas_borrar_este_control">¿Seguro que deseas borrar este control?</string>
+    <string name="activo_entre_las">Activo entre las</string>
+    <string name="y_las">y las</string>
+    <string name="tiempo_entre_controles">Tiempo entre controles</string>
+    <string name="a">a</string>
+    <string name="lunes">lunes</string>
+    <string name="martes">martes</string>
+    <string name="miercoles">miércoles</string>
+    <string name="jueves">jueves</string>
+    <string name="miercoles_abreviado">miérc.</string>
+    <string name="viernes">viernes</string>
+    <string name="sabado">sábado</string>
+    <string name="domingo">domingo</string>
+    <string name="controles_negativos">Controles negativos</string>
+    <string name="controles_positivos">Controles positivos</string>
 </resources>
