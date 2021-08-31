@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.dtos.randomcheck;
 
-public abstract class Check {
+import devs.mrp.coolyourturkey.comun.MyNombrable;
+
+public abstract class Check implements MyNombrable {
 
     private Integer id;
     private String name;
