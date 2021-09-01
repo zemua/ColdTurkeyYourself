@@ -8,13 +8,14 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.dtos.timeblock.CheckTimeBlockViewModel;
 
-public class CheckTimeBlockListFragment extends AbstractCheckTimeBlockListFragment<CheckTimeBlock>{
+public class CheckTimeBlockListFragment extends AbstractCheckTimeBlockListFragment<TimeBlockWithChecks>{
 
     @Override
-    protected LiveData<List<CheckTimeBlock>> getTimeBlocks(CheckTimeBlockViewModel viewModel) {
-        return viewModel.findAllTimeBlocks();
+    protected LiveData<List<TimeBlockWithChecks>> getTimeBlocks(CheckTimeBlockViewModel viewModel) {
+        return viewModel.getAllTimeBlockWithChecks();
     }
 
     @Override

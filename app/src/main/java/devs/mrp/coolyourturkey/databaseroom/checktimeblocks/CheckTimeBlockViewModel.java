@@ -31,6 +31,10 @@ public class CheckTimeBlockViewModel extends AndroidViewModel {
         return mRepo.getTimeBlockWithChecksById(blockid);
     }
 
+    public LiveData<List<TimeBlockWithChecks>> getAllTimeBlockWithChecks() {
+        return mRepo.getAllTimeBlockWithChecks();
+    }
+
     public LiveData<List<CheckTimeBlock>> findAllTimeBlocks() {
         return mRepo.findAllTimeBlocks();
     }

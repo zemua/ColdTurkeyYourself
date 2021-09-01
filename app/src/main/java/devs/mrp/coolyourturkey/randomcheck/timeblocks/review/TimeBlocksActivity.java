@@ -6,7 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Optional;
+
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.TransferWithBinders;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
 
 public class TimeBlocksActivity extends AppCompatActivity {
 
@@ -22,9 +27,18 @@ public class TimeBlocksActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         mFragment = fm.findFragmentById(R.id.fragment_container);
         if (mFragment == null) {
-            mFragment = new TimeBlocksFragment();
-
+            Optional<Object> opt = TransferWithBinders.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_TIME_BLOCK);
+            if (opt.isPresent()) {
+                mFragment = new TimeBlocksFragment((AbstractTimeBlock) opt.get());
+            } else {
+                mFragment = new TimeBlocksFragment();
+            }
+            fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
         }
+
+        ((TimeBlocksFragment)mFragment).addObserver((tipo, feedback) -> {
+            // TODO chain of responsibility
+        });
     }
 
 }

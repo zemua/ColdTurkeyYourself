@@ -15,8 +15,9 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 
-public class TimeBlockAdapter<T extends CheckTimeBlock> extends RecyclerView.Adapter<TimeBlockAdapter.TimeBlockViewHolder<T>> implements MyObservable<T> {
+public class TimeBlockAdapter<T extends TimeBlockWithChecks> extends RecyclerView.Adapter<TimeBlockAdapter.TimeBlockViewHolder<T>> implements MyObservable<T> {
 
     public static final String FEEDBACK_CHECK_SELECTED = "check selected";
 
@@ -24,7 +25,7 @@ public class TimeBlockAdapter<T extends CheckTimeBlock> extends RecyclerView.Ada
 
     private List<T> mDataset;
 
-    public static class TimeBlockViewHolder<S extends CheckTimeBlock> extends RecyclerView.ViewHolder {
+    public static class TimeBlockViewHolder<S extends TimeBlockWithChecks> extends RecyclerView.ViewHolder {
         public TextView textView;
         public S timeBlock;
 
@@ -53,7 +54,7 @@ public class TimeBlockAdapter<T extends CheckTimeBlock> extends RecyclerView.Ada
     @Override
     public void onBindViewHolder(@NonNull TimeBlockAdapter.TimeBlockViewHolder<T> holder, int position) {
         holder.timeBlock = mDataset.get(position);
-        holder.textView.setText(holder.timeBlock.getName());
+        holder.textView.setText(holder.timeBlock.getTimeBlock().getName());
     }
 
     @Override

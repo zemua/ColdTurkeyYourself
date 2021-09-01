@@ -59,6 +59,10 @@ public class CheckTimeBlockRepository {
         return mDao.getTimeBlockWithChecksById(blockid);
     }
 
+    public LiveData<List<TimeBlockWithChecks>> getAllTimeBlockWithChecks(){
+        return mDao.getAllTimeBlockWithChecks();
+    }
+
     public LiveData<List<CheckTimeBlock>> findAllTimeBlocks() {
         return mAllTimeBlocks;
     }

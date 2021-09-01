@@ -40,4 +40,8 @@ public interface CheckTimeBlockDao {
     @Query("SELECT * FROM checktimeblock WHERE blockid = :blockid")
     LiveData<List<TimeBlockWithChecks>> getTimeBlockWithChecksById(Integer blockid);
 
+    @Transaction
+    @Query("SELECT * FROM checktimeblock ORDER BY blockid ASC")
+    LiveData<List<TimeBlockWithChecks>> getAllTimeBlockWithChecks();
+
 }

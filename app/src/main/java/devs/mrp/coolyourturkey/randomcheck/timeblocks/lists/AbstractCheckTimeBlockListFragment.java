@@ -22,10 +22,11 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.dtos.timeblock.CheckTimeBlockViewModel;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
 
-public abstract class AbstractCheckTimeBlockListFragment<T extends CheckTimeBlock> extends Fragment implements MyObservable<T> {
+public abstract class AbstractCheckTimeBlockListFragment<T extends TimeBlockWithChecks> extends Fragment implements MyObservable<T> {
     public static final String CALLBACK_ADD_CONDITION = "callback_add_condition";
     public static final String CALLBACK_CLICK_ELEMENT = "clicked a check from the list";
 

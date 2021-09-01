@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.listchain.BlockListCommander;
 
 public class CheckTimeBlockListActivity extends AppCompatActivity {
 
@@ -26,12 +27,9 @@ public class CheckTimeBlockListActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
         }
 
-        ((CheckTimeBlockListFragment)mFragment).addObserver(new MyObserver<CheckTimeBlock>() {
-            @Override
-            public void callback(String tipo, CheckTimeBlock feedback) {
-                // TODO make chain of responsibility
-            }
-        });
+        ((CheckTimeBlockListFragment)mFragment).addObserver((tipo, feedback) -> {
+                new BlockListCommander(CheckTimeBlockListActivity.this).getHandlerChain().receiveRequest(tipo, feedback);
+            });
     }
 
 }

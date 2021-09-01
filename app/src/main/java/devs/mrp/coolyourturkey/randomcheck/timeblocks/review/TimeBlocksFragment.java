@@ -19,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.FTimePicker;
+import devs.mrp.coolyourturkey.comun.IMyTimePicker;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.ASelectablesFacade;
@@ -29,20 +32,25 @@ import devs.mrp.coolyourturkey.databaseroom.randomchecks.FDbChecksAsSelectable;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.FSelectablesFacade;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.INegativeAsSelectable;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.IPositiveAsSelectable;
-import devs.mrp.coolyourturkey.databaseroom.randomchecks.SelectableFacade;
 import devs.mrp.coolyourturkey.dtos.randomcheck.ANegativeCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.randomcheck.APositiveCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
-import devs.mrp.coolyourturkey.dtos.timeblock.FTimeBlockWithSelectableChecks;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
 
 public class TimeBlocksFragment extends Fragment implements MyObservable<AbstractTimeBlock> {
+
+    public static final String TAG = "TimeBlocksFragment";
 
     protected List<MyObserver<AbstractTimeBlock>> observers = new ArrayList<>();
 
     public static final String FEEDBACK_SAVE_NEW = "nuevo";
     public static final String FEEDBACK_SAVE_EXISTING = "existente";
     public static final String FEEDBACK_DELETE_THIS = "delete";
+
+    private static final int REQUEST_CODE_DESDE_HORA = 0;
+    private static final int REQUEST_CODE_HASTA_HORA = 1;
+    private static final int REQUEST_CODE_MIN_TIME = 2;
+    private static final int REQUEST_CODE_MAX_TIME = 3;
 
     protected Context mContext;
     protected AbstractTimeBlock mTimeBlock;
@@ -69,15 +77,17 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     private SelectablesAdapter<APositiveCheckSelectable> mPositiveAdapter;
     private SelectablesAdapter<ANegativeCheckSelectable> mNegativeAdapter;
 
-    protected int initH = 0;
-    protected int initM = 0;
-    protected int finH = 0;
-    protected int finM = 0;
+    protected int minH = 0;
+    protected int minM = 0;
+    protected int maxH = 0;
+    protected int maxM = 0;
 
     protected int fromH = 0;
     protected int fromM = 0;
     protected int toH = 0;
     protected int toM = 0;
+
+    protected Supplier<IMyTimePicker> pickers = FTimePicker::getNuevo;
 
     public TimeBlocksFragment() {
         super();
@@ -141,6 +151,11 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             fillFieldsWithExistingData(mTimeBlock);
         }
 
+        mPreHoraButton.setOnClickListener(view -> pickers.get().pick(this, REQUEST_CODE_DESDE_HORA, TAG));
+        mPostHoraButton.setOnClickListener(view -> pickers.get().pick(this, REQUEST_CODE_HASTA_HORA, TAG));
+        mControlMin.setOnClickListener(view -> pickers.get().pick(this, REQUEST_CODE_MIN_TIME, TAG));
+        mControlMax.setOnClickListener(view -> pickers.get().pick(this, REQUEST_CODE_MAX_TIME, TAG));
+
         mSaveBlock.setOnClickListener(v -> guardar(v));
 
         mDeleteBlock.setOnClickListener(v -> {
@@ -203,8 +218,8 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mTimeBlock.setName(mName.getText().toString());
         mTimeBlock.setFromTime(fromH*60L*60L*1000L + fromM*60L*1000L);
         mTimeBlock.setToTime(toH*60L*60L*1000L + toM*60L*1000L);
-        mTimeBlock.setMinimumLapse(initH*60L*60L*1000L + initM*60L*1000L);
-        mTimeBlock.setMaximumLapse(finH*60L*60L*1000L + finM*60L*1000L);
+        mTimeBlock.setMinimumLapse(minH *60L*60L*1000L + minM *60L*1000L);
+        mTimeBlock.setMaximumLapse(maxH *60L*60L*1000L + maxM *60L*1000L);
         mTimeBlock.setDays(getDays());
         mTimeBlock.setNegativeChecks(new ArrayList<>(mNegativeAdapter.getSelectedFromDataSet()));
         mTimeBlock.setPositiveChecks(new ArrayList<>(mPositiveAdapter.getSelectedFromDataSet()));
@@ -239,14 +254,10 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
 
     private boolean assertValid() {
         boolean valid = true;
-        if (initH+initM*60 > finH+finM*60) {
+        if (minH + minM *60 > maxH + maxM *60 || (minH == 0 && minM == 0)) {
             valid = false;
-            red(mControlMin);
-            red(mControlMax);
             red(mView.findViewById(R.id.textView28));
         } else {
-            green(mControlMin);
-            green(mControlMax);
             green(mView.findViewById(R.id.textView28));
         }
         if (mName.getText().toString().isEmpty()){
