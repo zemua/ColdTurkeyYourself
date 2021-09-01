@@ -1,10 +1,13 @@
 package devs.mrp.coolyourturkey.randomcheck.timeblocks.review;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +39,7 @@ import devs.mrp.coolyourturkey.dtos.randomcheck.ANegativeCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.randomcheck.APositiveCheckSelectable;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.pickerchain.PickerCommander;
 
 public class TimeBlocksFragment extends Fragment implements MyObservable<AbstractTimeBlock> {
 
@@ -47,10 +51,10 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     public static final String FEEDBACK_SAVE_EXISTING = "existente";
     public static final String FEEDBACK_DELETE_THIS = "delete";
 
-    private static final int REQUEST_CODE_DESDE_HORA = 0;
-    private static final int REQUEST_CODE_HASTA_HORA = 1;
-    private static final int REQUEST_CODE_MIN_TIME = 2;
-    private static final int REQUEST_CODE_MAX_TIME = 3;
+    public static final int REQUEST_CODE_DESDE_HORA = 0;
+    public static final int REQUEST_CODE_HASTA_HORA = 1;
+    public static final int REQUEST_CODE_MIN_TIME = 2;
+    public static final int REQUEST_CODE_MAX_TIME = 3;
 
     protected Context mContext;
     protected AbstractTimeBlock mTimeBlock;
@@ -205,6 +209,14 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         return mView;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "llamado onActivityResult");
+            new PickerCommander(mView, this).getHandlerChain().receiveRequest(String.valueOf(requestCode), resultData);
+        }
+    }
+
     private void fillFieldsWithExistingData(AbstractTimeBlock timeBlock) {
         mName.setText(timeBlock.getName());
         fromH = (int) (mTimeBlock.getFromTime()/(60*60*1000));
@@ -275,5 +287,69 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
 
     private void green(View v) {
         v.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    public int getMinH() {
+        return minH;
+    }
+
+    public void setMinH(int minH) {
+        this.minH = minH;
+    }
+
+    public int getMinM() {
+        return minM;
+    }
+
+    public void setMinM(int minM) {
+        this.minM = minM;
+    }
+
+    public int getMaxH() {
+        return maxH;
+    }
+
+    public void setMaxH(int maxH) {
+        this.maxH = maxH;
+    }
+
+    public int getMaxM() {
+        return maxM;
+    }
+
+    public void setMaxM(int maxM) {
+        this.maxM = maxM;
+    }
+
+    public int getFromH() {
+        return fromH;
+    }
+
+    public void setFromH(int fromH) {
+        this.fromH = fromH;
+    }
+
+    public int getFromM() {
+        return fromM;
+    }
+
+    public void setFromM(int fromM) {
+        this.fromM = fromM;
+    }
+
+    public int getToH() {
+        return toH;
+    }
+
+    public void setToH(int toH) {
+        this.toH = toH;
+    }
+
+    public int getToM() {
+        return toM;
+    }
+
+    public void setToM(int toM) {
+        this.toM = toM;
     }
 }
