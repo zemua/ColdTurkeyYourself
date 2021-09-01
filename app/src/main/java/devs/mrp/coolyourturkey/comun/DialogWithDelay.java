@@ -63,14 +63,14 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         mTiempo = DialogDelayer.CUENTA_ATRAS_SEGUNDOS;
     }
 
-    public DialogWithDelay(int iconResId, String title, String message, Integer replyValue, FeedbackListener<AlertDialog> listener) {
+    public DialogWithDelay(int iconResId, String title, String message, Integer replyValue, int delaySeconds, FeedbackListener<AlertDialog> listener) {
         super();
         restaurar = false;
         mIconResId = iconResId;
         mTitle = title;
         mMensaje = message;
         mReplyValue = replyValue;
-        mTiempo = DialogDelayer.CUENTA_ATRAS_SEGUNDOS;
+        mTiempo = delaySeconds;
         addFeedbackListener(listener);
     }
 

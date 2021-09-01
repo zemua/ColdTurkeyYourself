@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -70,6 +71,10 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
                 .peek(c -> Log.d(TAG, "filtering " + c.getName() + " " + c.isSelected()))
                 .filter(c -> c.isSelected())
                 .collect(Collectors.toList());
+    }
+
+    public List<T> getFullDataSet() {
+        return mDataset;
     }
 
 }

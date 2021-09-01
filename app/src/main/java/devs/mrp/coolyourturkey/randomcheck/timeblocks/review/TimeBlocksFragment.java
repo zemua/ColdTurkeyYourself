@@ -30,6 +30,7 @@ import devs.mrp.coolyourturkey.comun.FTimePicker;
 import devs.mrp.coolyourturkey.comun.IMyTimePicker;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
+import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.ASelectablesFacade;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.FDbChecksAsSelectable;
 import devs.mrp.coolyourturkey.databaseroom.randomchecks.FSelectablesFacade;
@@ -55,6 +56,21 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     public static final int REQUEST_CODE_HASTA_HORA = 1;
     public static final int REQUEST_CODE_MIN_TIME = 2;
     public static final int REQUEST_CODE_MAX_TIME = 3;
+
+    private static final String KEY_BUNDLE_MIN_H = "min h";
+    private static final String KEY_BUNDLE_MIN_M = "min m";
+    private static final String KEY_BUNDLE_MAX_H = "max h";
+    private static final String KEY_BUNDLE_MAX_M = "max m";
+
+    private static final String KEY_BUNDLE_FROM_H = "from h";
+    private static final String KEY_BUNDLE_FROM_M = "from m";
+    private static final String KEY_BUNDLE_TO_H = "to h";
+    private static final String KEY_BUNDLE_TO_M = "to m";
+
+    private static final String KEY_BUNDLE_POSITIVE_CHECKED = "positive checked";
+    private static final String KEY_BUNDLE_NEGATIVE_CHECKED = "negative checked";
+
+    private static final String KEY_BUNDLE_TIME_BLOCK_ENTITY = "time block entity";
 
     protected Context mContext;
     protected AbstractTimeBlock mTimeBlock;
@@ -119,6 +135,15 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBinder(KEY_BUNDLE_POSITIVE_CHECKED, new ObjectWrapperForBinder(mPositiveAdapter.getFullDataSet()));
+        outState.putBinder(KEY_BUNDLE_NEGATIVE_CHECKED, new ObjectWrapperForBinder(mNegativeAdapter.getFullDataSet()));
+
+        saveDataInTimeBlock();
+        outState.putBinder(KEY_BUNDLE_TIME_BLOCK_ENTITY, new ObjectWrapperForBinder(mTimeBlock));
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_time_block, container, false);
 
@@ -138,6 +163,22 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mPositiveRecycler = mView.findViewById(R.id.recyclerControlesPositivos);
         mDeleteBlock = mView.findViewById(R.id.buttonDeleteBlock);
         mSaveBlock = mView.findViewById(R.id.buttonSaveBlock);
+
+        mPositiveAdapter = new SelectablesAdapter<>();
+        mNegativeAdapter = new SelectablesAdapter<>();
+
+        boolean fromSavedInstance = false;
+
+        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
+            fromSavedInstance = true;
+        }
+
+        if (fromSavedInstance) {
+            mTimeBlock = (AbstractTimeBlock) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_TIME_BLOCK_ENTITY)).getData();
+
+            mPositiveAdapter.updateDataset((List<APositiveCheckSelectable>)((ObjectWrapperForBinder) savedInstanceState.getBinder(KEY_BUNDLE_POSITIVE_CHECKED)).getData());
+            mNegativeAdapter.updateDataset((List<ANegativeCheckSelectable>)((ObjectWrapperForBinder) savedInstanceState.getBinder(KEY_BUNDLE_NEGATIVE_CHECKED)).getData());
+        }
 
         LinearLayoutManager layout1 = new LinearLayoutManager(mContext);
         mNegativeRecycler.setLayoutManager(layout1);
@@ -177,30 +218,29 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             dialog.show();
         });
 
-        mPositiveAdapter = new SelectablesAdapter<>();
-        mNegativeAdapter = new SelectablesAdapter<>();
-
-        if (mCurrentFeedback.equals(FEEDBACK_SAVE_EXISTING)){
-            ASelectablesFacade facade = FSelectablesFacade.get(getActivity().getApplication(), this);
-            facade.addFeedbackListener((tipo, feedback, args) -> {
-                mPositiveAdapter.updateDataset(feedback);
-            });
-            facade.addObserver((tipo, feedback) ->{
-                mNegativeAdapter.updateDataset(feedback);
-            });
-            facade.getPositiveSelectablesOf(mTimeBlock.getId());
-            facade.getNegativeSelectablesOf(mTimeBlock.getId());
-        } else {
-            IPositiveAsSelectable pSel = FDbChecksAsSelectable.getPositive(getActivity().getApplication(), this);
-            INegativeAsSelectable nSel = FDbChecksAsSelectable.getNegative(getActivity().getApplication(), this);
-            pSel.addObserver((tipo, feedback) -> {
-                mPositiveAdapter.updateDataset(feedback);
-            });
-            nSel.addObserver((tipo, feedback) -> {
-                mNegativeAdapter.updateDataset(feedback);
-            });
-            pSel.getPositiveSelectables("tag for callback positives");
-            nSel.getNegativeSelectables("tag for callback negatives");
+        if (!fromSavedInstance) {
+            if (mCurrentFeedback.equals(FEEDBACK_SAVE_EXISTING)){
+                ASelectablesFacade facade = FSelectablesFacade.get(getActivity().getApplication(), this);
+                facade.addFeedbackListener((tipo, feedback, args) -> {
+                    mPositiveAdapter.updateDataset(feedback);
+                });
+                facade.addObserver((tipo, feedback) ->{
+                    mNegativeAdapter.updateDataset(feedback);
+                });
+                facade.getPositiveSelectablesOf(mTimeBlock.getId());
+                facade.getNegativeSelectablesOf(mTimeBlock.getId());
+            } else {
+                IPositiveAsSelectable pSel = FDbChecksAsSelectable.getPositive(getActivity().getApplication(), this);
+                INegativeAsSelectable nSel = FDbChecksAsSelectable.getNegative(getActivity().getApplication(), this);
+                pSel.addObserver((tipo, feedback) -> {
+                    mPositiveAdapter.updateDataset(feedback);
+                });
+                nSel.addObserver((tipo, feedback) -> {
+                    mNegativeAdapter.updateDataset(feedback);
+                });
+                pSel.getPositiveSelectables("tag for callback positives");
+                nSel.getNegativeSelectables("tag for callback negatives");
+            }
         }
 
         mPositiveRecycler.setAdapter(mPositiveAdapter);
@@ -225,18 +265,22 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         toH = (int) (timeBlock.getToTime()/(60*60*1000));
         toM = (int) (timeBlock.getToTime()%(60*60*1000))/(60*1000);
         minH = (int) (timeBlock.getMinimumLapse()/(60*60*1000));
-        minM = (int) (timeBlock.getMaximumLapse()%(60*60*1000)/(60*1000));
+        minM = (int) (timeBlock.getMinimumLapse()%(60*60*1000)/(60*1000));
         maxH = (int) (timeBlock.getMaximumLapse()/(60*60*1000));
         maxM = (int) (timeBlock.getMaximumLapse()%(60*60*1000)/(60*1000));
         fillDays(timeBlock);
 
+        setButtonsText();
+    }
+
+    private void setButtonsText() {
         mPreHoraButton.setText(fromH + ":" + fromM);
         mPostHoraButton.setText(toH + ":" + toM);
         mControlMin.setText(minH + ":" + minM);
         mControlMax.setText(maxH + ":" + maxM);
     }
 
-    private void guardar(View v) {
+    private void saveDataInTimeBlock() {
         mTimeBlock.setName(mName.getText().toString());
         mTimeBlock.setFromTime(fromH*60L*60L*1000L + fromM*60L*1000L);
         mTimeBlock.setToTime(toH*60L*60L*1000L + toM*60L*1000L);
@@ -245,6 +289,10 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mTimeBlock.setDays(getDays());
         mTimeBlock.setNegativeChecks(new ArrayList<>(mNegativeAdapter.getSelectedFromDataSet()));
         mTimeBlock.setPositiveChecks(new ArrayList<>(mPositiveAdapter.getSelectedFromDataSet()));
+    }
+
+    private void guardar(View v) {
+        saveDataInTimeBlock();
 
         Log.d(TAG, "checked negatives: " + mTimeBlock.getNegativeChecks());
         Log.d(TAG, "checked positives: " + mTimeBlock.getPositiveChecks());

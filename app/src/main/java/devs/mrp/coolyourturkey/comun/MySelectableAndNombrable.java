@@ -1,4 +1,4 @@
 package devs.mrp.coolyourturkey.comun;
 
-public interface MySelectableAndNombrable extends MySelectable, MyNombrable{
+public interface MySelectableAndNombrable extends MySelectable, MyNombrable, MyIdentificable{
 }
