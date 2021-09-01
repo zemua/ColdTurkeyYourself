@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.databaseroom.checktimeblocks;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -14,6 +15,8 @@ import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
 
 public class CheckTimeBlockRepository {
+
+    private static final String TAG = "CheckTimeBlockRepository";
 
     private CheckTimeBlockDao mDao;
     private LiveData<List<CheckTimeBlock>> mAllTimeBlocks;
@@ -35,14 +38,17 @@ public class CheckTimeBlockRepository {
     }
 
     public void insert(AbstractTimeBlock block) {
+        Log.d(TAG, "recibido para insertar: " + block.toString());
         TimeBlockWithChecks obj = factory.exportFrom(block);
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteCrossReferenceNotPresentIn(block.getId(), obj.getChecks().stream().map(RandomCheck::getId).collect(Collectors.toList()));
             mDao.insert(obj.getTimeBlock());
             obj.getChecks().stream().forEach(c -> {
+                Log.d(TAG, "check of block: " + c.toString());
                 TimeBlockAndChecksCrossRef crossRef = new TimeBlockAndChecksCrossRef();
                 crossRef.setBlockid(obj.getTimeBlock().getBlockid());
                 crossRef.setId(c.getId());
+                Log.d(TAG, "calling dao to insert cross-reference: " + crossRef.getBlockid() + " " + crossRef.getId());
                 mDao.insert(crossRef);
             });
         });

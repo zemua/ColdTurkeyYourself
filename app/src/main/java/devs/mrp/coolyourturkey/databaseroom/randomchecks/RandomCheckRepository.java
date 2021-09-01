@@ -52,7 +52,7 @@ public class RandomCheckRepository {
 
     public void insertNewNegative(Check check) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.insert(factory.newNegativeFrom(check));
+            mDao.insert(factory.exportNegativeFrom(check));
         });
     }
 

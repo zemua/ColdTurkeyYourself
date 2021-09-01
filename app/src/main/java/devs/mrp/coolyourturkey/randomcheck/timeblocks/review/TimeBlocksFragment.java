@@ -218,12 +218,22 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     }
 
     private void fillFieldsWithExistingData(AbstractTimeBlock timeBlock) {
+        Log.d(TAG, timeBlock.toString());
         mName.setText(timeBlock.getName());
-        fromH = (int) (mTimeBlock.getFromTime()/(60*60*1000));
-        fromM = (int) (mTimeBlock.getFromTime()%(60*60*1000))/(60*1000);
-        toH = (int) (mTimeBlock.getFromTime()/(60*60*1000));
-        toM = (int) (mTimeBlock.getFromTime()%(60*60*1000))/(60*1000);
+        fromH = (int) (timeBlock.getFromTime()/(60*60*1000));
+        fromM = (int) (timeBlock.getFromTime()%(60*60*1000))/(60*1000);
+        toH = (int) (timeBlock.getToTime()/(60*60*1000));
+        toM = (int) (timeBlock.getToTime()%(60*60*1000))/(60*1000);
+        minH = (int) (timeBlock.getMinimumLapse()/(60*60*1000));
+        minM = (int) (timeBlock.getMaximumLapse()%(60*60*1000)/(60*1000));
+        maxH = (int) (timeBlock.getMaximumLapse()/(60*60*1000));
+        maxM = (int) (timeBlock.getMaximumLapse()%(60*60*1000)/(60*1000));
         fillDays(timeBlock);
+
+        mPreHoraButton.setText(fromH + ":" + fromM);
+        mPostHoraButton.setText(toH + ":" + toM);
+        mControlMin.setText(minH + ":" + minM);
+        mControlMax.setText(maxH + ":" + maxM);
     }
 
     private void guardar(View v) {
@@ -235,6 +245,9 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mTimeBlock.setDays(getDays());
         mTimeBlock.setNegativeChecks(new ArrayList<>(mNegativeAdapter.getSelectedFromDataSet()));
         mTimeBlock.setPositiveChecks(new ArrayList<>(mPositiveAdapter.getSelectedFromDataSet()));
+
+        Log.d(TAG, "checked negatives: " + mTimeBlock.getNegativeChecks());
+        Log.d(TAG, "checked positives: " + mTimeBlock.getPositiveChecks());
 
         if (assertValid()) {
             doCallBack(mCurrentFeedback, mTimeBlock);

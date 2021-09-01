@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.randomcheck.timeblocks.review;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MySelectableAndNombrable;
 
 public class SelectablesAdapter<T extends MySelectableAndNombrable> extends RecyclerView.Adapter<SelectablesAdapter.SelectablesViewHolder> {
+
+    private final String TAG = "SelectablesAdapter";
 
     private List<T> mDataset = new ArrayList<>();
 
@@ -36,7 +39,11 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_text_and_switch, parent, false);
         SelectablesViewHolder vh = new SelectablesViewHolder(v);
 
-        vh.vhSwitch.setOnClickListener(view -> mDataset.get(vh.getAdapterPosition()).setSelected(vh.vhSwitch.isSelected()));
+        vh.vhSwitch.setOnClickListener(view -> {
+            mDataset.get(vh.getAdapterPosition()).setSelected(((Switch)view).isChecked());
+            Log.d(TAG, "in position: " + vh.getAdapterPosition());
+            Log.d(TAG, "set to: " + ((Switch)view).isChecked());
+        });
 
         return vh;
     }
@@ -44,7 +51,8 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
     @Override
     public void onBindViewHolder(@NonNull SelectablesViewHolder holder, int position) {
         holder.textView.setText(mDataset.get(position).getName());
-        holder.vhSwitch.setSelected(mDataset.get(position).isSelected());
+        holder.vhSwitch.setChecked(mDataset.get(position).isSelected());
+        Log.d(TAG, "position " + position + " is selected: " + mDataset.get(position).isSelected());
     }
 
     @Override
@@ -58,7 +66,10 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
     }
 
     public List<T> getSelectedFromDataSet() {
-        return mDataset.stream().filter(c -> c.isSelected()).collect(Collectors.toList());
+        return mDataset.stream()
+                .peek(c -> Log.d(TAG, "filtering " + c.getName() + " " + c.isSelected()))
+                .filter(c -> c.isSelected())
+                .collect(Collectors.toList());
     }
 
 }

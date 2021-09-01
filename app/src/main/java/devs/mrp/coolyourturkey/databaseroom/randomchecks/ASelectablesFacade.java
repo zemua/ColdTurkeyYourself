@@ -33,6 +33,7 @@ public abstract class ASelectablesFacade implements Feedbacker<List<APositiveChe
 
     public ASelectablesFacade(Application app, LifecycleOwner owner) {
         this.blocksrepo = CheckTimeBlockRepository.getRepo(app);
+        this.checksRepo = RandomCheckRepository.getRepo(app);
         this.owner = owner;
     }
 

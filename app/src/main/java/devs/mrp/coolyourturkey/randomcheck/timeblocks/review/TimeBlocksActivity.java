@@ -12,6 +12,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.TransferWithBinders;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.feedbackchain.BlockFeedbackCommander;
 
 public class TimeBlocksActivity extends AppCompatActivity {
 
@@ -37,7 +38,7 @@ public class TimeBlocksActivity extends AppCompatActivity {
         }
 
         ((TimeBlocksFragment)mFragment).addObserver((tipo, feedback) -> {
-            // TODO chain of responsibility
+            BlockFeedbackCommander.get(this).receiveRequest(tipo, feedback);
         });
     }
 

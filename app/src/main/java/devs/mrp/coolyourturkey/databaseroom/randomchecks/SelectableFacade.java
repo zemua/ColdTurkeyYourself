@@ -24,13 +24,17 @@ public class SelectableFacade extends ASelectablesFacade {
                 checksRepo.getPositiveChecks().observe(owner, new Observer<List<RandomCheck>>() {
                     @Override
                     public void onChanged(List<RandomCheck> randomChecks) {
-                        giveFeedback(FEEDBACK_POSITIVAS, selectablesFactory.positiveSelectablesFrom(
-                                checkFactory.importPositivesFrom(randomChecks),
-                                checkFactory.importPositivesFrom(timeBlockWithChecks.get(0).getChecks()
-                                    .stream()
-                                    .filter(c -> c.getType().equals(RandomCheck.CheckType.POSITIVE))
-                                    .collect(Collectors.toList())))
-                        );
+                        if (timeBlockWithChecks.size() > 0) {
+                            giveFeedback(FEEDBACK_POSITIVAS, selectablesFactory.positiveSelectablesFrom(
+                                    checkFactory.importPositivesFrom(randomChecks),
+                                    checkFactory.importPositivesFrom(timeBlockWithChecks.get(0).getChecks()
+                                            .stream()
+                                            .filter(c -> c.getType().equals(RandomCheck.CheckType.POSITIVE))
+                                            .collect(Collectors.toList())))
+                            );
+                        } else {
+                            giveFeedback(FEEDBACK_POSITIVAS, selectablesFactory.positiveSelectablesFrom(checkFactory.importPositivesFrom(randomChecks)));
+                        }
                     }
                 });
             }
@@ -45,13 +49,17 @@ public class SelectableFacade extends ASelectablesFacade {
                 checksRepo.getNegativeChecks().observe(owner, new Observer<List<RandomCheck>>() {
                     @Override
                     public void onChanged(List<RandomCheck> randomChecks) {
-                        doCallBack(FEEDBACK_NEGATIVAS, selectablesFactory.negativeSelectablesFrom(
-                                checkFactory.importNegativesFrom(randomChecks),
-                                checkFactory.importNegativesFrom(timeBlockWithChecks.get(0).getChecks()
-                                        .stream()
-                                        .filter(c -> c.getType().equals(RandomCheck.CheckType.NEGATIVE))
-                                        .collect(Collectors.toList())))
-                        );
+                        if (timeBlockWithChecks.size() > 0) {
+                            doCallBack(FEEDBACK_NEGATIVAS, selectablesFactory.negativeSelectablesFrom(
+                                    checkFactory.importNegativesFrom(randomChecks),
+                                    checkFactory.importNegativesFrom(timeBlockWithChecks.get(0).getChecks()
+                                            .stream()
+                                            .filter(c -> c.getType().equals(RandomCheck.CheckType.NEGATIVE))
+                                            .collect(Collectors.toList())))
+                            );
+                        } else {
+                            doCallBack(FEEDBACK_NEGATIVAS, selectablesFactory.negativeSelectablesFrom(checkFactory.importNegativesFrom(randomChecks)));
+                        }
                     }
                 });
             }

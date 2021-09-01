@@ -28,6 +28,7 @@ public class CheckFactory {
 
     public RandomCheck exportPositiveFrom(PositiveCheck pc) {
         RandomCheck rc = new RandomCheck();
+        rc.setId(pc.getId());
         rc.setMultiplicador(pc.getMultiplicador());
         rc.setType(RandomCheck.CheckType.POSITIVE);
         rc.setName(pc.getName());
@@ -46,8 +47,9 @@ public class CheckFactory {
         return rc;
     }
 
-    public RandomCheck newNegativeFrom(Check c) {
+    public RandomCheck exportNegativeFrom(Check c) {
         RandomCheck rc = new RandomCheck();
+        rc.setId(c.getId());
         rc.setName(c.getName());
         rc.setQuestion(c.getQuestion());
         rc.setType(RandomCheck.CheckType.NEGATIVE);

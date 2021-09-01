@@ -17,6 +17,14 @@ public abstract class AbstractTimeBlock {
     private List<PositiveCheck> positiveChecks;
     private List<Check> negativeChecks;
 
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + ", fromTime: " +
+                fromTime + ", toTime: " + toTime + ", minimumLapse: " +
+                minimumLapse + ", maximumLapse: " + maximumLapse + ", { days: " +
+                days.toString() + "}, { positiveChecks: " + positiveChecks.toString() +
+                "}, { negativeChecks: " + negativeChecks.toString() + "} }";
+    }
+
     public Integer getId() {
         return id;
     }

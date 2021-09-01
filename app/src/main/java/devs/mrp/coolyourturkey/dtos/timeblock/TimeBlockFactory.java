@@ -90,7 +90,7 @@ public class TimeBlockFactory {
     private List<RandomCheck> sendAllChecks(AbstractTimeBlock atb) {
         List<RandomCheck> list = new ArrayList<>();
         list.addAll(atb.getPositiveChecks().stream().map(c -> factory.exportPositiveFrom(c)).collect(Collectors.toList()));
-        list.addAll(atb.getPositiveChecks().stream().map(c -> factory.newNegativeFrom(c)).collect(Collectors.toList()));
+        list.addAll(atb.getNegativeChecks().stream().map(c -> factory.exportNegativeFrom(c)).collect(Collectors.toList()));
         return list;
     }
 
