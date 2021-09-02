@@ -59,6 +59,7 @@ public class CheckManager implements ICheckManager{
         mNotificador = new Notificador(app, app);
         mWorkManager = WorkManager.getInstance(app);
         mainHandler = new Handler(Looper.getMainLooper());
+        RandomCheckWorker.configureNotification(mNotificador, mApp);
     }
 
     public static CheckManager getInstance(Application app, LifecycleOwner owner) {
@@ -132,6 +133,7 @@ public class CheckManager implements ICheckManager{
     }
 
     private void setWorkerFor(AbstractTimeBlock block) {
+        RandomCheckWorker.addBlock(block);
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
                 .setInitialDelay(getDelay(block), TimeUnit.MILLISECONDS)
                 .build();
@@ -168,8 +170,13 @@ public class CheckManager implements ICheckManager{
     }
 
     private long getDelay(AbstractTimeBlock block) {
-        Optional<Long> opt = Optional.of(mSchedules.get(block.getId()));
-        long schedule = mScheduler.schedule(block, opt.orElse(0L));
+        long opt;
+        if (mSchedules.containsKey(block.getId())) {
+            opt = mSchedules.get(block.getId());
+        } else {
+            opt = 0;
+        }
+        long schedule = mScheduler.schedule(block, opt);
         mSchedules.put(block.getId(), schedule);
         return schedule - mScheduler.getNow();
     }

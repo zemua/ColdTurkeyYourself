@@ -40,14 +40,27 @@ public class CheckPerformerActivity extends AppCompatActivity {
             Log.d(TAG, "No data in the bundle!");
         }
 
-        mNegativeCheck = mTimeBlock.getNegativeChecks().get((int)Math.random()*mTimeBlock.getNegativeChecks().size());
-        mPositiveCheck = mTimeBlock.getPositiveChecks().get((int)Math.random()*mTimeBlock.getPositiveChecks().size());
+        if (mTimeBlock.getNegativeChecks() != null && mTimeBlock.getNegativeChecks().size() > 0) {
+            mNegativeCheck = mTimeBlock.getNegativeChecks().get((int)Math.random()*mTimeBlock.getNegativeChecks().size());
+        }
+        if (mTimeBlock.getPositiveChecks() != null && mTimeBlock.getPositiveChecks().size() > 0) {
+            mPositiveCheck = mTimeBlock.getPositiveChecks().get((int)Math.random()*mTimeBlock.getPositiveChecks().size());
+        }
+
+        if (mPositiveCheck == null) {
+            this.finish();
+        }
+
         mPremio = (mTimeBlock.getMinimumLapse() + ((mTimeBlock.getMaximumLapse()-mTimeBlock.getMinimumLapse())/2)) * mPositiveCheck.getMultiplicador();
 
         FragmentManager fm = getSupportFragmentManager();
         mFragment = fm.findFragmentById(R.id.fragment_container);
         if (mFragment == null) {
-            mFragment = new CheckPerformerFragment(mNegativeCheck.getQuestion(), true, false, false);
+            if (mNegativeCheck != null) {
+                mFragment = new CheckPerformerFragment(mNegativeCheck.getQuestion(), true, false, false);
+            } else {
+                mFragment = new CheckPerformerFragment(mPositiveCheck.getQuestion(), false, true, true);
+            }
         }
         fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
 
