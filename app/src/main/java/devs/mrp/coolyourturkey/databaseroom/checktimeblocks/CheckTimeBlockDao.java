@@ -21,6 +21,9 @@ public interface CheckTimeBlockDao {
     @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid")
     void deleteAllCheckReferencesOfBlock(Integer blockid);
 
+    @Query("DELETE FROM timeblockandcheckcrossref WHERE id = :id")
+    void deleteAllReferencesToCheck(Integer id);
+
     @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid AND id = :id")
     void deleteCrossReference(Integer blockid, Integer id);
 

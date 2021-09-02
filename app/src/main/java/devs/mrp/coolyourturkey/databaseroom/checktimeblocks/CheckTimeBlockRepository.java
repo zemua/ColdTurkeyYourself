@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.room.Transaction;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ public class CheckTimeBlockRepository {
         });
     }
 
+    @Transaction
     public void deleteById(Integer id) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteById(id);

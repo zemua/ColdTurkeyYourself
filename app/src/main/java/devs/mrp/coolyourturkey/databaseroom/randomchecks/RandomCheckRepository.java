@@ -3,10 +3,12 @@ package devs.mrp.coolyourturkey.databaseroom.randomchecks;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.room.Transaction;
 
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockDao;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.CheckFactory;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
@@ -14,6 +16,7 @@ import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 public class RandomCheckRepository {
 
     private RandomCheckDao mDao;
+    private CheckTimeBlockDao timeBlockDao;
     private LiveData<List<RandomCheck>> mPositiveChecks;
     private LiveData<List<RandomCheck>> mNegativeChecks;
     private static RandomCheckRepository mRepo;
@@ -22,6 +25,7 @@ public class RandomCheckRepository {
     private RandomCheckRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.randomCheckDao();
+        timeBlockDao = db.checkTimeBlockDao();
         mPositiveChecks = mDao.findAllTypeChecks(RandomCheck.CheckType.POSITIVE);
         mNegativeChecks = mDao.findAllTypeChecks(RandomCheck.CheckType.NEGATIVE);
         factory = new CheckFactory();
@@ -66,9 +70,11 @@ public class RandomCheckRepository {
         });
     }
 
+    @Transaction
     public void deleteById(Integer id) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteById(id);
+            timeBlockDao.deleteAllReferencesToCheck(id);
         });
     }
 
