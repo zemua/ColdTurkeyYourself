@@ -16,7 +16,7 @@ public class Scheduler implements IScheduler{
     private long randomLapse;
 
     @Override
-    public boolean outisdeQueryIfOnSchedule(long milis) {
+    public boolean outisdeQueryIfOnSchedule(long milis) { // TODO to count the timeBlockDays in the schedule
         now = System.currentTimeMillis();
         currentSchedule = milis;
         return scheduleInsideTimeFrame();
