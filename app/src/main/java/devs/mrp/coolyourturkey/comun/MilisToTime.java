@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.comun;
 
+import android.icu.util.Calendar;
+
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
 
@@ -50,4 +52,14 @@ public class MilisToTime {
     }
 
     public static long getDaysFromMilis(long milis) {return TimeUnit.MILLISECONDS.toDays(milis);}
+
+    public static long milisDateToMilisTime(long milis) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(milis);
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        int m = c.get(Calendar.MINUTE);
+
+        long nowToMilis = getMilisDeHoras(h) + getMilisDeMinutos(m);
+        return nowToMilis;
+    }
 }

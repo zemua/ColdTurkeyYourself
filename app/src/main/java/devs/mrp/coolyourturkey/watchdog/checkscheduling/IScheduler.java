@@ -4,6 +4,6 @@ import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 
 public interface IScheduler {
 
-    public Long schedule(AbstractTimeBlock block);
+    public Long schedule(AbstractTimeBlock block, Long schedule);
 
 }
