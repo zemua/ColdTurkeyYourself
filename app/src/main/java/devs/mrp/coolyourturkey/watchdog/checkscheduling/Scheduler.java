@@ -16,6 +16,13 @@ public class Scheduler implements IScheduler{
     private long randomLapse;
 
     @Override
+    public boolean outisdeQueryIfOnSchedule(long milis) {
+        now = System.currentTimeMillis();
+        currentSchedule = milis;
+        return scheduleInsideTimeFrame();
+    }
+
+    @Override
     public Long schedule(AbstractTimeBlock block, Long schedule) {
         now = System.currentTimeMillis();
         hourNow = MilisToTime.milisDateToMilisTime(now);
@@ -95,6 +102,11 @@ public class Scheduler implements IScheduler{
 
     private long timeToPassFromNow() {
         return randomLapse + framesToPassFromNow() * timeNotOfFrame();
+    }
+
+    @Override
+    public long getNow() {
+        return now;
     }
 
 }

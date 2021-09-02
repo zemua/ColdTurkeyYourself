@@ -6,4 +6,8 @@ public interface IScheduler {
 
     public Long schedule(AbstractTimeBlock block, Long schedule);
 
+    public long getNow();
+
+    public boolean outisdeQueryIfOnSchedule(long milis);
+
 }

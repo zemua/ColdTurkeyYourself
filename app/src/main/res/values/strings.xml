@@ -182,4 +182,6 @@
     <string name="seguro_que_deseas_borrar_este_bloque_de_tiempo">¿Seguro que deseas borrar este bloque de tiempo?</string>
     <string name="si">si</string>
     <string name="no">no</string>
+    <string name="notification_channel_for_random_checks_name">Control aleatorio</string>
+    <string name="notification_channel_for_random_checks_description">Haz click aquí para reclamar tu recompensa</string>
 </resources>

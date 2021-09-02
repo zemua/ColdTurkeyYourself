@@ -14,6 +14,7 @@ import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
+import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 
 public class CheckTimeBlockRepository {
 
@@ -56,7 +57,8 @@ public class CheckTimeBlockRepository {
     }
 
     @Transaction
-    public void deleteById(Integer id) {
+    public void deleteById(Integer id, CheckManager checkManager) {
+        checkManager.stopWorkOfId(id); // stop random check worker alarm for this id
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteById(id);
             mDao.deleteAllCheckReferencesOfBlock(id);

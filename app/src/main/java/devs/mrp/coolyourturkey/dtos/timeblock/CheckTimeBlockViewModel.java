@@ -11,6 +11,7 @@ import java.util.List;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockRepository;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
+import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 
 public class CheckTimeBlockViewModel extends AndroidViewModel {
 
@@ -27,8 +28,8 @@ public class CheckTimeBlockViewModel extends AndroidViewModel {
         mRepo.insert(block);
     }
 
-    public void deleteById(Integer id) {
-        mRepo.deleteById(id);
+    public void deleteById(Integer id, CheckManager checkManager) {
+        mRepo.deleteById(id, checkManager);
     }
 
     public LiveData<List<TimeBlockWithChecks>> getTimeBlockWithChecksById(Integer blockid) {

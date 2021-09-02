@@ -27,6 +27,7 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.ActionRequestorInterface;
+import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 import java.util.HashMap;
@@ -51,6 +52,7 @@ public class WatchdogService extends LifecycleService {
     private Exporter mExporter;
     private Importer mImporter;
     private ActionRequestorInterface actionRequestor;
+    private CheckManager mCheckManager;
 
     private WatchDogData mData;
 
@@ -61,6 +63,7 @@ public class WatchdogService extends LifecycleService {
         mExporter = new Exporter(this);
         mImporter = new Importer(this, this.getApplication());
         actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor();
+        mCheckManager = CheckManager.getInstance(this.getApplication(), this);
 
         mData = MyBeanFactory.getWatchDogDataFactory().create(this)
                 .setSleepTime(1000 * 3) // 3 seconds between checks
@@ -198,6 +201,7 @@ public class WatchdogService extends LifecycleService {
             data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
             data.getNegativeConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
             data.getNegativeConditionTimeChecker().refreshNotifications(); // send notification if proceeds
+            mCheckManager.refresh();
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
