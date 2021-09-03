@@ -94,6 +94,7 @@ public class CheckManager implements ICheckManager{
                 mBlocks = blocks.stream()
                         .peek(b -> Log.d(TAG, "block: " + b.getName() + " min " + b.getMinimumLapse() + " max " + b.getMaximumLapse()))
                         .filter(b -> b.getDays().size() > 0) // filter out time blocks that have no days assigned
+                        .filter(b -> b.getPositiveChecks().size() > 0) // filter out time blocks that have no positive checks
                         .collect(Collectors.toMap(b -> b.getId(), b -> b));
                 // remove any schedules of time-blocks that no longer exist
                 Iterator<Map.Entry<Integer, Long>> i = mSchedules.entrySet().iterator();

@@ -39,20 +39,22 @@ public class CheckTimeBlockRepository {
         return mRepo;
     }
 
+    @Transaction
     public void insert(AbstractTimeBlock block) {
         Log.d(TAG, "recibido para insertar: " + block.toString());
         TimeBlockWithChecks obj = factory.exportFrom(block);
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteCrossReferenceNotPresentIn(block.getId(), obj.getChecks().stream().map(RandomCheck::getId).collect(Collectors.toList()));
-            mDao.insert(obj.getTimeBlock());
+            long insId = mDao.insert(obj.getTimeBlock());
             obj.getChecks().stream().forEach(c -> {
                 Log.d(TAG, "check of block: " + c.toString());
                 TimeBlockAndChecksCrossRef crossRef = new TimeBlockAndChecksCrossRef();
-                crossRef.setBlockid(obj.getTimeBlock().getBlockid());
+                crossRef.setBlockid((int)insId);
                 crossRef.setId(c.getId());
                 Log.d(TAG, "calling dao to insert cross-reference: " + crossRef.getBlockid() + " " + crossRef.getId());
                 mDao.insert(crossRef);
             });
+            //mDao.insert(obj);
         });
     }
 

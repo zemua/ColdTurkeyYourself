@@ -13,10 +13,13 @@ import java.util.List;
 public interface CheckTimeBlockDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(CheckTimeBlock checkTimeBlock);
+    long insert(CheckTimeBlock checkTimeBlock);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(TimeBlockAndChecksCrossRef crossRef);
+
+    /*@Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(TimeBlockWithChecks timeBlockWithChecks);*/
 
     @Query("DELETE FROM timeblockandcheckcrossref WHERE blockid = :blockid")
     void deleteAllCheckReferencesOfBlock(Integer blockid);
