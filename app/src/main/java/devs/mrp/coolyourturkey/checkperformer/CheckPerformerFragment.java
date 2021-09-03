@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -38,7 +40,14 @@ public class CheckPerformerFragment extends Fragment implements MyObservableNega
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_random_control, container, false);
 
-        // TODO
+        TextView pregunta = mView.findViewById(R.id.textPregunta);
+        pregunta.setText(mQuestion);
+
+        Button botonNo = mView.findViewById(R.id.button);
+        botonNo.setOnClickListener(view -> doNegativeCallback(mFeedback));
+
+        Button botonSi = mView.findViewById(R.id.button2);
+        botonSi.setOnClickListener(view -> doPositiveCallback(mFeedback));
 
         return mView;
     }

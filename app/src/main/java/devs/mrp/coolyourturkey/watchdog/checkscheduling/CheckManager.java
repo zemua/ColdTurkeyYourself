@@ -76,6 +76,7 @@ public class CheckManager implements ICheckManager{
             long now = System.currentTimeMillis();
             if (now > lastRefresh+betweenRefreshes) {
                 lastRefresh = now;
+                Log.d(TAG, "going to refresh workers from watchdog");
                 refreshWorkers();
             }
         });
@@ -86,8 +87,9 @@ public class CheckManager implements ICheckManager{
             mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
             // get all time-blocks and set observer
             mFacade.getAll((tipo, blocks) -> {
+                Log.d(TAG, "updated observer of Facade for the TimeBlocks");
                 // update time blocks
-                mBlocks = blocks.stream().collect(Collectors.toMap(b -> b.getId(), b -> b));
+                mBlocks = blocks.stream().peek(b -> Log.d(TAG, "block: " + b.getName())).collect(Collectors.toMap(b -> b.getId(), b -> b));
                 // remove any schedules of time-blocks that no longer exist
                 Iterator<Map.Entry<Integer, Long>> i = mSchedules.entrySet().iterator();
                 while (i.hasNext()) {
@@ -96,7 +98,10 @@ public class CheckManager implements ICheckManager{
                         i.remove();
                     }
                 }
-                mBlocks.forEach((a,b) -> setWorkerFor(b));
+                mBlocks.forEach((a,b) -> {
+                    Log.d(TAG, "setting worker for " + b.getName() + " with current schedule " + mSchedules.get(b.getId()));
+                    setWorkerFor(b);
+                });
             });
         });
     }
