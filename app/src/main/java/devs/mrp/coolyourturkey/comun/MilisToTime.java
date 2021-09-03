@@ -2,6 +2,10 @@ package devs.mrp.coolyourturkey.comun;
 
 import android.icu.util.Calendar;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
 
@@ -54,12 +58,24 @@ public class MilisToTime {
     public static long getDaysFromMilis(long milis) {return TimeUnit.MILLISECONDS.toDays(milis);}
 
     public static long milisDateToMilisTime(long milis) {
-        Calendar c = Calendar.getInstance();
+        // Calendar is legacy class
+        /*Calendar c = Calendar.getInstance();
         c.setTimeInMillis(milis);
         int h = c.get(Calendar.HOUR_OF_DAY);
-        int m = c.get(Calendar.MINUTE);
+        int m = c.get(Calendar.MINUTE);*/
+
+        ZonedDateTime zone = Instant.ofEpochMilli(milis)
+                .atZone(ZoneId.systemDefault());
+        int h = zone.getHour();
+        int m = zone.getMinute();
 
         long nowToMilis = getMilisDeHoras(h) + getMilisDeMinutos(m);
         return nowToMilis;
+    }
+
+    public static int milisToDayOfWeek(long milis) {
+        ZonedDateTime zone = Instant.ofEpochMilli(milis)
+                .atZone(ZoneId.systemDefault());
+        return zone.getDayOfWeek().getValue();
     }
 }

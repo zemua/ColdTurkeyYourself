@@ -33,18 +33,20 @@ public class RandomCheckWorker extends Worker {
     private static final int notificationId = 84;
 
     private static ArrayDeque<AbstractTimeBlock> mBlock = new ArrayDeque<>();
+    private AbstractTimeBlock currentBlock;
     //private static Notificador mNotificador;
     private static Context mContext;
 
     public RandomCheckWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         mContext = context;
+        currentBlock = mBlock.pollLast();
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        AbstractTimeBlock block = mBlock.pollLast();
+        AbstractTimeBlock block = currentBlock;
         Intent intent = new Intent(mContext, CheckPerformerActivity.class);
         if (block.getNegativeChecks() != null && block.getNegativeChecks().size() > 0) {
             intent.putExtra(KEY_FOR_NEGATIVE_QUESTION, block.getNegativeChecks().get((int) Math.random() * block.getNegativeChecks().size()).getQuestion());
