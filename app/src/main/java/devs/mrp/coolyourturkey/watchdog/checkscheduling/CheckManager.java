@@ -61,7 +61,6 @@ public class CheckManager implements ICheckManager{
         mNotificador = new Notificador(app, app);
         mWorkManager = WorkManager.getInstance(app);
         mainHandler = new Handler(Looper.getMainLooper());
-        RandomCheckWorker.configureNotification(mNotificador, mApp);
     }
 
     public static CheckManager getInstance(Application app, LifecycleOwner owner) {
@@ -95,6 +94,7 @@ public class CheckManager implements ICheckManager{
                         .peek(b -> Log.d(TAG, "block: " + b.getName() + " min " + b.getMinimumLapse() + " max " + b.getMaximumLapse()))
                         .filter(b -> b.getDays().size() > 0) // filter out time blocks that have no days assigned
                         .filter(b -> b.getPositiveChecks().size() > 0) // filter out time blocks that have no positive checks
+                        .filter(b -> b.getMaximumLapse() > 50000) // filter out time blocks that have too low lapse by mistake
                         .collect(Collectors.toMap(b -> b.getId(), b -> b));
                 // remove any schedules of time-blocks that no longer exist
                 Iterator<Map.Entry<Integer, Long>> i = mSchedules.entrySet().iterator();

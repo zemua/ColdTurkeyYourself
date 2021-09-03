@@ -184,4 +184,6 @@
     <string name="no">no</string>
     <string name="notification_channel_for_random_checks_name">Control aleatorio</string>
     <string name="notification_channel_for_random_checks_description">Haz click aquí para reclamar tu recompensa</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="estas_seguro">¿Estás seguro?</string>
 </resources>
