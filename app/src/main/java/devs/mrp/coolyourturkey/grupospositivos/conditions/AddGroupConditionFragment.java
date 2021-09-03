@@ -236,7 +236,7 @@ public class AddGroupConditionFragment extends Fragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
+                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri() & !checkEmptyGroup()) {
                     ConditionToGroup condition = new ConditionToGroup();
 
                     condition.setGroupid(getGroupId());
@@ -373,6 +373,20 @@ public class AddGroupConditionFragment extends Fragment {
             return true;
         }
         mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
+    private boolean checkEmptyGroup() {
+        if (mConditionType != ConditionToGroup.ConditionType.GROUP) {
+            mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mTargetGroupSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mTargetGroupSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
         return false;
     }
 

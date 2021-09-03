@@ -186,7 +186,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
+                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri() & !checkEmptyGroup()) {
                     ConditionNegativeToGroup condition = MyBeanFactory.getNewNegativeCondition();
 
                     condition.setId(mConditionId);
@@ -325,6 +325,20 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
             return true;
         }
         mSelectedFileTextView.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
+    private boolean checkEmptyGroup() {
+        if (mConditionType != ConditionNegativeToGroup.ConditionType.GROUP) {
+            mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mTargetGroupSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mTargetGroupSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
         return false;
     }
 
