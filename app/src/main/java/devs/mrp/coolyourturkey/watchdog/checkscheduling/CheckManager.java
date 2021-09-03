@@ -77,7 +77,6 @@ public class CheckManager implements ICheckManager{
             long now = System.currentTimeMillis();
             if (now > lastRefresh+betweenRefreshes) {
                 lastRefresh = now;
-                Log.d(TAG, "going to refresh workers from watchdog");
                 refreshWorkers();
             }
         });
@@ -88,10 +87,8 @@ public class CheckManager implements ICheckManager{
             mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
             // get all time-blocks and set observer
             mFacade.getAll((tipo, blocks) -> {
-                Log.d(TAG, "updated observer of Facade for the TimeBlocks");
                 // update time blocks
                 mBlocks = blocks.stream()
-                        .peek(b -> Log.d(TAG, "block: " + b.getName() + " min " + b.getMinimumLapse() + " max " + b.getMaximumLapse()))
                         .filter(b -> b.getDays().size() > 0) // filter out time blocks that have no days assigned
                         .filter(b -> b.getPositiveChecks().size() > 0) // filter out time blocks that have no positive checks
                         .filter(b -> b.getMaximumLapse() > 50000) // filter out time blocks that have too low lapse by mistake
@@ -105,7 +102,6 @@ public class CheckManager implements ICheckManager{
                     }
                 }
                 mBlocks.forEach((a,b) -> {
-                    Log.d(TAG, "setting worker for " + b.getName() + " with current schedule " + mSchedules.get(b.getId()));
                     setWorkerFor(b);
                 });
             });
@@ -146,7 +142,6 @@ public class CheckManager implements ICheckManager{
     private void setWorkerFor(AbstractTimeBlock block) {
         RandomCheckWorker.addBlock(block);
         long delay = getDelay(block);
-        Log.d(TAG, "delay for work: " + delay);
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build();
@@ -165,12 +160,10 @@ public class CheckManager implements ICheckManager{
         liveDatas.put(block.getId(), ld);
         ld.observe(mOwner, workInfo -> {
             if (workInfo.size() == 0 && mBlocks.containsKey(block.getId())) {
-                Log.d(TAG, "setting new worker from worker observer because size == 0 for block " + block.getName());
                 setWorkerFor(mBlocks.get(block.getId()));
             } else {
                 workInfo.forEach(wi -> {
                     if (mBlocks.containsKey(block.getId()) && (wi.getState() == null || wi.getState().equals(WorkInfo.State.BLOCKED) || wi.getState().equals(WorkInfo.State.CANCELLED) || wi.getState().equals(WorkInfo.State.FAILED) || wi.getState().equals(WorkInfo.State.SUCCEEDED))) {
-                        Log.d(TAG, "setting new worker from worker observer for block " + block.getName());
                         setWorkerFor(mBlocks.get(block.getId()));
                     }
                 });
@@ -191,13 +184,10 @@ public class CheckManager implements ICheckManager{
         }
         long schedule = mScheduler.schedule(block, opt);
         mSchedules.put(block.getId(), schedule);
-        Log.d(TAG, "abs schedule is " + schedule + " now is " + mScheduler.getNow() + " and delay is " + (schedule - mScheduler.getNow()));
-        Log.d(TAG, "next scheduled for " + Instant.ofEpochMilli(schedule).atZone(ZoneId.systemDefault()).toString());
         return schedule - mScheduler.getNow();
     }
 
     public void stopWorkOfId(int blockId) {
-        Log.d(TAG, "calling to stop work of id " + blockId);
         mWorkManager.cancelUniqueWork(workUniqueName(blockId));
         liveDatas.remove(blockId);
         mSchedules.remove(blockId);

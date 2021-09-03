@@ -38,8 +38,6 @@ public class Scheduler implements IScheduler{
         from = block.getFromTime();
         to = block.getToTime();
         currentSchedule = schedule;
-        Log.d(TAG, "block minimum lapse = " + block.getMinimumLapse());
-        Log.d(TAG, "block maximum lapse = " + block.getMaximumLapse());
         randomLapse = (long) (Math.random() * (block.getMaximumLapse()-block.getMinimumLapse()))+block.getMinimumLapse();
         if (!scheduleInsideTimeFrame() || !ifDayIncluded(currentSchedule) || scheduleLongerThanMax()) {
             return now + timeToPassFromNow();

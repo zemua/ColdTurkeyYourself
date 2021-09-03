@@ -32,7 +32,6 @@ public class TimePusher implements TimePusherInterface{
         ld.observe(owner, contadores -> {
             ld.removeObservers(owner);
             Contador contador = contadores.get(0);
-            Log.d(TAG, "acumulado " + contador.getAcumulado() + " a aumentar " + acumulado + " dayOfEpoch" + contador.getDayOfEpoch());
             push(epoch, contador.getAcumulado()+acumulado);
         });
     }

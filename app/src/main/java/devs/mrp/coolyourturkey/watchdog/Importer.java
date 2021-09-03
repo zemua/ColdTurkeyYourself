@@ -91,7 +91,7 @@ public class Importer implements Feedbacker<Long> {
                 try {
                     if (tenemosPermisoLectura(mApp, uri)) {
                         String longString = readTextFromUri(uri);
-                        Long longNum = Long.parseLong(longString);
+                        Long longNum = Long.parseLong(longString.trim());
                         if (longNum != null) {
                             preResult += longNum;
                         }
