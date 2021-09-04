@@ -89,13 +89,13 @@ public class CheckManager implements ICheckManager{
     private void run() {
         mainHandler.post(() -> {
             mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
-            // delete existing works
-            mBlocks.entrySet().stream()
-                    .forEach(s -> stopWorkOfId(s.getKey()));
-            // delete observer for work re-start
-            liveDatas.entrySet().stream().forEach(s -> s.getValue().removeObservers(mOwner));
             // get all time-blocks and set observer
             mFacade.getAll((tipo, blocks) -> {
+                // delete existing works
+                mBlocks.entrySet().stream()
+                        .forEach(s -> stopWorkOfId(s.getKey()));
+                // delete observer for work re-start
+                liveDatas.entrySet().stream().forEach(s -> s.getValue().removeObservers(mOwner));
                 // update time blocks
                 mBlocks = blocks.stream()
                         .filter(b -> b.getDays().size() > 0) // filter out time blocks that have no days assigned
