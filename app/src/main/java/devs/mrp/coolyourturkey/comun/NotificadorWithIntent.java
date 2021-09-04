@@ -24,9 +24,9 @@ public class NotificadorWithIntent {
         return n;
     }
 
-    public static void notify (Notification n, Context context){
+    public static void notify (Notification n, Context context, Integer notificationId){
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(0, n);
+        nm.notify(notificationId, n);
     }
 
 }

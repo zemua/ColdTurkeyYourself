@@ -38,6 +38,7 @@ public class CheckManager implements ICheckManager{
     private static final String TAG = "CheckManager";
 
     public static final String EXTRA_BLOCK_ID = "extra.block.id";
+    public static final String EXTRA_BLOCK_NAME = "extra.block.name";
 
     private ITimeBlockFacade mFacade;
     private static CheckManager instance;
@@ -88,6 +89,11 @@ public class CheckManager implements ICheckManager{
     private void run() {
         mainHandler.post(() -> {
             mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
+            // delete existing works
+            mBlocks.entrySet().stream()
+                    .forEach(s -> stopWorkOfId(s.getKey()));
+            // delete observer for work re-start
+            liveDatas.entrySet().stream().forEach(s -> s.getValue().removeObservers(mOwner));
             // get all time-blocks and set observer
             mFacade.getAll((tipo, blocks) -> {
                 // update time blocks
@@ -165,7 +171,9 @@ public class CheckManager implements ICheckManager{
         Log.d(TAG, "set worker for " + block.getName());
         if (block.getMaximumLapse() < 50000 || block.getPositiveChecks().size() <= 0 || block.getDays().size() <= 0) { return; }
         long delay = getDelay(block);
-        Data.Builder data = new Data.Builder().putInt(EXTRA_BLOCK_ID, block.getId());
+        Data.Builder data = new Data.Builder()
+                .putInt(EXTRA_BLOCK_ID, block.getId())
+                .putString(EXTRA_BLOCK_NAME, block.getName());
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
                 .setInputData(data.build())
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
@@ -186,14 +194,18 @@ public class CheckManager implements ICheckManager{
         LiveData<List<WorkInfo>> ld = mWorkManager.getWorkInfosForUniqueWorkLiveData(workUniqueName(block.getId()));
         liveDatas.put(block.getId(), ld);
         ld.observe(mOwner, workInfo -> {
-            if (workInfo.size() == 0 && mBlocks.containsKey(block.getId())) {
-                setWorkerFor(mBlocks.get(block.getId()));
+            if (mBlocks.containsKey(block.getId()) && block.getMaximumLapse() > 50000 && block.getDays().size() > 0 && block.getPositiveChecks().size() > 0) {
+                if (workInfo.size() == 0) {
+                    setWorkerFor(mBlocks.get(block.getId()));
+                } else {
+                    workInfo.forEach(wi -> {
+                        if (wi.getState() == null || wi.getState().equals(WorkInfo.State.BLOCKED) || wi.getState().equals(WorkInfo.State.CANCELLED) || wi.getState().equals(WorkInfo.State.FAILED) || wi.getState().equals(WorkInfo.State.SUCCEEDED)) {
+                            setWorkerFor(mBlocks.get(block.getId()));
+                        }
+                    });
+                }
             } else {
-                workInfo.forEach(wi -> {
-                    if (mBlocks.containsKey(block.getId()) && (wi.getState() == null || wi.getState().equals(WorkInfo.State.BLOCKED) || wi.getState().equals(WorkInfo.State.CANCELLED) || wi.getState().equals(WorkInfo.State.FAILED) || wi.getState().equals(WorkInfo.State.SUCCEEDED))) {
-                        setWorkerFor(mBlocks.get(block.getId()));
-                    }
-                });
+                ld.removeObservers(mOwner);
             }
         });
     }
