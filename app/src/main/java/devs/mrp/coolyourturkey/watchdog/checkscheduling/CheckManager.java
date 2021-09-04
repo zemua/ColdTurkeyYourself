@@ -115,6 +115,18 @@ public class CheckManager implements ICheckManager{
     }
 
     private void refreshWorkers() {
+        // delete works if existing for non valid time blocks
+        mBlocks.entrySet().stream()
+                .filter(s -> s.getValue().getDays().size() <= 0)
+                .forEach(s -> stopWorkOfId(s.getKey()));
+        mBlocks.entrySet().stream()
+                .filter(s -> s.getValue().getPositiveChecks().size() <= 0)
+                .forEach(s -> stopWorkOfId(s.getKey()));
+        mBlocks.entrySet().stream()
+                .filter(s -> s.getValue().getMaximumLapse() <= 50000)
+                .forEach(s -> stopWorkOfId(s.getKey()));
+
+        // set works for valid time blocks
         ExecutorService servicio = Executors.newSingleThreadExecutor();
         mBlocks.entrySet().stream()
                 .filter(s -> s.getValue().getPositiveChecks().size() > 0)
@@ -151,6 +163,7 @@ public class CheckManager implements ICheckManager{
 
     private void setWorkerFor(AbstractTimeBlock block) {
         Log.d(TAG, "set worker for " + block.getName());
+        if (block.getMaximumLapse() < 50000 || block.getPositiveChecks().size() <= 0 || block.getDays().size() <= 0) { return; }
         long delay = getDelay(block);
         Data.Builder data = new Data.Builder().putInt(EXTRA_BLOCK_ID, block.getId());
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)

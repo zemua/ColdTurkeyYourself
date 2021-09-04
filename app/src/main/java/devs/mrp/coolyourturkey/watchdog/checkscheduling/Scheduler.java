@@ -113,14 +113,26 @@ public class Scheduler implements IScheduler{
         long nextStart = 0;
         if (nowInsideTimeFrame()) {
             if (ifDayIncluded(now)) {
-                if (timeToDecrease > to-hourNow){
-                    timeJumped += fullday-hourNow+from;
-                    timeToDecrease -= to-hourNow;
-                    nextStart = now+fullday-hourNow+from;
-                    Log.d(TAG, "Cond A");
+                if (to > hourNow){
+                    if (timeToDecrease > to-hourNow){
+                        timeJumped += fullday-hourNow+from;
+                        timeToDecrease -= to-hourNow;
+                        nextStart = now+fullday-hourNow+from;
+                        Log.d(TAG, "Cond A");
+                    } else {
+                        Log.d(TAG, "Cond B");
+                        return timeToDecrease;
+                    }
                 } else {
-                    Log.d(TAG, "Cond B");
-                    return timeToDecrease;
+                    if (timeToDecrease > fullday-hourNow+to) {
+                        timeJumped += fullday-hourNow+from;
+                        timeToDecrease -= to+fullday-hourNow;
+                        nextStart = now+fullday-hourNow+from;
+                        Log.d(TAG, "Cond A2");
+                    } else {
+                        Log.d(TAG, "Cond B2");
+                        return timeToDecrease;
+                    }
                 }
             } else {
                 timeJumped += fullday-hourNow+from;

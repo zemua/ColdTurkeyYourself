@@ -327,7 +327,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
 
     private boolean assertValid() {
         boolean valid = true;
-        if (minH + minM *60 > maxH + maxM *60 || (minH == 0 && minM == 0)) {
+        if ((minH*60) + minM > (maxH*60) + maxM || (minH == 0 && minM == 0)) {
             valid = false;
             red(mView.findViewById(R.id.textView28));
         } else {
