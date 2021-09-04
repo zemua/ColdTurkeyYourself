@@ -11,6 +11,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import devs.mrp.coolyourturkey.R;
@@ -33,38 +35,23 @@ public class RandomCheckWorker extends Worker {
     public static final String KEY_FOR_PREMIO = "key.for.premio";
     private static final int notificationId = 84;
 
-    private static ArrayDeque<AbstractTimeBlock> mBlock = new ArrayDeque<>();
-    private AbstractTimeBlock currentBlock;
     private static Context mContext;
 
     public RandomCheckWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         mContext = context;
-        currentBlock = mBlock.pollLast();
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        AbstractTimeBlock block = currentBlock;
-        Random random = new Random();
+        Log.d(TAG, "do work");
         Intent intent = new Intent(mContext, CheckPerformerActivity.class);
-        if (block.getNegativeChecks() != null && block.getNegativeChecks().size() > 0) {
-            intent.putExtra(KEY_FOR_NEGATIVE_QUESTION, block.getNegativeChecks().get(random.nextInt(block.getNegativeChecks().size())).getQuestion());
-        }
-        if (block.getPositiveChecks() != null && block.getPositiveChecks().size() > 0) {
-            PositiveCheck pCheck = block.getPositiveChecks().get(random.nextInt(block.getPositiveChecks().size()));
-            intent.putExtra(KEY_FOR_POSITIVE_QUESTION, pCheck.getQuestion());
-            intent.putExtra(KEY_FOR_PREMIO, (block.getMinimumLapse() + ((block.getMaximumLapse()-block.getMinimumLapse())/2)) * pCheck.getMultiplicador());
-        }
-        intent.putExtra(KEY_FOR_BLOCK_ID, block.getId());
+        Integer blockId = getInputData().getInt(CheckManager.EXTRA_BLOCK_ID, -1);
+        intent.putExtra(KEY_FOR_BLOCK_ID, blockId);
         Notification n = NotificadorWithIntent.notifyWithIntent(R.drawable.seal, mContext.getString(R.string.notification_channel_for_random_checks_name), mContext.getString(R.string.notification_channel_for_random_checks_description), mContext, intent, NOTIFICATION_CHANNEL_ID);
         NotificadorWithIntent.notify(n, mContext);
 
         return Result.success();
-    }
-
-    public static void addBlock(AbstractTimeBlock block) {
-        mBlock.addFirst(block);
     }
 }

@@ -252,13 +252,13 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (resultCode == Activity.RESULT_OK) {
-            Log.d(TAG, "llamado onActivityResult");
+            //Log.d(TAG, "llamado onActivityResult");
             new PickerCommander(mView, this).getHandlerChain().receiveRequest(String.valueOf(requestCode), resultData);
         }
     }
 
     private void fillFieldsWithExistingData(AbstractTimeBlock timeBlock) {
-        Log.d(TAG, timeBlock.toString());
+        //Log.d(TAG, timeBlock.toString());
         mName.setText(timeBlock.getName());
         fromH = (int) (timeBlock.getFromTime()/(60*60*1000));
         fromM = (int) (timeBlock.getFromTime()%(60*60*1000))/(60*1000);
@@ -294,8 +294,8 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     private void guardar(View v) {
         saveDataInTimeBlock();
 
-        Log.d(TAG, "checked negatives: " + mTimeBlock.getNegativeChecks());
-        Log.d(TAG, "checked positives: " + mTimeBlock.getPositiveChecks());
+        //Log.d(TAG, "checked negatives: " + mTimeBlock.getNegativeChecks());
+        //Log.d(TAG, "checked positives: " + mTimeBlock.getPositiveChecks());
 
         if (assertValid()) {
             doCallBack(mCurrentFeedback, mTimeBlock);

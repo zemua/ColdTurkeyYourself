@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
@@ -35,6 +36,8 @@ import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 public class CheckManager implements ICheckManager{
 
     private static final String TAG = "CheckManager";
+
+    public static final String EXTRA_BLOCK_ID = "extra.block.id";
 
     private ITimeBlockFacade mFacade;
     private static CheckManager instance;
@@ -92,6 +95,9 @@ public class CheckManager implements ICheckManager{
                         .filter(b -> b.getDays().size() > 0) // filter out time blocks that have no days assigned
                         .filter(b -> b.getPositiveChecks().size() > 0) // filter out time blocks that have no positive checks
                         .filter(b -> b.getMaximumLapse() > 50000) // filter out time blocks that have too low lapse by mistake
+                        //.peek(b -> Log.d(TAG, "Time Block: " + b.getName()))
+                        //.peek(b -> b.getPositiveChecks().forEach(c -> Log.d(TAG, "Positive Check: " + c.getName())))
+                        //.peek(b -> b.getNegativeChecks().forEach(c -> Log.d(TAG, "Negative Check: " + c.getName())))
                         .collect(Collectors.toMap(b -> b.getId(), b -> b));
                 // remove any schedules of time-blocks that no longer exist
                 Iterator<Map.Entry<Integer, Long>> i = mSchedules.entrySet().iterator();
@@ -110,18 +116,22 @@ public class CheckManager implements ICheckManager{
 
     private void refreshWorkers() {
         ExecutorService servicio = Executors.newSingleThreadExecutor();
-        mBlocks.forEach((id, block) -> {
-            FutureTask<List<WorkInfo>> task = new FutureTask<List<WorkInfo>>(() -> mWorkManager.getWorkInfosForUniqueWork(workUniqueName(id)).get()){
+        mBlocks.entrySet().stream()
+                .filter(s -> s.getValue().getPositiveChecks().size() > 0)
+                .filter(s -> s.getValue().getDays().size() > 0)
+                .filter(s -> s.getValue().getMaximumLapse() > 50000)
+                .forEach(set -> {
+            FutureTask<List<WorkInfo>> task = new FutureTask<List<WorkInfo>>(() -> mWorkManager.getWorkInfosForUniqueWork(workUniqueName(set.getKey())).get()){
                 @Override
                 protected void done() {
                     try {
                         List<WorkInfo> workInfos = get();
                         if (workInfos.size() == 0) {
-                            resetWorker(block);
+                            resetWorker(set.getValue());
                         } else {
                             workInfos.forEach(wi -> {
                                 if (wi.getState() == null || wi.getState().equals(WorkInfo.State.BLOCKED) || wi.getState().equals(WorkInfo.State.CANCELLED) || wi.getState().equals(WorkInfo.State.FAILED) || wi.getState().equals(WorkInfo.State.SUCCEEDED)) {
-                                    resetWorker(block);
+                                    resetWorker(set.getValue());
                                 }
                             });
                         }
@@ -140,14 +150,18 @@ public class CheckManager implements ICheckManager{
     }
 
     private void setWorkerFor(AbstractTimeBlock block) {
-        RandomCheckWorker.addBlock(block);
+        Log.d(TAG, "set worker for " + block.getName());
         long delay = getDelay(block);
+        Data.Builder data = new Data.Builder().putInt(EXTRA_BLOCK_ID, block.getId());
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
+                .setInputData(data.build())
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build();
+        Log.d(TAG ,"work request built");
         WorkManager.getInstance(mApp)
                 .beginUniqueWork(workUniqueName(block.getId()), ExistingWorkPolicy.REPLACE, workRequest)
                 .enqueue();
+        Log.d(TAG, "work request enqueued with delay " + delay);
         observeWorkerToRestart(block);
     }
 

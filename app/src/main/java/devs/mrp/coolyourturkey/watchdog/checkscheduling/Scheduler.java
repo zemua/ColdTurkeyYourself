@@ -107,6 +107,7 @@ public class Scheduler implements IScheduler{
     }
 
     private long milisToJumpFromNow(long timeLeft) {
+        Log.d(TAG, "calculate milis to jump for " + mBlock.getName());
         long timeJumped = 0;
         long timeToDecrease = timeLeft;
         long nextStart = 0;
@@ -116,29 +117,37 @@ public class Scheduler implements IScheduler{
                     timeJumped += fullday-hourNow+from;
                     timeToDecrease -= to-hourNow;
                     nextStart = now+fullday-hourNow+from;
+                    Log.d(TAG, "Cond A");
                 } else {
+                    Log.d(TAG, "Cond B");
                     return timeToDecrease;
                 }
             } else {
                 timeJumped += fullday-hourNow+from;
                 nextStart = now+fullday-hourNow+from; // decrease time to tomorrow on open timeframe
+                Log.d(TAG, "Cond C");
             }
         } else {
             if (hourNow <= from) {
                 timeJumped += from-hourNow;
                 nextStart = now+from-hourNow;
+                Log.d(TAG, "Cond D");
             } else {
                 timeJumped += fullday-hourNow+from;
                 nextStart = now+fullday-hourNow+from;
+                Log.d(TAG, "Cond E");
             }
         }
         while (timeToDecrease > timeFrame() || !ifDayIncluded(nextStart)) {
+            Log.d(TAG, "Cond F1");
             if (ifDayIncluded(nextStart)){
                 timeToDecrease -= timeFrame();
+                Log.d(TAG, "Cond F2");
             }
             timeJumped += fullday;
             nextStart += fullday;
         }
+        Log.d(TAG, "done");
         timeJumped += timeToDecrease;
         return timeJumped;
     }

@@ -42,8 +42,8 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
 
         vh.vhSwitch.setOnClickListener(view -> {
             mDataset.get(vh.getAdapterPosition()).setSelected(((Switch)view).isChecked());
-            Log.d(TAG, "in position: " + vh.getAdapterPosition());
-            Log.d(TAG, "set to: " + ((Switch)view).isChecked());
+            //Log.d(TAG, "in position: " + vh.getAdapterPosition());
+            //Log.d(TAG, "set to: " + ((Switch)view).isChecked());
         });
 
         return vh;
@@ -53,7 +53,7 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
     public void onBindViewHolder(@NonNull SelectablesViewHolder holder, int position) {
         holder.textView.setText(mDataset.get(position).getName());
         holder.vhSwitch.setChecked(mDataset.get(position).isSelected());
-        Log.d(TAG, "position " + position + " is selected: " + mDataset.get(position).isSelected());
+        //Log.d(TAG, "position " + position + " is selected: " + mDataset.get(position).isSelected());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class SelectablesAdapter<T extends MySelectableAndNombrable> extends Recy
 
     public List<T> getSelectedFromDataSet() {
         return mDataset.stream()
-                .peek(c -> Log.d(TAG, "filtering " + c.getName() + " " + c.isSelected()))
+                //.peek(c -> Log.d(TAG, "filtering " + c.getName() + " " + c.isSelected()))
                 .filter(c -> c.isSelected())
                 .collect(Collectors.toList());
     }
