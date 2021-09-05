@@ -21,6 +21,7 @@ import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -32,6 +33,7 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
     private List<ConditionToGroup> mDataset;
     private Context mContext;
     private Map<Integer, GrupoPositivo> mGrupos; // Integer = id del grupo
+    private Map<Integer, AbstractTimeBlock> mTimeBlocks; // Integer = id del time block
     private TimeLogHandler mTimeLogHandler;
 
     private List<FeedbackListener<ConditionToGroup>> mListeners = new ArrayList<>();
@@ -40,6 +42,7 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         mContext = context;
         mDataset = new ArrayList<>();
         mGrupos = new HashMap<>();
+        mTimeBlocks = new HashMap<>();
         mTimeLogHandler = logger;
     }
 
@@ -110,6 +113,13 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
                     s.append(mGrupos.get(condition.getConditionalgroupid()).getNombre());
                 }
                 break;
+            case RANDOMCHECK:
+                s.append(mContext.getResources().getString(R.string.si_el_control));
+                s.append(" ");
+                if (mTimeBlocks.containsKey(condition.getConditionalrandomcheckid())) {
+                    s.append(mTimeBlocks.get(condition.getConditionalrandomcheckid()).getName());
+                }
+                break;
             case FILE:
                 s.append(mContext.getResources().getString(R.string.si_el_archivo));
                 s.append(" ");
@@ -134,21 +144,33 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         s.append(". ");
         s.append(mContext.getResources().getString(R.string.actualmente_ha_usado));
         s.append(" ");
-        s.append(getLoggerMinutes(condition)/60);
+        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+            s.append(getLoggerMinutes(condition)/60);
+        } else if (condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
+            // TODO append with random check logger
+        }
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.h_de_horas));
         s.append(" ");
-        s.append(getLoggerMinutes(condition)%60);
+        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+            s.append(getLoggerMinutes(condition)%60);
+        } else if (condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
+            // TODO append with random check logger
+        }
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
     }
 
     private void setBackgroundOnConditionMet(ReviewGroupsConditionsViewHolder holder, ConditionToGroup condition) {
-        if (mTimeLogHandler.ifConditionMet(condition)) {
-            holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
-        } else {
-            holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
+        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+            if (mTimeLogHandler.ifConditionMet(condition)) {
+                holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
+            } else {
+                holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
+            }
+        } else if ( condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
+            // TODO check condition with randomCheck logger
         }
     }
 
@@ -159,6 +181,11 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
 
     public void setGrupos(Map<Integer, GrupoPositivo> grupos) {
         mGrupos = grupos;
+        notifyDataSetChanged();
+    }
+
+    public void setChecks(Map<Integer, AbstractTimeBlock> blocks) {
+        mTimeBlocks = blocks;
         notifyDataSetChanged();
     }
 

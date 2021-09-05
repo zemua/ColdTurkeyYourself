@@ -25,7 +25,7 @@ public class ConditionToGroup {
     }
 
     public enum ConditionType {
-        GROUP(R.string.tiempo_ganado_en_otro_grupo, 0), FILE(R.string.tiempo_importado_de_un_archivo, 1);
+        GROUP(R.string.tiempo_ganado_en_otro_grupo, 0), RANDOMCHECK(R.string.controles_aleatorios, 1), FILE(R.string.tiempo_importado_de_un_archivo, 2);
         private Integer resourceId;
         private Integer position;
         ConditionType(Integer resource, Integer pos) {
@@ -59,6 +59,9 @@ public class ConditionToGroup {
     @ColumnInfo(name = "conditionalgroupid")
     private Integer conditionalgroupid;
 
+    @ColumnInfo(name = "conditionalrandomcheckid")
+    private Integer conditionalrandomcheckid;
+
     @ColumnInfo(name = "conditionalminutes")
     private Integer conditionalminutes;
 
@@ -80,6 +83,14 @@ public class ConditionToGroup {
     public void setFromlastndays(Integer fromlastndays){this.fromlastndays = fromlastndays;}
     public Integer getFromlastndays(){return this.fromlastndays;}
 
+    public Integer getConditionalrandomcheckid() {
+        return conditionalrandomcheckid;
+    }
+
+    public void setConditionalrandomcheckid(Integer conditionalrandomcheckid) {
+        this.conditionalrandomcheckid = conditionalrandomcheckid;
+    }
+
     public void cloneCondition(ConditionToGroup c) {
         this.id = c.getId();
         this.groupid = c.getGroupid();
@@ -88,6 +99,7 @@ public class ConditionToGroup {
         this.conditionalgroupid = c.getConditionalgroupid();
         this.conditionalminutes = c.getConditionalminutes();
         this.fromlastndays = c.getFromlastndays();
+        this.conditionalrandomcheckid = c.getConditionalrandomcheckid();
     }
 
 }
