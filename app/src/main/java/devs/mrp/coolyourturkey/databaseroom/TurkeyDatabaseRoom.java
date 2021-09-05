@@ -15,6 +15,8 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockDao;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockAndChecksCrossRef;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerDao;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockSchedule;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockScheduleDao;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
@@ -44,7 +46,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class}, version = 16)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class}, version = 17)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -62,6 +64,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract RandomCheckDao randomCheckDao();
     public abstract CheckTimeBlockDao checkTimeBlockDao();
     public abstract TimeBlockScheduleDao timeBlockScheduleDao();
+    public abstract TimeBlockLoggerDao timeBlockLoggerDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -264,6 +267,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblockschedule' ('scheduleid' INTEGER NOT NULL, 'schedulemillis' INTEGER NOT NULL, PRIMARY KEY ('scheduleid'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 16
+     * to
+     * version 17
+     */
+    static final Migration MIGRATION_16_17 = new Migration(16, 17) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblocklogger' ('loggerid' INTEGER NOT NULL, 'epoch' INTEGER NOT NULL, 'blockid' INTEGER NOT NULL, 'timecounted' INTEGER NOT NULL, PRIMARY KEY ('loggerid'))");
         }
     };
 

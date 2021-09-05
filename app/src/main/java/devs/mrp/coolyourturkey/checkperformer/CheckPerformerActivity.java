@@ -19,6 +19,8 @@ import devs.mrp.coolyourturkey.comun.TransferWithBinders;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockRepository;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
@@ -34,11 +36,14 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     private Fragment mFragment;
     private TimePusherInterface timePusher;
-    private long mPremio;
     private FragmentManager fm;
     private boolean summed = false;
 
+    private Integer blockId;
+    private long mPremio;
+
     private CheckTimeBlockRepository mRepo;
+    private TimeBlockLoggerRepository mLogger;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +52,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
         timePusher = new TimePusherFactory().get(ContadorRepository.getRepo(getApplication()));
 
-        Integer blockId = -1;
+        blockId = -1;
         if (getIntent().hasExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID)) {
             blockId = getIntent().getIntExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID, -1);
             if (blockId == -1) {
@@ -58,6 +63,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
         }
 
         mRepo = CheckTimeBlockRepository.getRepo(getApplication());
+        mLogger = TimeBlockLoggerRepository.getRepo(getApplication());
         LiveData<List<TimeBlockWithChecks>> ld = mRepo.getTimeBlockWithChecksById(blockId);
         ld.observe(CheckPerformerActivity.this, timeBlockWithChecks -> {
             ld.removeObservers(CheckPerformerActivity.this);
@@ -128,7 +134,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 summed = true; // prevent double tap and so double sum
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
                 timePusher.add(System.currentTimeMillis(), mPremio, this);
-                // TODO add log of time for conditions
+                mLogger.insert(new TimeBlockLogger(blockId, mPremio));
                 PriceConfirmationFragment fr = new PriceConfirmationFragment();
                 fr.addObserver((tp, fdbck) -> {
                     CheckPerformerActivity.this.finish();
