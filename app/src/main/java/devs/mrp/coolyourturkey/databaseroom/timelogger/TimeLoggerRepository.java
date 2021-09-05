@@ -45,4 +45,8 @@ public class TimeLoggerRepository {
         return mDao.findAllTimeLogger();
     }
 
+    public void deleteByGroupId(Integer id) {
+        mDao.deleteByGroupId(id);
+    }
+
 }

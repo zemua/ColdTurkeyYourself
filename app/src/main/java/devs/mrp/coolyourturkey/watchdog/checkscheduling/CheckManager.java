@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockSchedule;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockScheduleRepository;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
 import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
@@ -42,7 +44,6 @@ public class CheckManager implements ICheckManager{
 
     private ITimeBlockFacade mFacade;
     private static CheckManager instance;
-    private Map<Integer, Long> mSchedules;
     private Map<Integer, AbstractTimeBlock> mBlocks;
     private Application mApp;
     private LifecycleOwner mOwner;
@@ -52,6 +53,8 @@ public class CheckManager implements ICheckManager{
     private Map<Integer, LiveData<List<WorkInfo>>> liveDatas = new HashMap<>();
     private Handler mainHandler;
 
+    private TimeBlockScheduleRepository mScheduleRepo;
+
     private long lastRefresh = 0L;
     private long betweenRefreshes = 10*60*1000; // 10 minutes
 
@@ -59,7 +62,7 @@ public class CheckManager implements ICheckManager{
         mFacade = FTimeBlockFacade.getNew(app, owner);
         mApp = app;
         mOwner = owner;
-        mSchedules = new HashMap<>();
+        mScheduleRepo = TimeBlockScheduleRepository.getRepo(app);
         mBlocks = new HashMap<>();
         mScheduler = new Scheduler();
         mNotificador = new Notificador(app, app);
@@ -106,13 +109,15 @@ public class CheckManager implements ICheckManager{
                         //.peek(b -> b.getNegativeChecks().forEach(c -> Log.d(TAG, "Negative Check: " + c.getName())))
                         .collect(Collectors.toMap(b -> b.getId(), b -> b));
                 // remove any schedules of time-blocks that no longer exist
-                Iterator<Map.Entry<Integer, Long>> i = mSchedules.entrySet().iterator();
-                while (i.hasNext()) {
-                    Map.Entry<Integer, Long> next = i.next();
-                    if (!mBlocks.containsKey(next.getKey())) {
-                        i.remove();
-                    }
-                }
+                LiveData<List<TimeBlockSchedule>> schdls = mScheduleRepo.findAllSchedules();
+                schdls.observe(mOwner, lSchedules -> {
+                    schdls.removeObservers(mOwner);
+                    lSchedules.stream().forEach(s ->{
+                        if (!mBlocks.containsKey(s.getScheduleid())) {
+                            mScheduleRepo.deleteById(s.getScheduleid());
+                        }
+                    });
+                });
                 mBlocks.forEach((a,b) -> {
                     setWorkerFor(b);
                 });
@@ -163,27 +168,36 @@ public class CheckManager implements ICheckManager{
     }
 
     private void resetWorker(AbstractTimeBlock block) {
-        mSchedules.put(block.getId(), 0L);
+        mScheduleRepo.insert(new TimeBlockSchedule(block.getId(), 0L));
         setWorkerFor(block);
     }
 
     private void setWorkerFor(AbstractTimeBlock block) {
         Log.d(TAG, "set worker for " + block.getName());
         if (block.getMaximumLapse() < 50000 || block.getPositiveChecks().size() <= 0 || block.getDays().size() <= 0) { return; }
-        long delay = getDelay(block);
-        Data.Builder data = new Data.Builder()
-                .putInt(EXTRA_BLOCK_ID, block.getId())
-                .putString(EXTRA_BLOCK_NAME, block.getName());
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
-                .setInputData(data.build())
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .build();
-        Log.d(TAG ,"work request built");
-        WorkManager.getInstance(mApp)
-                .beginUniqueWork(workUniqueName(block.getId()), ExistingWorkPolicy.REPLACE, workRequest)
-                .enqueue();
-        Log.d(TAG, "work request enqueued with delay " + delay);
-        observeWorkerToRestart(block);
+        LiveData<List<TimeBlockSchedule>> ld = mScheduleRepo.findScheduleById(block.getId());
+        ld.observe(mOwner, schdls -> {
+            ld.removeObservers(mOwner);
+            long delay;
+            if (schdls.size()>0) {
+                delay = getDelay(block, schdls.get(0).getScheduleMillis());
+            } else {
+                delay = getDelay(block, 0L);
+            }
+            Data.Builder data = new Data.Builder()
+                    .putInt(EXTRA_BLOCK_ID, block.getId())
+                    .putString(EXTRA_BLOCK_NAME, block.getName());
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RandomCheckWorker.class)
+                    .setInputData(data.build())
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                    .build();
+            Log.d(TAG ,"work request built");
+            WorkManager.getInstance(mApp)
+                    .beginUniqueWork(workUniqueName(block.getId()), ExistingWorkPolicy.REPLACE, workRequest)
+                    .enqueue();
+            Log.d(TAG, "work request enqueued with delay " + delay);
+            observeWorkerToRestart(block);
+        });
     }
 
     private void observeWorkerToRestart(AbstractTimeBlock block) {
@@ -214,22 +228,16 @@ public class CheckManager implements ICheckManager{
         return "work.check.notif.unique.name." + blockId;
     }
 
-    private long getDelay(AbstractTimeBlock block) {
-        long opt;
-        if (mSchedules.containsKey(block.getId())) {
-            opt = mSchedules.get(block.getId());
-        } else {
-            opt = 0;
-        }
-        long schedule = mScheduler.schedule(block, opt);
-        mSchedules.put(block.getId(), schedule);
+    private long getDelay(AbstractTimeBlock block, long originalSchedule) {
+        long schedule = mScheduler.schedule(block, originalSchedule);
+        mScheduleRepo.insert(new TimeBlockSchedule(block.getId(), schedule));
         return schedule - mScheduler.getNow();
     }
 
     public void stopWorkOfId(int blockId) {
         mWorkManager.cancelUniqueWork(workUniqueName(blockId));
         liveDatas.remove(blockId);
-        mSchedules.remove(blockId);
+        mScheduleRepo.deleteById(blockId);
     }
 
 }

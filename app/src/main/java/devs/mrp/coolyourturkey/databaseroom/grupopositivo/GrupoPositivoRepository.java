@@ -12,6 +12,7 @@ import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRep
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
+import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class GrupoPositivoRepository {
 
@@ -22,6 +23,7 @@ public class GrupoPositivoRepository {
     private GroupLimitRepository limitsRepo;
     private ConditionToGroupRepository conditionRepo;
     private ConditionNegativeToGroupRepository negativeConditionRepo;
+    private TimeLoggerRepository timeLogRepo;
 
     private GrupoPositivoRepository(Application application){
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
@@ -31,6 +33,7 @@ public class GrupoPositivoRepository {
         limitsRepo = GroupLimitRepository.getRepo(application);
         conditionRepo = ConditionToGroupRepository.getRepo(application);
         negativeConditionRepo = ConditionNegativeToGroupRepository.getRepo(application);
+        timeLogRepo = TimeLoggerRepository.getRepo(application);
     }
 
     public static GrupoPositivoRepository getRepo(Application application){
@@ -63,6 +66,7 @@ public class GrupoPositivoRepository {
         conditionRepo.deleteByGroupId(id);
         conditionRepo.deleteByConditionalGroupId(id);
         negativeConditionRepo.deleteByConditionalGroupId(id);
+        timeLogRepo.deleteByGroupId(id);
     }
 
 }
