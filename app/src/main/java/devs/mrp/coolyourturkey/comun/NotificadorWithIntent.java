@@ -11,8 +11,8 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificadorWithIntent {
 
-    public static Notification notifyWithIntent(Integer iconResourceId, String title, String content, Context context, Intent intent, String channelId){
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    public static Notification notifyWithIntent(Integer iconResourceId, String title, String content, Context context, Intent intent, String channelId, int requestCode){
+        PendingIntent contentIntent = PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         Resources res = context.getResources();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
         builder.setContentIntent(contentIntent)
