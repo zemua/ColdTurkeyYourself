@@ -35,6 +35,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
     private Fragment mFragment;
     private TimePusherInterface timePusher;
     private long mPremio;
+    private FragmentManager fm;
+    private boolean summed = false;
 
     private CheckTimeBlockRepository mRepo;
 
@@ -88,7 +90,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
                 final String pq = positiveQuestion;
 
-                FragmentManager fm = getSupportFragmentManager();
+                fm = getSupportFragmentManager();
                 mFragment = fm.findFragmentById(R.id.fragment_container);
                 if (mFragment == null) {
                     if (!negativeQuestion.equals("")) {
@@ -122,11 +124,17 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     private void addPositiveObserver() {
         ((MyObservablePositive<Boolean>)mFragment).addPositiveObserver((tipo, bool) -> {
-            if (bool) {
+            if (bool && !summed) {
+                summed = true; // prevent double tap and so double sum
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
                 timePusher.add(System.currentTimeMillis(), mPremio, this);
                 // TODO add log of time for conditions
-                CheckPerformerActivity.this.finish();
+                PriceConfirmationFragment fr = new PriceConfirmationFragment();
+                fr.addObserver((tp, fdbck) -> {
+                    CheckPerformerActivity.this.finish();
+                });
+                fm.beginTransaction().remove(mFragment).commit();
+                fm.beginTransaction().add(R.id.fragment_container, fr).commit();
             } else {
                 CheckPerformerActivity.this.finish();
             }

@@ -34,7 +34,9 @@ public class TimeBlockScheduleRepository {
     }
 
     public void deleteById(Integer id) {
-        mDao.deleteScheduleById(id);
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteScheduleById(id);
+        });
     }
 
     public LiveData<List<TimeBlockSchedule>> findAllSchedules() {
