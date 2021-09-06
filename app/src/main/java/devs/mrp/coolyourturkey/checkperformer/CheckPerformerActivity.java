@@ -126,6 +126,11 @@ public class CheckPerformerActivity extends AppCompatActivity {
             }
         });
 
+        mLogger.findAll().observe(this, lgrs -> {
+            Log.d(TAG, "ChekPerformerActivity all block loggers");
+            lgrs.stream().peek(l -> Log.d(TAG, "id:" + l.getLoggerid() + " blockid:" + l.getBlockid() + " counted:" + l.getTimecounted() + " epoch:" + l.getEpoch()));
+        });
+
     }
 
     private void addPositiveObserver() {
@@ -134,7 +139,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 summed = true; // prevent double tap and so double sum
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
                 timePusher.add(System.currentTimeMillis(), mPremio, this);
-                mLogger.insert(new TimeBlockLogger(blockId, mPremio));
+                mLogger.insert(new TimeBlockLogger(blockId, mPremio, System.currentTimeMillis()));
                 PriceConfirmationFragment fr = new PriceConfirmationFragment();
                 fr.addObserver((tp, fdbck) -> {
                     CheckPerformerActivity.this.finish();

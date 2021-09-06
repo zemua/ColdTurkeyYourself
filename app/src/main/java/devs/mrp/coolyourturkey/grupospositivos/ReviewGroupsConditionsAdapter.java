@@ -144,33 +144,21 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
         s.append(". ");
         s.append(mContext.getResources().getString(R.string.actualmente_ha_usado));
         s.append(" ");
-        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
-            s.append(getLoggerMinutes(condition)/60);
-        } else if (condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
-            // TODO append with random check logger
-        }
+        s.append(getLoggerMinutes(condition)/60);
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.h_de_horas));
         s.append(" ");
-        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
-            s.append(getLoggerMinutes(condition)%60);
-        } else if (condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
-            // TODO append with random check logger
-        }
+        s.append(getLoggerMinutes(condition)%60);
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
     }
 
     private void setBackgroundOnConditionMet(ReviewGroupsConditionsViewHolder holder, ConditionToGroup condition) {
-        if (condition.getType().equals(ConditionToGroup.ConditionType.GROUP) || condition.getType().equals(ConditionToGroup.ConditionType.FILE)) {
-            if (mTimeLogHandler.ifConditionMet(condition)) {
-                holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
-            } else {
-                holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
-            }
-        } else if ( condition.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)){
-            // TODO check condition with randomCheck logger
+        if (mTimeLogHandler.ifConditionMet(condition)) {
+            holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
+        } else {
+            holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
         }
     }
 

@@ -10,10 +10,10 @@ public class TimeBlockLogger {
 
     public TimeBlockLogger(){}
 
-    public TimeBlockLogger(Integer blockId, Long timeCounted) {
+    public TimeBlockLogger(Integer blockId, Long timeCounted, Long epoch) {
         this.blockid = blockId;
         this.timecounted = timeCounted;
-        this.epoch = System.currentTimeMillis();
+        this.epoch = epoch;
     }
 
     @PrimaryKey(autoGenerate = true)
