@@ -126,11 +126,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
             }
         });
 
-        mLogger.findAll().observe(this, lgrs -> {
-            Log.d(TAG, "ChekPerformerActivity all block loggers");
-            lgrs.stream().peek(l -> Log.d(TAG, "id:" + l.getLoggerid() + " blockid:" + l.getBlockid() + " counted:" + l.getTimecounted() + " epoch:" + l.getEpoch()));
-        });
-
     }
 
     private void addPositiveObserver() {

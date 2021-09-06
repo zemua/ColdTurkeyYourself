@@ -545,19 +545,13 @@ public class TimeLogHandler implements Feedbacker<Object> {
         TimeSummary ts = new TimeSummary(cond.getGroupid(), cond.getConditionalgroupid());
         if (cond.getType().equals(ConditionToGroup.ConditionType.GROUP) && mTimeLoggersByConditionId.containsKey(cond.getId())) {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
-        } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(ts.getKey())) {
+        } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
             time = mRandomCheckLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getTimecounted()));
         } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE) && mFileTimeSummaryMap.containsKey(ts.getKey())) {
             time = mFileTimeSummaryMap.get(ts.getKey()).getSummedTime();
         } else {
             time = 0L;
             Log.d(TAG, "entry for condition not found for " + cond.getType() + " checkid: " + cond.getConditionalrandomcheckid() + " groupid: " + cond.getConditionalgroupid());
-            mMainHandler.post(() -> {
-                timeBlockLoggerRepository.findAll().observe(mLifecycleOwner, lgrs -> {
-                    Log.d(TAG, "all existing loggers:");
-                    lgrs.stream().peek(l -> Log.d(TAG, "blockid:" + l.getBlockid() + " time counted:" + l.getTimecounted() + " epoch:" + l.getEpoch() + " loggerid:" + l.getLoggerid()));
-                });
-            });
         }
         return time;
     }
@@ -624,13 +618,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw new Exception("observeTimeLoggedOnRandomCheck shall be called from main thread");
         }
-        Log.d(TAG, "find for " + c.getConditionalgroupid());
+        Log.d(TAG, "find for " + c.getConditionalrandomcheckid());
         LiveData<List<TimeBlockLogger>> timeLoggedLD = timeBlockLoggerRepository.findByTimeNewerAndBlockId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalrandomcheckid());
         Observer<List<TimeBlockLogger>> observer = new Observer<List<TimeBlockLogger>>() {
             @Override
             public void onChanged(List<TimeBlockLogger> timeBlockLoggers) {
-                Log.d(TAG, "these are timeBlockLoggers we have:");
-                timeBlockLoggers.stream().peek(l -> Log.d(TAG, "id: " + l.getBlockid() + " epoch: " + l.getEpoch() + " time-counted: " + l.getTimecounted()));
                 mRandomCheckLoggersByConditionId.put(c.getId(), timeBlockLoggers);
                 giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
             }
