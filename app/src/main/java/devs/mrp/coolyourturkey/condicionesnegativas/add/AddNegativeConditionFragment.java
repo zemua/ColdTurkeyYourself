@@ -104,7 +104,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(KEY_BUNDLE_ID_ACTUAL, mConditionId);
+        outState.putInt(KEY_BUNDLE_ID_ACTUAL, getConditionId());
         if (mFileUri != null) {
             outState.putString(KEY_BUNDLE_URI, mFileUri.toString());
         }
@@ -114,6 +114,13 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mConditionForEdit));
         outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEditAction);
         super.onSaveInstanceState(outState);
+    }
+
+    public Integer getConditionId() {
+        if (mConditionId == null) {
+            return -1;
+        }
+        return mConditionId;
     }
 
     @Override
