@@ -16,7 +16,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 
-public class PriceConfirmationFragment extends Fragment implements MyObservable<Boolean> {
+public class PrizeConfirmationFragment extends Fragment implements MyObservable<Boolean> {
 
     private List<MyObserver<Boolean>> observers = new ArrayList<>();
 

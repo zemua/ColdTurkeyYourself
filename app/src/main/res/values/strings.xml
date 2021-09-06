@@ -188,4 +188,5 @@
     <string name="estas_seguro">¿Estás seguro?</string>
     <string name="has_conseguido_la_recompensa">Has conseguido la recompensa</string>
     <string name="si_el_control">Si el control</string>
+    <string name="alerta">Alerta</string>
 </resources>

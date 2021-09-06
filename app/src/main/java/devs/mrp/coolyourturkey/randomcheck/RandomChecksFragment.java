@@ -29,6 +29,7 @@ public class RandomChecksFragment extends Fragment implements MyObservable<Objec
     private Button mTimeBlocksButton;
     private Button mPositiveChecksButton;
     private Button mNegativeChecksButton;
+    private Button mSonidoButton;
 
     @Override
     public void addObserver(MyObserver<Object> observer) {
@@ -55,6 +56,7 @@ public class RandomChecksFragment extends Fragment implements MyObservable<Objec
         mTimeBlocksButton = v.findViewById(R.id.buttonTimeBlocks);
         mPositiveChecksButton = v.findViewById(R.id.buttonPositiveChecks);
         mNegativeChecksButton = v.findViewById(R.id.buttonNegativeChecks);
+        mSonidoButton = v.findViewById(R.id.buttonSonidoNotif);
 
         mTimeBlocksButton.setOnClickListener(new View.OnClickListener() {
             @Override

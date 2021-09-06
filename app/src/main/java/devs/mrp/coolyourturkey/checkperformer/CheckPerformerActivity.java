@@ -9,20 +9,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObservableNegative;
 import devs.mrp.coolyourturkey.comun.MyObservablePositive;
-import devs.mrp.coolyourturkey.comun.TransferWithBinders;
-import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockRepository;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
-import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
@@ -135,7 +131,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
                 timePusher.add(System.currentTimeMillis(), mPremio, this);
                 mLogger.insert(new TimeBlockLogger(blockId, mPremio, System.currentTimeMillis()));
-                PriceConfirmationFragment fr = new PriceConfirmationFragment();
+                PrizeConfirmationFragment fr = new PrizeConfirmationFragment();
                 fr.addObserver((tp, fdbck) -> {
                     CheckPerformerActivity.this.finish();
                 });
