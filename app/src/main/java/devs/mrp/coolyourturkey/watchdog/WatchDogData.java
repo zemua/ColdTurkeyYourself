@@ -7,6 +7,7 @@ import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class WatchDogData {
@@ -261,5 +262,14 @@ public class WatchDogData {
     }
     public NegativeConditionTimeChecker getNegativeConditionTimeChecker() {
         return this.negativeConditionTimeChecker;
+    }
+
+    private TimeBlockExporter timeBlockExporter;
+    public WatchDogData setTimeBlockExporter(TimeBlockExporter exporter) {
+        this.timeBlockExporter = exporter;
+        return this;
+    }
+    public TimeBlockExporter getTimeBlockExporter() {
+        return this.timeBlockExporter;
     }
 }

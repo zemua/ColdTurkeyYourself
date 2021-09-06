@@ -51,6 +51,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     public static final String FEEDBACK_SAVE_NEW = "nuevo";
     public static final String FEEDBACK_SAVE_EXISTING = "existente";
     public static final String FEEDBACK_DELETE_THIS = "delete";
+    public static final String FEEDBACK_EXPORT_TXT = "export.txt";
 
     public static final int REQUEST_CODE_DESDE_HORA = 0;
     public static final int REQUEST_CODE_HASTA_HORA = 1;
@@ -93,6 +94,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     protected RecyclerView mPositiveRecycler;
     protected Button mDeleteBlock;
     protected Button mSaveBlock;
+    protected Button mExportButton;
 
     private SelectablesAdapter<APositiveCheckSelectable> mPositiveAdapter;
     private SelectablesAdapter<ANegativeCheckSelectable> mNegativeAdapter;
@@ -163,6 +165,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mPositiveRecycler = mView.findViewById(R.id.recyclerControlesPositivos);
         mDeleteBlock = mView.findViewById(R.id.buttonDeleteBlock);
         mSaveBlock = mView.findViewById(R.id.buttonSaveBlock);
+        mExportButton = mView.findViewById(R.id.buttonExportTB);
 
         mPositiveAdapter = new SelectablesAdapter<>();
         mNegativeAdapter = new SelectablesAdapter<>();
@@ -190,9 +193,11 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             mCurrentFeedback = FEEDBACK_SAVE_NEW;
             mTimeBlock = new TimeBlockFactory().getNew();
             mDeleteBlock.setVisibility(View.GONE);
+            mExportButton.setVisibility(View.GONE);
         } else {
             mCurrentFeedback = FEEDBACK_SAVE_EXISTING;
             mDeleteBlock.setVisibility(View.VISIBLE);
+            mExportButton.setVisibility(View.VISIBLE);
             fillFieldsWithExistingData(mTimeBlock);
         }
 
@@ -216,6 +221,10 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             builder.setNegativeButton(R.string.conservar, null);
             AlertDialog dialog = builder.create();
             dialog.show();
+        });
+
+        mExportButton.setOnClickListener(view -> {
+            doCallBack(FEEDBACK_EXPORT_TXT, mTimeBlock);
         });
 
         if (!fromSavedInstance) {

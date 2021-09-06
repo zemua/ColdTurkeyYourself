@@ -25,6 +25,7 @@ import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.ActionRequestorInterface;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
@@ -76,7 +77,8 @@ public class WatchdogService extends LifecycleService {
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
-                .setNegativeConditionTimeChecker(new NegativeConditionTimeChecker(this, this.getApplication(), this));
+                .setNegativeConditionTimeChecker(new NegativeConditionTimeChecker(this, this.getApplication(), this))
+                .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this));
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -202,6 +204,7 @@ public class WatchdogService extends LifecycleService {
             data.getNegativeConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
             data.getNegativeConditionTimeChecker().refreshTimeLoggedOnFiles(); // refresh time from external files
             data.getNegativeConditionTimeChecker().refreshNotifications(); // send notification if proceeds
+            data.getTimeBlockExporter().refresh();
             mCheckManager.refresh();
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {

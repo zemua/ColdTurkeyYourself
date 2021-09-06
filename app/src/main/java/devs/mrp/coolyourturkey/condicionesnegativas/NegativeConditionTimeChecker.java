@@ -296,4 +296,5 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
             });
         }
     }
+
 }
