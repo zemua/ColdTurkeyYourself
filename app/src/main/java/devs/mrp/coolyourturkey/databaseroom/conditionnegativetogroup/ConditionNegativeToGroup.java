@@ -25,7 +25,7 @@ public class ConditionNegativeToGroup {
     }
 
     public enum ConditionType {
-        GROUP(R.string.tiempo_ganado_en_otro_grupo, 0), FILE(R.string.tiempo_importado_de_un_archivo, 1);
+        GROUP(R.string.tiempo_ganado_en_otro_grupo, 0), RANDOMCHECK(R.string.controles_aleatorios, 1), FILE(R.string.tiempo_importado_de_un_archivo, 1);
         private Integer resourceId;
         private Integer position;
         ConditionType(Integer resource, Integer pos) {
@@ -54,6 +54,9 @@ public class ConditionNegativeToGroup {
     @ColumnInfo(name = "conditionalgroupid")
     private Integer conditionalgroupid;
 
+    @ColumnInfo(name = "conditionalblockid")
+    private Integer conditionalblockid;
+
     @ColumnInfo(name = "conditionalminutes")
     private Integer conditionalminutes;
 
@@ -73,6 +76,14 @@ public class ConditionNegativeToGroup {
     public void setFromlastndays(Integer fromlastndays){this.fromlastndays = fromlastndays;}
     public Integer getFromlastndays(){return this.fromlastndays;}
 
+    public Integer getConditionalblockid() {
+        return conditionalblockid;
+    }
+
+    public void setConditionalblockid(Integer conditionalblockid) {
+        this.conditionalblockid = conditionalblockid;
+    }
+
     public void cloneCondition(ConditionNegativeToGroup c) {
         this.id = c.getId();
         this.type = c.getType();
@@ -80,6 +91,7 @@ public class ConditionNegativeToGroup {
         this.conditionalgroupid = c.getConditionalgroupid();
         this.conditionalminutes = c.getConditionalminutes();
         this.fromlastndays = c.getFromlastndays();
+        this.conditionalblockid = c.getConditionalblockid();
     }
 
 }

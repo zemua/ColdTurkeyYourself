@@ -22,6 +22,8 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
@@ -42,9 +44,11 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
     private List<FeedbackListener<List<ConditionNegativeToGroup>>> listeners = new ArrayList<>();
 
     private List<LiveData<List<TimeLogger>>> timeLoggerLiveDatas;
+    private List<LiveData<List<TimeBlockLogger>>> timeBlockLoggerLiveDatas;
     private Long dayRefreshed;
 
     private TimeLoggerRepository timeLoggerRepository;
+    private TimeBlockLoggerRepository timeBlockLoggerRepository;
     private ConditionNegativeToGroupRepository conditionNegativeRepository;
 
     private List<ConditionNegativeToGroup> mConditions;
@@ -73,9 +77,11 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
 
         dayRefreshed = currentDay();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
+        timeBlockLoggerRepository = TimeBlockLoggerRepository.getRepo(application);
         conditionNegativeRepository = ConditionNegativeToGroupRepository.getRepo(mApplication);
         mTimeByConditionIdMap = new HashMap<>();
         timeLoggerLiveDatas = new ArrayList<>();
+        timeBlockLoggerLiveDatas = new ArrayList<>();
 
         mMainHandler.post(new Runnable() {
             @Override
@@ -117,17 +123,33 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
     private void loadTimes(List<ConditionNegativeToGroup> conditions) {
         clearTimeLoggerObservers();
         conditions.stream().forEach(c -> {
-            LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid());
-            Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
-                @Override
-                public void onChanged(List<TimeLogger> timeLoggers) {
-                    Long totalTime = timeLoggers.stream().mapToLong(t -> t.getUsedtimemilis()).sum();
-                    mTimeByConditionIdMap.put(c.getId(), totalTime);
-                    giveFeedback(FEEDBACK_TIMES_LOADED, mConditions);
-                }
-            };
-            liveData.observe(mLifecycleOwner, observer);
-            timeLoggerLiveDatas.add(liveData);
+            if (c.getType().equals(ConditionNegativeToGroup.ConditionType.GROUP)) {
+                LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalgroupid());
+                Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
+                    @Override
+                    public void onChanged(List<TimeLogger> timeLoggers) {
+                        Long totalTime = timeLoggers.stream().mapToLong(t -> t.getUsedtimemilis()).sum();
+                        mTimeByConditionIdMap.put(c.getId(), totalTime);
+                        giveFeedback(FEEDBACK_TIMES_LOADED, mConditions);
+                    }
+                };
+                liveData.observe(mLifecycleOwner, observer);
+                timeLoggerLiveDatas.add(liveData);
+            } else if (c.getType().equals(ConditionNegativeToGroup.ConditionType.RANDOMCHECK)) {
+                LiveData<List<TimeBlockLogger>> liveData = timeBlockLoggerRepository.findByTimeNewerAndBlockId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalblockid());
+                Observer<List<TimeBlockLogger>> observer = new Observer<List<TimeBlockLogger>>() {
+                    @Override
+                    public void onChanged(List<TimeBlockLogger> timeBlockLoggers) {
+                        Long totalTime = timeBlockLoggers.stream().mapToLong(t -> t.getTimecounted()).sum();
+                        mTimeByConditionIdMap.put(c.getId(), totalTime);
+                        giveFeedback(FEEDBACK_TIMES_LOADED, mConditions);
+                    }
+                };
+                liveData.observe(mLifecycleOwner, observer);
+                timeBlockLoggerLiveDatas.add(liveData);
+            } else if (c.getType().equals(ConditionNegativeToGroup.ConditionType.FILE)) {
+                // TODO
+            }
         });
     }
 
@@ -136,6 +158,10 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
             lvdt.removeObservers(mLifecycleOwner);
         });
         timeLoggerLiveDatas.clear();
+        timeBlockLoggerLiveDatas.stream().forEach(lvdt -> {
+            lvdt.removeObservers(mLifecycleOwner);
+        });
+        timeBlockLoggerLiveDatas.clear();
     }
 
     public Long getTimeCountedOnCondition(ConditionNegativeToGroup condition) {

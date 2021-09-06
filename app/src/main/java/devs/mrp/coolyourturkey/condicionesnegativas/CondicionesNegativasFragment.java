@@ -27,6 +27,9 @@ import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class CondicionesNegativasFragment extends Fragment implements MyObservable<ConditionNegativeToGroup> {
@@ -40,6 +43,7 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
 
     private List<MyObserver<ConditionNegativeToGroup>> observers = new ArrayList<>();
     Map<Integer, GrupoPositivo> mMapaGrupos;
+    Map<Integer, AbstractTimeBlock> mMapaBlocks;
     Map<Integer, ConditionNegativeToGroup> mMapaConditions;
     private Context mContext;
 
@@ -85,6 +89,12 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
                 mMapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
                 adapter.setGrupos(mMapaGrupos);
             }
+        });
+
+        ITimeBlockFacade blockFacade = FTimeBlockFacade.getNew(getActivity().getApplication(), getActivity());
+        blockFacade.getAll((tipo, feedback) -> {
+            mMapaBlocks = feedback.stream().collect(Collectors.toMap(AbstractTimeBlock::getId, b -> b));
+            adapter.setBlocks(mMapaBlocks);
         });
 
         timeChecker.addFeedbackListener(new FeedbackListener<List<ConditionNegativeToGroup>>() {
