@@ -13,6 +13,7 @@ public abstract class AbstractTimeBlock {
     private Long toTime;
     private Long minimumLapse;
     private Long maximumLapse;
+    private Long prizeammount;
     private List<Integer> days;
     private List<PositiveCheck> positiveChecks;
     private List<Check> negativeChecks;
@@ -95,5 +96,13 @@ public abstract class AbstractTimeBlock {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getPrizeammount() {
+        return prizeammount;
+    }
+
+    public void setPrizeammount(Long prizeammount) {
+        this.prizeammount = prizeammount;
     }
 }

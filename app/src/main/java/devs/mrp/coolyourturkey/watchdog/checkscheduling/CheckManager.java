@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockSchedule;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockScheduleRepository;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
@@ -52,6 +53,7 @@ public class CheckManager implements ICheckManager{
     private WorkManager mWorkManager;
     private Map<Integer, LiveData<List<WorkInfo>>> liveDatas = new HashMap<>();
     private Handler mainHandler;
+    private MisPreferencias misPreferencias;
 
     private TimeBlockScheduleRepository mScheduleRepo;
 
@@ -68,15 +70,21 @@ public class CheckManager implements ICheckManager{
         mNotificador = new Notificador(app, app);
         mWorkManager = WorkManager.getInstance(app);
         mainHandler = new Handler(Looper.getMainLooper());
+        misPreferencias = new MisPreferencias(app);
     }
 
     public static CheckManager getInstance(Application app, LifecycleOwner owner) {
         if (instance == null) {
             instance = new CheckManager(app, owner);
+            instance.mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
             instance.run();
         }
         return instance;
     }
+
+    //public void setNotificationChannel() {
+        //instance.mNotificador.createNotificationChannelWithCustomSound(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID, misPreferencias.getRandomCheckSound());
+    //}
 
     @Override
     public void refresh() {
@@ -91,7 +99,6 @@ public class CheckManager implements ICheckManager{
 
     private void run() {
         mainHandler.post(() -> {
-            mNotificador.createNotificationChannel(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
             // get all time-blocks and set observer
             mFacade.getAll((tipo, blocks) -> {
                 // delete existing works

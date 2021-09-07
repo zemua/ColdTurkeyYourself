@@ -83,6 +83,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     protected Button mPostHoraButton;
     protected Button mControlMin;
     protected Button mControlMax;
+    protected EditText mPrizeText;
     protected CheckBox mLunesCheck;
     protected CheckBox mMartesCheck;
     protected CheckBox mMiercolesCheck;
@@ -154,6 +155,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mPostHoraButton = mView.findViewById(R.id.buttonPostHora);
         mControlMin = mView.findViewById(R.id.buttonControlMin);
         mControlMax = mView.findViewById(R.id.buttonControlMax);
+        mPrizeText = mView.findViewById(R.id.editTextNumberPrize);
         mLunesCheck = mView.findViewById(R.id.checkBoxLunes);
         mMartesCheck = mView.findViewById(R.id.checkBoxMartes);
         mMiercolesCheck = mView.findViewById(R.id.checkBoxMiercoles);
@@ -277,6 +279,7 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         minM = (int) (timeBlock.getMinimumLapse()%(60*60*1000)/(60*1000));
         maxH = (int) (timeBlock.getMaximumLapse()/(60*60*1000));
         maxM = (int) (timeBlock.getMaximumLapse()%(60*60*1000)/(60*1000));
+        mPrizeText.setText(String.valueOf(timeBlock.getPrizeammount()));
         fillDays(timeBlock);
 
         setButtonsText();
@@ -295,6 +298,11 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mTimeBlock.setToTime(toH*60L*60L*1000L + toM*60L*1000L);
         mTimeBlock.setMinimumLapse(minH *60L*60L*1000L + minM *60L*1000L);
         mTimeBlock.setMaximumLapse(maxH *60L*60L*1000L + maxM *60L*1000L);
+        if (!mPrizeText.getText().toString().isEmpty()) {
+            mTimeBlock.setPrizeammount(Long.parseLong(mPrizeText.getText().toString()));
+        } else {
+            mTimeBlock.setPrizeammount(0L);
+        }
         mTimeBlock.setDays(getDays());
         mTimeBlock.setNegativeChecks(new ArrayList<>(mNegativeAdapter.getSelectedFromDataSet()));
         mTimeBlock.setPositiveChecks(new ArrayList<>(mPositiveAdapter.getSelectedFromDataSet()));
@@ -347,6 +355,12 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             valid = false;
         } else {
             green(mName);
+        }
+        if (mPrizeText.getText().toString().isEmpty() || Long.valueOf(mPrizeText.getText().toString()) <= 0) {
+            red(mPrizeText);
+            valid = false;
+        } else {
+            green(mPrizeText);
         }
         return valid;
     }

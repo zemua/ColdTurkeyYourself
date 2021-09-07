@@ -189,4 +189,6 @@
     <string name="has_conseguido_la_recompensa">Has conseguido la recompensa</string>
     <string name="si_el_control">Si el control</string>
     <string name="alerta">Alerta</string>
+    <string name="escoge_audio">Escoge audio</string>
+    <string name="recompensa_como_haber_trabajado">Recompensa como haber trabajado</string>
 </resources>

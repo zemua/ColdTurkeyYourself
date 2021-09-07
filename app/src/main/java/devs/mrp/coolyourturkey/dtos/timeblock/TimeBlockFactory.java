@@ -27,6 +27,7 @@ public class TimeBlockFactory {
         block.setToTime(tb.getTimeBlock().getTotime());
         block.setMinimumLapse(tb.getTimeBlock().getMinlapse());
         block.setMaximumLapse(tb.getTimeBlock().getMaxlapse());
+        block.setPrizeammount(tb.getTimeBlock().getPrizeammount());
         block.setDays(transformDays(tb.getTimeBlock()));
         block.setPositiveChecks(extractPositives(tb.getChecks()));
         block.setNegativeChecks(extractNegatives(tb.getChecks()));
@@ -43,6 +44,7 @@ public class TimeBlockFactory {
         obj.getTimeBlock().setTotime(tb.getToTime());
         obj.getTimeBlock().setMinlapse(tb.getMinimumLapse());
         obj.getTimeBlock().setMaxlapse(tb.getMaximumLapse());
+        obj.getTimeBlock().setPrizeammount(tb.getPrizeammount());
         setDaysToSend(tb, obj);
         return obj;
     }

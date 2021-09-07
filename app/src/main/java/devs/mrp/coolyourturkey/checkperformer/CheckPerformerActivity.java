@@ -76,7 +76,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 if (tb.getPositiveChecks().size() > 0) {
                     pCheck = tb.getPositiveChecks().get(rand.nextInt(tb.getPositiveChecks().size()));
                     positiveQuestion = pCheck.getQuestion();
-                    mPremio = ((((tb.getMaximumLapse()-tb.getMinimumLapse())/2)+tb.getMinimumLapse())*pCheck.getMultiplicador());
+                    //mPremio = ((((tb.getMaximumLapse()-tb.getMinimumLapse())/2)+tb.getMinimumLapse())*pCheck.getMultiplicador());
+                    mPremio = tb.getPrizeammount()*pCheck.getMultiplicador();
                 } else {
                     finish();
                 }

@@ -33,6 +33,10 @@ public class CheckTimeBlock {
     @ColumnInfo(name = "maxlapse")
     private Long maxlapse;
 
+    @NonNull
+    @ColumnInfo(name = "prizeammount")
+    private Long prizeammount;
+
     @ColumnInfo(name = "monday")
     private boolean monday;
 
@@ -162,5 +166,14 @@ public class CheckTimeBlock {
 
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    @NonNull
+    public Long getPrizeammount() {
+        return prizeammount;
+    }
+
+    public void setPrizeammount(@NonNull Long priceammount) {
+        this.prizeammount = priceammount;
     }
 }
