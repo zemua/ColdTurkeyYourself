@@ -7,10 +7,12 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
+import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
+import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class GrupoPositivoRepository {
 
@@ -20,6 +22,8 @@ public class GrupoPositivoRepository {
     private GrupoExportRepository exportRepo;
     private GroupLimitRepository limitsRepo;
     private ConditionToGroupRepository conditionRepo;
+    private ConditionNegativeToGroupRepository negativeConditionRepo;
+    private TimeLoggerRepository timeLogRepo;
 
     private GrupoPositivoRepository(Application application){
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
@@ -28,6 +32,8 @@ public class GrupoPositivoRepository {
         exportRepo = GrupoExportRepository.getRepo(application);
         limitsRepo = GroupLimitRepository.getRepo(application);
         conditionRepo = ConditionToGroupRepository.getRepo(application);
+        negativeConditionRepo = ConditionNegativeToGroupRepository.getRepo(application);
+        timeLogRepo = TimeLoggerRepository.getRepo(application);
     }
 
     public static GrupoPositivoRepository getRepo(Application application){
@@ -59,6 +65,8 @@ public class GrupoPositivoRepository {
         limitsRepo.deleteByGroupId(id);
         conditionRepo.deleteByGroupId(id);
         conditionRepo.deleteByConditionalGroupId(id);
+        negativeConditionRepo.deleteByConditionalGroupId(id);
+        timeLogRepo.deleteByGroupId(id);
     }
 
 }

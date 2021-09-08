@@ -17,6 +17,7 @@ import java.util.Map;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
@@ -29,12 +30,14 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
     private Context mContext;
     private List<ConditionNegativeToGroup> mDataset;
     private Map<Integer, GrupoPositivo> mGrupos;
+    private Map<Integer, AbstractTimeBlock> mBlocks;
     private NegativeConditionTimeChecker mTimeLogHandler;
 
     public CondicionesNegativasAdapter(Context context, NegativeConditionTimeChecker logger) {
         mContext = context;
         mDataset = new ArrayList<>();
         mGrupos = new HashMap<>();
+        mBlocks = new HashMap<>();
         mTimeLogHandler = logger;
     }
 
@@ -102,6 +105,13 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
                     s.append(mGrupos.get(condition.getConditionalgroupid()).getNombre());
                 }
                 break;
+            case RANDOMCHECK:
+                s.append(mContext.getResources().getString(R.string.si_el_control));
+                s.append(" ");
+                if (mBlocks.containsKey(condition.getConditionalblockid())) {
+                    s.append(mBlocks.get(condition.getConditionalblockid()).getName());
+                }
+                break;
             case FILE:
                 s.append(mContext.getResources().getString(R.string.si_el_archivo));
                 s.append(" ");
@@ -157,6 +167,11 @@ public class CondicionesNegativasAdapter extends RecyclerView.Adapter<Condicione
 
     public void setGrupos(Map<Integer, GrupoPositivo> grupos) {
         mGrupos = grupos;
+        notifyDataSetChanged();
+    }
+
+    public void setBlocks(Map<Integer, AbstractTimeBlock> blocks) {
+        mBlocks = blocks;
         notifyDataSetChanged();
     }
 }

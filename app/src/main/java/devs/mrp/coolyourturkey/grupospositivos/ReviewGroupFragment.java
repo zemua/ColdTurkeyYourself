@@ -36,6 +36,9 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -81,6 +84,7 @@ public class ReviewGroupFragment extends Fragment {
     private List<AplicacionListada> appsPositivas;
     private List<AppToGroup> groupedApps;
     private ConditionToGroupViewModel mConditionToGroupViewModel;
+    private ITimeBlockFacade mTimeBlockFacade;
     private GrupoPositivoViewModel mGrupoPositivoViewModel;
 
 
@@ -235,6 +239,12 @@ public class ReviewGroupFragment extends Fragment {
                 Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
                 mConditionsAdapter.setGrupos(mapaGrupos);
             }
+        });
+
+        mTimeBlockFacade = FTimeBlockFacade.getNew(getActivity().getApplication(), getActivity());
+        mTimeBlockFacade.getAll((tipo, blocks) -> {
+            Map<Integer, AbstractTimeBlock> mapaBlocks = blocks.stream().collect(Collectors.toMap(AbstractTimeBlock::getId, b -> b));
+            mConditionsAdapter.setChecks(mapaBlocks);
         });
 
         mConditionsAdapter.addFeedbackListener(new FeedbackListener<ConditionToGroup>() {

@@ -1,16 +1,15 @@
 package devs.mrp.coolyourturkey.condicionesnegativas;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,24 +21,31 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class CondicionesNegativasFragment extends Fragment implements MyObservable<ConditionNegativeToGroup> {
+
+    private static String TAG_DIALOGO_CON_DELAY = "Dialogo.con.delay.condiciones.negativas.fragment.java";
 
     public static final String CALLBACK_ADD_CONDITION = "callback_add_condition";
     public static final String CALLBACK_EDIT_EXISTING_CONDITION = "callback_edit_existing_condition";
 
+    private static final Integer RESULT_CONFIRM_EDIT_CONDITION = 20;
+
     private List<MyObserver<ConditionNegativeToGroup>> observers = new ArrayList<>();
+    Map<Integer, GrupoPositivo> mMapaGrupos;
+    Map<Integer, AbstractTimeBlock> mMapaBlocks;
+    Map<Integer, ConditionNegativeToGroup> mMapaConditions;
     private Context mContext;
-    private ViewModelProvider.Factory factory;
-    private Handler mainHandler;
 
     private FloatingActionButton addButton;
     private RecyclerView recycler;
@@ -67,15 +73,11 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication());
-        mainHandler = new Handler(mContext.getMainLooper());
 
         View v = inflater.inflate(R.layout.fragment_condiciones_negativas, container, false);
 
-        addButton = v.findViewById(R.id.addNegCond);
-        recycler = v.findViewById(R.id.recyclerNegCond);
-
-        // TODO when deleting a positive group, delete all negative conditions depending on it
+        addButton = v.findViewById(R.id.add);
+        recycler = v.findViewById(R.id.recycler);
 
         NegativeConditionTimeChecker timeChecker = new NegativeConditionTimeChecker(mContext, this.getActivity().getApplication(), this);
         CondicionesNegativasAdapter adapter = new CondicionesNegativasAdapter(mContext, timeChecker);
@@ -84,9 +86,15 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         gruposRepo.findAllGrupoPositivo().observe(this, new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
-                adapter.setGrupos(mapaGrupos);
+                mMapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
+                adapter.setGrupos(mMapaGrupos);
             }
+        });
+
+        ITimeBlockFacade blockFacade = FTimeBlockFacade.getNew(getActivity().getApplication(), getActivity());
+        blockFacade.getAll((tipo, feedback) -> {
+            mMapaBlocks = feedback.stream().collect(Collectors.toMap(AbstractTimeBlock::getId, b -> b));
+            adapter.setBlocks(mMapaBlocks);
         });
 
         timeChecker.addFeedbackListener(new FeedbackListener<List<ConditionNegativeToGroup>>() {
@@ -95,6 +103,7 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
                 switch (tipo){
                     case NegativeConditionTimeChecker.FEEDBACK_CONDITIONS_LOADED:
                         adapter.setDataset(feedback);
+                        mMapaConditions = feedback.stream().collect(Collectors.toMap(ConditionNegativeToGroup::getId, c -> c));
                         break;
                     case NegativeConditionTimeChecker.FEEDBACK_TIMES_LOADED:
                         adapter.notifyDataSetChanged();
@@ -108,7 +117,9 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
             public void giveFeedback(int tipo, ConditionNegativeToGroup feedback, Object... args) {
                 switch (tipo) {
                     case CondicionesNegativasAdapter.FEEDBACK_CONDITION_SELECTED:
-                        doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, feedback);
+                        DialogWithDelay dialog = new DialogWithDelay(R.drawable.bug, mContext.getString(R.string.apps_malas), mContext.getString(R.string.seguro_debes_modificar_esta_condicion), feedback.getId());
+                        dialog.setTargetFragment(CondicionesNegativasFragment.this, RESULT_CONFIRM_EDIT_CONDITION);
+                        dialog.show(getActivity().getSupportFragmentManager(), TAG_DIALOGO_CON_DELAY);
                         break;
                 }
             }
@@ -126,6 +137,15 @@ public class CondicionesNegativasFragment extends Fragment implements MyObservab
         });
 
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == RESULT_CONFIRM_EDIT_CONDITION) {
+                doCallBack(CALLBACK_EDIT_EXISTING_CONDITION, mMapaConditions.get(resultData.getIntExtra(DialogWithDelay.EXTRA_REPLY_VALUE, -1)));
+            }
+        }
     }
 
 }

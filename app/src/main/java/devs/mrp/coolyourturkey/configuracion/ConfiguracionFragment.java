@@ -359,6 +359,7 @@ public class ConfiguracionFragment extends Fragment {
                             R.drawable.clock_time_eight);
                 } else {
                     mMisPreferencias.setTiempoDeGraciaActivado(true);
+                    mSwitchTiempoDeGracia.setText(R.string.espera_activada);
                 }
             }
         });
@@ -626,6 +627,7 @@ public class ConfiguracionFragment extends Fragment {
             } else if (requestCode == REQUEST_CODE_DESACTIVA_TIEMPO_GRACIA) {
                 mMisPreferencias.setTiempoDeGraciaActivado(false);
                 mSwitchTiempoDeGracia.setChecked(false);
+                mSwitchTiempoDeGracia.setText(R.string.espera_desactivada);
             } else if (requestCode == REQUEST_CODE_TIME_PIQUER_INICIO || requestCode == REQUEST_CODE_TIME_PIQUER_FIN) {
                 if (resultData != null) {
                     String txt = resultData.getStringExtra(TimePickerFragment.EXTRA_REPLY_STRING);

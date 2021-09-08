@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -24,7 +25,8 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     private static final String TAG = "Dialog With Delay";
 
     private List<FeedbackListener<AlertDialog>> listeners = new ArrayList<>();
-    public static final int FEEDBACK_ALERT_DIALOG = 0;
+    public static final int FEEDBACK_ALERT_DIALOG_ACEPTAR = 0;
+    public static final int FEEDBACK_ALERT_DIALOG_RECHAZAR = 1;
 
     public static final String EXTRA_REPLY_VALUE = "Extra.reply.key.integer.dialog.with.delay.java";
     public static final String EXTRA_RESPUESTA = "Extra.respuesta.boolean.dialog.with.delay.java";
@@ -59,6 +61,17 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         mMensaje = message;
         mReplyValue = replyValue;
         mTiempo = DialogDelayer.CUENTA_ATRAS_SEGUNDOS;
+    }
+
+    public DialogWithDelay(int iconResId, String title, String message, Integer replyValue, int delaySeconds, FeedbackListener<AlertDialog> listener) {
+        super();
+        restaurar = false;
+        mIconResId = iconResId;
+        mTitle = title;
+        mMensaje = message;
+        mReplyValue = replyValue;
+        mTiempo = delaySeconds;
+        addFeedbackListener(listener);
     }
 
     @Override
@@ -150,11 +163,16 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         sendResult(Activity.RESULT_CANCELED, false);
     }
 
-    public void pulsadoAceptar() {
+    private void pulsadoAceptar() {
         sendResult(Activity.RESULT_OK, true);
     }
 
     private void sendResult(int resultCode, boolean aceptado) {
+        if (aceptado) {
+            giveFeedback(FEEDBACK_ALERT_DIALOG_ACEPTAR, mDialogo);
+        } else {
+            giveFeedback(FEEDBACK_ALERT_DIALOG_RECHAZAR, mDialogo);
+        }
         if (getTargetFragment() == null) {
             return;
         }

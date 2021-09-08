@@ -2,12 +2,17 @@ package devs.mrp.coolyourturkey.configuracion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.provider.Settings;
+import android.util.Log;
 
 import devs.mrp.coolyourturkey.R;
 
 import java.util.Formatter;
 
 public class MisPreferencias {
+
+    private final String TAG = "MisPreferencias";
 
     private static final String FLAG_EXPORT = "flag.export.to.txt.activo";
     private static final String FLAG_IMPORT = "flag.import.from.txt.activo";
@@ -26,6 +31,8 @@ public class MisPreferencias {
     private static final String NOTIFY_CONDITIONS_NOT_MET = "notify.conditions.not.met";
     private static final String NOTIFY_CONDITIONS_JUST_MET = "notify.conditions.just.met";
     private static final String NOTIFY_LIMITES_REACHED = "notify.limites.reached";
+
+    private static final String RANDOM_CHECK_CUSTOM_SOUND = "random.check.custom.sound";
 
     Context mContext;
     private static SharedPreferences mSharedPreferences;
@@ -274,6 +281,24 @@ public class MisPreferencias {
 
     public boolean getNotifyLimitesReached() {
         return getSharedPreferences().getBoolean(NOTIFY_LIMITES_REACHED, true);
+    }
+
+    public void setRandomCheckSound(Uri uri){
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putString(RANDOM_CHECK_CUSTOM_SOUND, uri.getPath());
+        e.apply();
+    }
+
+    public Uri getRandomCheckSound(){
+        String s = getSharedPreferences().getString(RANDOM_CHECK_CUSTOM_SOUND, "");
+        Uri uri;
+        if (s.equals("")) {
+            uri = Settings.System.DEFAULT_NOTIFICATION_URI;
+        } else {
+            uri = Uri.parse(s);
+        }
+        //Log.d(TAG, "sound uri: " + uri.toString());
+        return uri;
     }
 
 }

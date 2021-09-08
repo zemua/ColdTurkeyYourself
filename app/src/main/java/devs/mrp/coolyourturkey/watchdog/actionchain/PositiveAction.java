@@ -1,10 +1,15 @@
 package devs.mrp.coolyourturkey.watchdog.actionchain;
 
+import android.util.Log;
+
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.watchdog.ForegroundAppChecker;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
 
 public class PositiveAction extends AbstractHandler{
+
+    private final String TAG = "PositiveAction";
+
     @Override
     protected boolean canHandle(int tipo) {
         if (tipo == ForegroundAppChecker.POSITIVO) {

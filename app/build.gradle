@@ -10,8 +10,8 @@ android {
         applicationId "devs.mrp.coolyourturkey"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 4
-        versionName "2.2"
+        versionCode 6
+        versionName "0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +29,11 @@ android {
 }
 
 dependencies {
+
+    def work_version = "2.5.0"
+
+    // (Java only)
+    implementation "androidx.work:work-runtime:$work_version"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'

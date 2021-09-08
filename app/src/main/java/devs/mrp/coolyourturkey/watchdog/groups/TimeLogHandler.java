@@ -29,6 +29,8 @@ import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
@@ -58,6 +60,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private LimitHandler mLimitHandler;
 
     private TimeLoggerRepository timeLoggerRepository;
+    private TimeBlockLoggerRepository timeBlockLoggerRepository;
     private AppToGroupRepository appToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private GrupoExportRepository mGrupoExportRepository;
@@ -66,12 +69,14 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to remove and re-add observer only
     private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
+    private Map<LiveData<List<TimeBlockLogger>>, Observer<List<TimeBlockLogger>>> mMapOfTimeBlockLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
     private LiveData<List<GrupoExport>> mGrupoExportLiveData; // to clear observer from exports
     private Observer<List<GrupoExport>> mGrupoExportObserver; // to clear observer from exports
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByGroupId; // to clear observers from livedata only
     private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mTodayTimeByGroupObservers;
 
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
+    private Map<Integer, List<TimeBlockLogger>> mRandomCheckLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
     private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
@@ -100,11 +105,14 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
+        mMapOfTimeBlockLoggerLiveDataObserversByConditionId = new HashMap<>();
         mTodayTimeByGroupMap = new HashMap<>();
         mTodayTimeByGroupObservers = new HashMap<>();
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
+        timeBlockLoggerRepository = TimeBlockLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
+        mRandomCheckLoggersByConditionId = new HashMap<>();
         appToGroupRepository = AppToGroupRepository.getRepo(application);
         mMainHandler.post(new Runnable() {
             @Override
@@ -477,6 +485,12 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
+                                    } else if(c.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)) {
+                                        try {
+                                            observeTimeLoggedOnRandomCheck(c);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     } else if (c.getType().equals(ConditionToGroup.ConditionType.FILE)) {
                                         observeTimeLoggedOnFile(c);
                                     }
@@ -509,6 +523,12 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 });
                 mMapOfLoggerLiveDataObserversByConditionId.clear();
             }
+            if (mMapOfTimeBlockLoggerLiveDataObserversByConditionId != null) {
+                mMapOfTimeBlockLoggerLiveDataObserversByConditionId.keySet().stream().forEach(key -> {
+                    key.removeObserver(mMapOfTimeBlockLoggerLiveDataObserversByConditionId.get(key));
+                });
+                mMapOfTimeBlockLoggerLiveDataObserversByConditionId.clear();
+            }
         } else {
             throw new Exception("clearLogObservers to be called in main thread");
         }
@@ -523,13 +543,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
     public Long getTimeCountedOnGroupCondition(ConditionToGroup cond) {
         Long time;
         TimeSummary ts = new TimeSummary(cond.getGroupid(), cond.getConditionalgroupid());
-        if (mTimeLoggersByConditionId.containsKey(cond.getId())) {
+        if (cond.getType().equals(ConditionToGroup.ConditionType.GROUP) && mTimeLoggersByConditionId.containsKey(cond.getId())) {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
-        } else if(mFileTimeSummaryMap.containsKey(ts.getKey())) {
+        } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
+            time = mRandomCheckLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getTimecounted()));
+        } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE) && mFileTimeSummaryMap.containsKey(ts.getKey())) {
             time = mFileTimeSummaryMap.get(ts.getKey()).getSummedTime();
         } else {
             time = 0L;
-            Log.d(TAG, "entry for condition not found");
+            Log.d(TAG, "entry for condition not found for " + cond.getType() + " checkid: " + cond.getConditionalrandomcheckid() + " groupid: " + cond.getConditionalgroupid());
         }
         return time;
     }
@@ -592,7 +614,22 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
 
-
+    private void observeTimeLoggedOnRandomCheck(ConditionToGroup c) throws Exception {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new Exception("observeTimeLoggedOnRandomCheck shall be called from main thread");
+        }
+        Log.d(TAG, "find for " + c.getConditionalrandomcheckid());
+        LiveData<List<TimeBlockLogger>> timeLoggedLD = timeBlockLoggerRepository.findByTimeNewerAndBlockId(offsetDayInMillis(c.getFromlastndays().longValue()), c.getConditionalrandomcheckid());
+        Observer<List<TimeBlockLogger>> observer = new Observer<List<TimeBlockLogger>>() {
+            @Override
+            public void onChanged(List<TimeBlockLogger> timeBlockLoggers) {
+                mRandomCheckLoggersByConditionId.put(c.getId(), timeBlockLoggers);
+                giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
+            }
+        };
+        mMapOfTimeBlockLoggerLiveDataObserversByConditionId.put(timeLoggedLD, observer);
+        timeLoggedLD.observe(mLifecycleOwner, observer);
+    }
 
 
 

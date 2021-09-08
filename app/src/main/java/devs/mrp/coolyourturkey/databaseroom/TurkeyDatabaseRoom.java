@@ -11,6 +11,16 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockAndChecksCrossRef;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExport;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExportDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerDao;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockSchedule;
+import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockScheduleDao;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
@@ -25,6 +35,8 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoDao;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaDao;
+import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheck;
+import devs.mrp.coolyourturkey.databaseroom.randomchecks.RandomCheckDao;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerDao;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
@@ -36,7 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class}, version = 13)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class}, version = 21)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -51,6 +63,11 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract TimeLoggerDao timeLoggerDao();
     public abstract GrupoExportDao grupoExportDao();
     public abstract GroupLimitDao groupLimitDao();
+    public abstract RandomCheckDao randomCheckDao();
+    public abstract CheckTimeBlockDao checkTimeBlockDao();
+    public abstract TimeBlockScheduleDao timeBlockScheduleDao();
+    public abstract TimeBlockLoggerDao timeBlockLoggerDao();
+    public abstract TimeBlockExportDao timeBlockExportDao();
 
     private static volatile TurkeyDatabaseRoom INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
@@ -217,6 +234,111 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 13
+     * to
+     * version 14
+     */
+    static final Migration MIGRATION_13_14 = new Migration(13, 14) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'randomcheck' ('id' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'name' TEXT NOT NULL, 'question' TEXT NOT NULL, 'multiplicador' INTEGER, PRIMARY KEY('id'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 14
+     * to
+     * version 15
+     */
+    static final Migration MIGRATION_14_15 = new Migration(14, 15) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'checktimeblock' ('blockid' INTEGER NOT NULL, 'name' TEXT NOT NULL, 'fromtime' INTEGER NOT NULL, 'totime' INTEGER NOT NULL, 'minlapse' INTEGER NOT NULL, 'maxlapse' INTEGER NOT NULL, 'monday' INTEGER NOT NULL DEFAULT(0), 'tuesday' INTEGER NOT NULL DEFAULT(0), 'wednesday' INTEGER NOT NULL DEFAULT(0), 'thursday' INTEGER NOT NULL DEFAULT(0), 'friday' INTEGER NOT NULL DEFAULT(0), 'saturday' INTEGER NOT NULL DEFAULT(0), 'sunday' INTEGER NOT NULL DEFAULT(0), PRIMARY KEY('blockid'))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblockandcheckcrossref' ('blockid' INTEGER NOT NULL, 'id' INTEGER NOT NULL, PRIMARY KEY('blockid', 'id'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 15
+     * to
+     * version 16
+     */
+    static final Migration MIGRATION_15_16 = new Migration(15, 16) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblockschedule' ('scheduleid' INTEGER NOT NULL, 'schedulemillis' INTEGER NOT NULL, PRIMARY KEY ('scheduleid'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 16
+     * to
+     * version 17
+     */
+    static final Migration MIGRATION_16_17 = new Migration(16, 17) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblocklogger' ('loggerid' INTEGER NOT NULL, 'epoch' INTEGER NOT NULL, 'blockid' INTEGER NOT NULL, 'timecounted' INTEGER NOT NULL, PRIMARY KEY ('loggerid'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 17
+     * to
+     * version 18
+     */
+    static final Migration MIGRATION_17_18 = new Migration(17, 18) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'conditiontogroup' ADD 'conditionalrandomcheckid' INTEGER");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 18
+     * to
+     * version 19
+     */
+    static final Migration MIGRATION_18_19 = new Migration(18, 19) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'conditionnegativetogroup' ADD 'conditionalblockid' INTEGER");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 19
+     * to
+     * version 20
+     */
+    static final Migration MIGRATION_19_20 = new Migration(19, 20) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'timeblockexport' ('expblockid' INTEGER NOT NULL, 'archivo' TEXT NOT NULL, 'days' INTEGER NOT NULL, PRIMARY KEY ('expblockid'))");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 20
+     * to
+     * version 21
+     */
+    static final Migration MIGRATION_20_21 = new Migration(20, 21) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'checktimeblock' ADD 'prizeammount' INTEGER NOT NULL DEFAULT(0)");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -228,7 +350,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(), TurkeyDatabaseRoom.class, "apps_listadas")
                             .addCallback(sRoomDatabaseCallback) //inicialización de la base de datos
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13) // add the migration schemas separated by commas
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21) // add the migration schemas separated by commas
                             .build();
                 }
             }

@@ -3,9 +3,11 @@ package devs.mrp.coolyourturkey.watchdog;
 import android.app.Notification;
 
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
+import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
+import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class WatchDogData {
@@ -251,5 +253,23 @@ public class WatchDogData {
     }
     public GenericTimedToaster getConditionToaster() {
         return this.mGenericTimedToaster;
+    }
+
+    private NegativeConditionTimeChecker negativeConditionTimeChecker;
+    public WatchDogData setNegativeConditionTimeChecker(NegativeConditionTimeChecker checker) {
+        this.negativeConditionTimeChecker = checker;
+        return this;
+    }
+    public NegativeConditionTimeChecker getNegativeConditionTimeChecker() {
+        return this.negativeConditionTimeChecker;
+    }
+
+    private TimeBlockExporter timeBlockExporter;
+    public WatchDogData setTimeBlockExporter(TimeBlockExporter exporter) {
+        this.timeBlockExporter = exporter;
+        return this;
+    }
+    public TimeBlockExporter getTimeBlockExporter() {
+        return this.timeBlockExporter;
     }
 }

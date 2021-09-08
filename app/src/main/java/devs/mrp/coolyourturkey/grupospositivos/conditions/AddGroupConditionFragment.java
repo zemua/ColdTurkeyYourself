@@ -33,6 +33,9 @@ import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class AddGroupConditionFragment extends Fragment {
@@ -42,6 +45,7 @@ public class AddGroupConditionFragment extends Fragment {
     private static final String KEY_BUNDLE_URI = "key.bundle.uri";
     private static final String KEY_CONDITION_TYPE = "key.condition.type";
     private static final String KEY_BUNDLE_GRUPOS_POSITIVOS_LIST = "key.bundle.grupos.positivos.list";
+    private static final String KEY_BUNDLE_RANDOM_CHECKS_LIST = "key.bundle.random.checks.list";
     private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
     private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
 
@@ -59,6 +63,7 @@ public class AddGroupConditionFragment extends Fragment {
     private TextView mGroupNameTextView;
     private Spinner mTypeSpinner;
     private Spinner mTargetGroupSpinner;
+    private Spinner mRandomCheckSpinner;
     private TextView mSelectedFileTextView;
     private Button mSelectedFileButton;
     private EditText mUsedHoursEditText;
@@ -68,13 +73,16 @@ public class AddGroupConditionFragment extends Fragment {
     private Button mButtonBorrar;
 
     private ConstraintLayout mGroupsLayout;
+    private ConstraintLayout mRandomChecksLayout;
     private ConstraintLayout mFileSourceLayout;
 
     private List<GrupoPositivo> mGruposPositivos;
+    private List<AbstractTimeBlock> mTimeBlocks;
     private ConditionToGroup mConditionForEdit;
     private boolean mIsEditAction = false;
     private boolean mViewReadyForEdit = false;
     private boolean mTargetGroupReadyForEdit = false;
+    private boolean mRandomChecksReadyForEdit = false;
 
     // TODO add boolean/switch whether the condition should trigger a notification when met
 
@@ -99,10 +107,12 @@ public class AddGroupConditionFragment extends Fragment {
             }
             mConditionType = (ConditionToGroup.ConditionType) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_CONDITION_TYPE)).getData();
             mGruposPositivos = (List<GrupoPositivo>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST)).getData();
+            mTimeBlocks = (List<AbstractTimeBlock>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_RANDOM_CHECKS_LIST)).getData();
             mConditionForEdit = (ConditionToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
             mIsEditAction = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION);
         } else {
             mGruposPositivos = new ArrayList<>();
+            mTimeBlocks = new ArrayList<>();
         }
     }
 
@@ -118,6 +128,7 @@ public class AddGroupConditionFragment extends Fragment {
         }
         outState.putBinder(KEY_CONDITION_TYPE, new ObjectWrapperForBinder(mConditionType));
         outState.putBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST, new ObjectWrapperForBinder(mGruposPositivos));
+        outState.putBinder(KEY_BUNDLE_RANDOM_CHECKS_LIST, new ObjectWrapperForBinder(mTimeBlocks));
         outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mConditionForEdit));
         outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEditAction);
         super.onSaveInstanceState(outState);
@@ -159,6 +170,7 @@ public class AddGroupConditionFragment extends Fragment {
         mGroupNameTextView = v.findViewById(R.id.textGroupName);
         mTypeSpinner = v.findViewById(R.id.spinnerType);
         mTargetGroupSpinner = v.findViewById(R.id.spinnerTargetGroup);
+        mRandomCheckSpinner = v.findViewById(R.id.spinnerRandomCheck);
         mSelectedFileTextView = v.findViewById(R.id.textSelectedFile);
         mSelectedFileButton = v.findViewById(R.id.buttonSelectFile);
         mUsedHoursEditText = v.findViewById(R.id.editTextHoras);
@@ -168,6 +180,7 @@ public class AddGroupConditionFragment extends Fragment {
         mButtonBorrar = v.findViewById(R.id.buttonBorrar);
 
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
+        mRandomChecksLayout = v.findViewById(R.id.lineaTargetRandomChecks);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
 
         mGroupNameTextView.setText(mGroupName);
@@ -183,6 +196,9 @@ public class AddGroupConditionFragment extends Fragment {
                 if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.GROUP.getResourceId()))) {
                     showGroupLayout();
                     mConditionType = ConditionToGroup.ConditionType.GROUP;
+                } else if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.RANDOMCHECK.getResourceId()))) {
+                    showRandomCheckLayout();
+                    mConditionType = ConditionToGroup.ConditionType.RANDOMCHECK;
                 } else if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.FILE.getResourceId()))) {
                     showFileLayout();
                     mConditionType = ConditionToGroup.ConditionType.FILE;
@@ -226,6 +242,25 @@ public class AddGroupConditionFragment extends Fragment {
             }
         });
 
+        List<AbstractTimeBlock> blocksObjectList = new ArrayList<>();
+        List<String> blockList = new ArrayList<>();
+        ArrayAdapter<String> checkSpinnerAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, blockList);
+        checkSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mRandomCheckSpinner.setAdapter(checkSpinnerAdapter);
+        ITimeBlockFacade timeBlockRepo = FTimeBlockFacade.getNew(getActivity().getApplication(), getActivity());
+        timeBlockRepo.getAll((tipo, blocks) -> {
+            mTimeBlocks.clear();
+            mTimeBlocks.addAll(blocks);
+            blocksObjectList.clear();
+            blocksObjectList.addAll(blocks);
+            List<String>  blocksNamesList = mTimeBlocks.stream().map(b -> b.getName()).collect(Collectors.toList());
+            checkSpinnerAdapter.clear();
+            checkSpinnerAdapter.addAll(blocksNamesList);
+            checkSpinnerAdapter.notifyDataSetChanged();
+            mRandomChecksReadyForEdit = true;
+            if (mIsEditAction) {setupEditExistingCondition(mConditionForEdit);}
+        });
+
         mSelectedFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,7 +271,7 @@ public class AddGroupConditionFragment extends Fragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
+                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri() & !checkEmptyGroup() & !checkEmptyRandomCheck()) {
                     ConditionToGroup condition = new ConditionToGroup();
 
                     condition.setGroupid(getGroupId());
@@ -247,6 +282,7 @@ public class AddGroupConditionFragment extends Fragment {
                         condition.setFiletarget("");
                     }
                     condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
+                    condition.setConditionalrandomcheckid(blocksObjectList.get(mRandomCheckSpinner.getSelectedItemPosition()).getId());
 
                     Integer ltime = 0;
                     if(!mUsedHoursEditText.getText().toString().equals("")){
@@ -300,11 +336,19 @@ public class AddGroupConditionFragment extends Fragment {
     private void showGroupLayout() {
         mGroupsLayout.setVisibility(View.VISIBLE);
         mFileSourceLayout.setVisibility(View.GONE);
+        mRandomChecksLayout.setVisibility(View.GONE);
     }
 
     private void showFileLayout(){
         mGroupsLayout.setVisibility(View.GONE);
         mFileSourceLayout.setVisibility(View.VISIBLE);
+        mRandomChecksLayout.setVisibility(View.GONE);
+    }
+
+    private void showRandomCheckLayout() {
+        mGroupsLayout.setVisibility(View.GONE);
+        mFileSourceLayout.setVisibility(View.GONE);
+        mRandomChecksLayout.setVisibility(View.VISIBLE);
     }
 
     private void openFile() {
@@ -376,6 +420,34 @@ public class AddGroupConditionFragment extends Fragment {
         return false;
     }
 
+    private boolean checkEmptyGroup() {
+        if (mConditionType != ConditionToGroup.ConditionType.GROUP) {
+            mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mTargetGroupSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mTargetGroupSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
+    private boolean checkEmptyRandomCheck() {
+        if (mConditionType != ConditionToGroup.ConditionType.RANDOMCHECK) {
+            mRandomCheckSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mRandomCheckSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mRandomCheckSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mRandomCheckSpinner.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
     public void setConditionForEdit(ConditionToGroup condition) {
         mIsEditAction = true;
         mConditionForEdit = condition;
@@ -383,11 +455,14 @@ public class AddGroupConditionFragment extends Fragment {
     }
 
     private void setupEditExistingCondition(ConditionToGroup condition){
-        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
+        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit) && (condition.getType() != ConditionToGroup.ConditionType.RANDOMCHECK || mRandomChecksReadyForEdit)) {
 
             switch (condition.getType()) {
                 case GROUP:
                     mTypeSpinner.setSelection(ConditionToGroup.ConditionType.GROUP.getPosition());
+                    break;
+                case RANDOMCHECK:
+                    mTypeSpinner.setSelection(ConditionToGroup.ConditionType.RANDOMCHECK.getPosition());
                     break;
                 case FILE:
                     mTypeSpinner.setSelection(ConditionToGroup.ConditionType.FILE.getPosition());
@@ -399,6 +474,15 @@ public class AddGroupConditionFragment extends Fragment {
                 for (int i = 0; i < mGruposPositivos.size(); i++) {
                     if (mGruposPositivos.get(i).getId() == condition.getConditionalgroupid()) {
                         mTargetGroupSpinner.setSelection(i);
+                    }
+                }
+            }
+
+            //mRandomCheckSpinner
+            if (mTimeBlocks != null) {
+                for (int i = 0; i<mTimeBlocks.size(); i++) {
+                    if (mTimeBlocks.get(i).getId() == condition.getConditionalrandomcheckid()) {
+                        mRandomCheckSpinner.setSelection(i);
                     }
                 }
             }

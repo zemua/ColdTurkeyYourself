@@ -33,6 +33,9 @@ import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNe
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
+import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
@@ -45,6 +48,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
     private static final String KEY_BUNDLE_URI = "key.bundle.uri";
     private static final String KEY_CONDITION_TYPE = "key.condition.type";
     private static final String KEY_BUNDLE_GRUPOS_POSITIVOS_LIST = "key.bundle.grupos.positivos.list";
+    private static final String KEY_BUNDLE_TIME_BLOCKS_LIST = "key.bundle.time.blocks.list";
     private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
     private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
 
@@ -56,14 +60,17 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
     private ConditionNegativeToGroup mConditionForEdit;
     private boolean mViewReadyForEdit = false; // view items already initialized?
     private boolean mTargetGroupReadyForEdit = false; // groups already loaded from the db?
+    private boolean mBlocksReadyForEdit = false;
     private Uri mFileUri;
     private Integer mConditionId;
     private ConditionNegativeToGroup.ConditionType mConditionType;
     private List<GrupoPositivo> mGruposPositivos;
+    private List<AbstractTimeBlock> mTimeBlocks;
     private Context mContext;
 
     private Spinner mTypeSpinner;
     private Spinner mTargetGroupSpinner;
+    private Spinner mTimeBlockSpinner;
     private TextView mSelectedFileTextView;
     private TextView mUsedHoursEditText;
     private TextView mUsedMinutesEditText;
@@ -74,6 +81,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
 
     private ConstraintLayout mGroupsLayout;
     private ConstraintLayout mFileSourceLayout;
+    private ConstraintLayout mRandomCheckLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,24 +93,34 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
             }
             mConditionType = (ConditionNegativeToGroup.ConditionType) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_CONDITION_TYPE)).getData();
             mGruposPositivos = (List<GrupoPositivo>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST)).getData();
+            mTimeBlocks = (List<AbstractTimeBlock>) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_TIME_BLOCKS_LIST)).getData();
             mConditionForEdit = (ConditionNegativeToGroup) ((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT)).getData();
             mIsEditAction = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION);
         } else {
             mGruposPositivos = new ArrayList<>();
+            mTimeBlocks = new ArrayList<>();
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(KEY_BUNDLE_ID_ACTUAL, mConditionId);
+        outState.putInt(KEY_BUNDLE_ID_ACTUAL, getConditionId());
         if (mFileUri != null) {
             outState.putString(KEY_BUNDLE_URI, mFileUri.toString());
         }
         outState.putBinder(KEY_CONDITION_TYPE, new ObjectWrapperForBinder(mConditionType));
         outState.putBinder(KEY_BUNDLE_GRUPOS_POSITIVOS_LIST, new ObjectWrapperForBinder(mGruposPositivos));
+        outState.putBinder(KEY_BUNDLE_TIME_BLOCKS_LIST, new ObjectWrapperForBinder(mTimeBlocks));
         outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mConditionForEdit));
         outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEditAction);
         super.onSaveInstanceState(outState);
+    }
+
+    public Integer getConditionId() {
+        if (mConditionId == null) {
+            return -1;
+        }
+        return mConditionId;
     }
 
     @Override
@@ -117,6 +135,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
 
         mTypeSpinner = v.findViewById(R.id.spinnerType);
         mTargetGroupSpinner = v.findViewById(R.id.spinnerTargetGroup);
+        mTimeBlockSpinner = v.findViewById(R.id.spinnerRandomCheck);
         mSelectedFileTextView = v.findViewById(R.id.textSelectedFile);
         mSelectedFileButton = v.findViewById(R.id.buttonSelectFile);
         mUsedHoursEditText = v.findViewById(R.id.editTextHoras);
@@ -126,6 +145,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         mButtonBorrar = v.findViewById(R.id.buttonBorrar);
 
         mGroupsLayout = v.findViewById(R.id.lineaTargetGroups);
+        mRandomCheckLayout = v.findViewById(R.id.lineaTargetRandomChecks);
         mFileSourceLayout = v.findViewById(R.id.lineaTargetFile);
 
         ((TextView)v.findViewById(R.id.textGroupName)).setText(R.string.apps_malas);
@@ -138,10 +158,13 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = (String)parent.getItemAtPosition(position);
-                if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.GROUP.getResourceId()))) {
+                if (selected.equals(getResources().getString(ConditionNegativeToGroup.ConditionType.GROUP.getResourceId()))) {
                     showGroupLayout();
                     mConditionType = ConditionNegativeToGroup.ConditionType.GROUP;
-                } else if (selected.equals(getResources().getString(ConditionToGroup.ConditionType.FILE.getResourceId()))) {
+                } else if (selected.equals(getResources().getString(ConditionNegativeToGroup.ConditionType.RANDOMCHECK.getResourceId()))) {
+                    showRandomCheckLayout();
+                    mConditionType = ConditionNegativeToGroup.ConditionType.RANDOMCHECK;
+                } else if (selected.equals(getResources().getString(ConditionNegativeToGroup.ConditionType.FILE.getResourceId()))) {
                     showFileLayout();
                     mConditionType = ConditionNegativeToGroup.ConditionType.FILE;
                 }
@@ -176,6 +199,25 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
             }
         });
 
+        List<AbstractTimeBlock> blocksObjectList = new ArrayList<>();
+        List<String> blocksList = new ArrayList<>();
+        ArrayAdapter<String> blockSpinerAdaper = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, blocksList);
+        blockSpinerAdaper.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mTimeBlockSpinner.setAdapter(blockSpinerAdaper);
+        ITimeBlockFacade blockFacade = FTimeBlockFacade.getNew(getActivity().getApplication(), getActivity());
+        blockFacade.getAll((tipo, feedback) -> {
+            mTimeBlocks.clear();
+            mTimeBlocks.addAll(feedback);
+            blocksObjectList.clear();
+            blocksObjectList.addAll(mTimeBlocks);
+            List<String> blockNamesList = mTimeBlocks.stream().map(b -> b.getName()).collect(Collectors.toList());
+            blockSpinerAdaper.clear();
+            blockSpinerAdaper.addAll(blockNamesList);
+            blockSpinerAdaper.notifyDataSetChanged();
+            mBlocksReadyForEdit = true;
+            if (mIsEditAction){setupEditExistingCondition(mConditionForEdit);}
+        });
+
         mSelectedFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,7 +228,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri()) {
+                if (verifyConditionalTime() & verifyFromLastNdays() & !checkEmptyFileUri() & !checkEmptyGroup() & !checkEmptyBlock()) {
                     ConditionNegativeToGroup condition = MyBeanFactory.getNewNegativeCondition();
 
                     condition.setId(mConditionId);
@@ -197,6 +239,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
                         condition.setFiletarget("");
                     }
                     condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
+                    condition.setConditionalblockid(blocksObjectList.get(mTimeBlockSpinner.getSelectedItemPosition()).getId());
 
                     Integer ltime = 0;
                     if(!mUsedHoursEditText.getText().toString().equals("")){
@@ -249,11 +292,19 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
 
     private void showGroupLayout() {
         mGroupsLayout.setVisibility(View.VISIBLE);
+        mRandomCheckLayout.setVisibility(View.GONE);
+        mFileSourceLayout.setVisibility(View.GONE);
+    }
+
+    private void showRandomCheckLayout() {
+        mGroupsLayout.setVisibility(View.GONE);
+        mRandomCheckLayout.setVisibility(View.VISIBLE);
         mFileSourceLayout.setVisibility(View.GONE);
     }
 
     private void showFileLayout(){
         mGroupsLayout.setVisibility(View.GONE);
+        mRandomCheckLayout.setVisibility(View.GONE);
         mFileSourceLayout.setVisibility(View.VISIBLE);
     }
 
@@ -328,12 +379,43 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         return false;
     }
 
+    private boolean checkEmptyGroup() {
+        if (mConditionType != ConditionNegativeToGroup.ConditionType.GROUP) {
+            mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mTargetGroupSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mTargetGroupSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mTargetGroupSpinner.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
+    private boolean checkEmptyBlock() {
+        if (mConditionType != ConditionNegativeToGroup.ConditionType.RANDOMCHECK) {
+            mTimeBlockSpinner.setBackgroundColor(Color.TRANSPARENT);
+            return false;
+        }
+        int position = mTimeBlockSpinner.getSelectedItemPosition();
+        if (position == -1) {
+            mTargetGroupSpinner.setBackgroundColor(Color.RED);
+            return true;
+        }
+        mTimeBlockSpinner.setBackgroundColor(Color.TRANSPARENT);
+        return false;
+    }
+
     private void setupEditExistingCondition(ConditionNegativeToGroup condition) {
-        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionNegativeToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit)) {
+        if (mViewReadyForEdit && condition != null && (condition.getType() != ConditionNegativeToGroup.ConditionType.GROUP || mTargetGroupReadyForEdit) && (condition.getType() != ConditionNegativeToGroup.ConditionType.RANDOMCHECK || mBlocksReadyForEdit)) {
 
             switch (condition.getType()) {
                 case GROUP:
                     mTypeSpinner.setSelection(ConditionNegativeToGroup.ConditionType.GROUP.getPosition());
+                    break;
+                case RANDOMCHECK:
+                    mTypeSpinner.setSelection(ConditionNegativeToGroup.ConditionType.RANDOMCHECK.getPosition());
                     break;
                 case FILE:
                     mTypeSpinner.setSelection(ConditionNegativeToGroup.ConditionType.FILE.getPosition());
@@ -345,6 +427,15 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
                 for (int i=0; i<mGruposPositivos.size(); i++) {
                     if (mGruposPositivos.get(i).getId() == condition.getConditionalgroupid()) {
                         mTargetGroupSpinner.setSelection(i);
+                    }
+                }
+            }
+
+            // blocks spinner
+            if (mTimeBlocks != null) {
+                for (int i =0; i<mTimeBlocks.size(); i++) {
+                    if (mTimeBlocks.get(i).getId() == condition.getConditionalblockid()) {
+                        mTimeBlockSpinner.setSelection(i);
                     }
                 }
             }
