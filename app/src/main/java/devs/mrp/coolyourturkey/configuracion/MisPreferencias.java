@@ -33,6 +33,7 @@ public class MisPreferencias {
     private static final String NOTIFY_LIMITES_REACHED = "notify.limites.reached";
 
     private static final String RANDOM_CHECK_CUSTOM_SOUND = "random.check.custom.sound";
+    private static final String RANDOM_CHECK_TIMESTAMP = "random.check.time.stamp";
 
     Context mContext;
     private static SharedPreferences mSharedPreferences;
@@ -299,6 +300,17 @@ public class MisPreferencias {
         }
         //Log.d(TAG, "sound uri: " + uri.toString());
         return uri;
+    }
+
+    public void setLastRandomCheckTimeStamp(long time) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putLong(RANDOM_CHECK_TIMESTAMP, time);
+        e.apply();
+    }
+
+    public long getLastRandomCheckTimeStamp() {
+        long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP, 0L);
+        return l;
     }
 
 }
