@@ -72,6 +72,8 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.export.ExportBlockActivity">
         </activity>
+        <activity android:name="devs.mrp.coolyourturkey.checkperformer.PreventsBack">
+        </activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

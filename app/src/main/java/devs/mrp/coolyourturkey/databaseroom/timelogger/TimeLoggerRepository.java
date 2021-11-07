@@ -46,7 +46,9 @@ public class TimeLoggerRepository {
     }
 
     public void deleteByGroupId(Integer id) {
-        mDao.deleteByGroupId(id);
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteByGroupId(id);
+        });
     }
 
 }

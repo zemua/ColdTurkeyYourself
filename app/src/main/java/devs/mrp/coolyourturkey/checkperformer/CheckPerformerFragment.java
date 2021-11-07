@@ -32,7 +32,9 @@ public class CheckPerformerFragment extends Fragment implements MyObservableNega
     private boolean mFeedback;
     private Context mContext;
 
-    public CheckPerformerFragment(String question, boolean noWaits, boolean yesWaits, Boolean feedback, Context context) {
+    public CheckPerformerFragment() { }
+
+    public void setData(String question, boolean noWaits, boolean yesWaits, Boolean feedback, Context context) {
         mQuestion = question;
         mNoWaits = noWaits;
         mYesWaits = yesWaits;
