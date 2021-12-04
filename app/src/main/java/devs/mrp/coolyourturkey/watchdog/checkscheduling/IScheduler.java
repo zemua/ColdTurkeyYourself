@@ -4,6 +4,8 @@ import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 
 public interface IScheduler {
 
+    public void setTimeBlock(AbstractTimeBlock block);
+
     public Long schedule(AbstractTimeBlock block, Long schedule);
 
     public long getNow();

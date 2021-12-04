@@ -1,7 +1,5 @@
 package devs.mrp.coolyourturkey.watchdog.checkscheduling;
 
-import android.util.Log;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +19,15 @@ public class Scheduler implements IScheduler{
     private long to;
     private long randomLapse;
     private Set<Integer> daysIncluded;
+
+    public void setTimeBlock(AbstractTimeBlock block) {
+        mBlock = block;
+        daysIncluded = block.getDays().stream().map(d -> d+1).collect(Collectors.toSet()); // sum +1 to equal ZonedTime day-of-week standard
+        now = System.currentTimeMillis();
+        hourNow = MilisToTime.milisDateToMilisTime(now);
+        from = block.getFromTime();
+        to = block.getToTime();
+    }
 
     @Override
     public boolean outisdeQueryIfOnSchedule(long milis) { // TODO to count the timeBlockDays in the schedule
@@ -107,6 +114,24 @@ public class Scheduler implements IScheduler{
     }
 
     private long milisToJumpFromNow(long timeLeft) {
+        if (isCurrentFrameEnough(timeLeft)) {
+            return timeLeft;
+        }
+
+        long jumpTime = (framesNeeded(timeLeft)-1) * fullday;
+        jumpTime += timeUntilNextFromPoint();
+
+        long remainingTime = timeRemainingOnIncompletedFrame(timeLeft);
+        jumpTime += timeToGoOverForNextFrame(remainingTime);
+
+        while(!ifDayIncluded(now+jumpTime) && daysIncluded.size() > 0){ // if the day of week is not included in the list try next day
+            jumpTime += fullday;
+        }
+        return jumpTime;
+    }
+
+    // replaced and simplified in previous function because of bugs
+    /*private long milisToJumpFromNow(long timeLeft) {
         Log.d(TAG, "calculate milis to jump for " + mBlock.getName());
         long timeJumped = 0;
         long timeToDecrease = timeLeft;
@@ -114,6 +139,7 @@ public class Scheduler implements IScheduler{
         if (nowInsideTimeFrame()) {
             if (ifDayIncluded(now)) {
                 if (to > hourNow){
+                    // we are later than "from" and earlier than "to"
                     if (timeToDecrease > to-hourNow){
                         timeJumped += fullday-hourNow+from;
                         timeToDecrease -= to-hourNow;
@@ -124,6 +150,8 @@ public class Scheduler implements IScheduler{
                         return timeToDecrease;
                     }
                 } else {
+                    // "to" is earlier than "from" and we are later than "from"
+                    // so we have until the end of today to schedule
                     if (timeToDecrease > fullday-hourNow+to) {
                         timeJumped += fullday-hourNow+from;
                         timeToDecrease -= to+fullday-hourNow;
@@ -162,6 +190,52 @@ public class Scheduler implements IScheduler{
         Log.d(TAG, "done");
         timeJumped += timeToDecrease;
         return timeJumped;
+    }*/
+
+    private long timeRemainingInCurrentFrame() {
+        if (!insideTimeFrame(hourNow)){
+            return 0;
+        } else if (hourNow < to) {
+            return to-hourNow;
+        } else {
+            return fullday-hourNow+to;
+        }
+    }
+
+    private long timePerFrame() {
+        if (from == to) {
+            return fullday;
+        }
+        else if (from < to) {
+            return to-from;
+        }
+        else {
+            return fullday-from+to;
+        }
+    }
+
+    private long framesNeeded(long timeLeft) {
+        return timeLeft / timePerFrame();
+    }
+
+    private long timeRemainingOnIncompletedFrame(long timeLeft) {
+        return timeLeft % timePerFrame();
+    }
+
+    private boolean isCurrentFrameEnough(long lapse) {
+        return timeRemainingInCurrentFrame() >= lapse;
+    }
+
+    private long timeUntilNextFromPoint() {
+        if (from >= hourNow) {
+            return from-hourNow;
+        } else {
+            return fullday-hourNow+from;
+        }
+    }
+
+    private long timeToGoOverForNextFrame(long timeLeft) {
+        return timeLeft - timeRemainingInCurrentFrame();
     }
 
     private long timeToPassFromNow() {
