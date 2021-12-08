@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.watchdog.checkscheduling;
 
+import android.util.Log;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,9 @@ public class Scheduler implements IScheduler{
         currentSchedule = schedule;
         randomLapse = (long) (Math.random() * (block.getMaximumLapse()-block.getMinimumLapse()))+block.getMinimumLapse();
         if (!scheduleInsideTimeFrame() || !ifDayIncluded(currentSchedule) || scheduleLongerThanMax()) {
+            Log.d(TAG, "outside of time frame");
+            Log.d(TAG, "now: " + now);
+            Log.d(TAG, "time to pass from now: " + timeToPassFromNow());
             return now + timeToPassFromNow();
         } else {
             return schedule;
@@ -118,7 +123,7 @@ public class Scheduler implements IScheduler{
             return timeLeft;
         }
 
-        long jumpTime = (framesNeeded(timeLeft)-1) * fullday;
+        long jumpTime = (framesNeeded(timeLeft)) * fullday;
         jumpTime += timeUntilNextFromPoint();
 
         long remainingTime = timeRemainingOnIncompletedFrame(timeLeft);
