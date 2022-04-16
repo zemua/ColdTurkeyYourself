@@ -40,6 +40,7 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.watchdog.Exporter;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ConfiguracionFragment extends Fragment {
 
@@ -688,7 +689,7 @@ public class ConfiguracionFragment extends Fragment {
     }
 
     private boolean isInExports(String s){
-        if (s.equals(mExportValueMap.getValor())){
+        if (s.equals(Optional.ofNullable(mExportValueMap).map(vm -> vm.getValor()).orElse(null))){
             return true;
         }
         return false;
