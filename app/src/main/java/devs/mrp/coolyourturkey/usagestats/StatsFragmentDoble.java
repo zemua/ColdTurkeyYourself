@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.usagestats;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import java.util.concurrent.FutureTask;
 
 public class StatsFragmentDoble extends Fragment {
 
+    private static String TAG = "StatsFragmentDoble";
+
     public static final int TIPO_POSITIVO = 0;
     public static final int TIPO_NEGATIVO = 1;
     public static final int TIPO_AMBOS = 2;
@@ -47,7 +50,12 @@ public class StatsFragmentDoble extends Fragment {
 
     private StatsListHandler mHandler;
 
-    ViewModelProvider.Factory factory;
+    private ViewModelProvider.Factory factory;
+
+    private ExecutorService servicio = Executors.newFixedThreadPool(3);
+    private FutureTask<StatsAdapterDetail> positivetask;
+    private FutureTask<StatsAdapterDetail> negativetask;
+    private FutureTask<StatsAdapterDetail> neutraltask;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,99 +104,116 @@ public class StatsFragmentDoble extends Fragment {
         mAplicacionViewModel = new ViewModelProvider(this, factory).get(AplicacionListadaViewModel.class);
 
         // POSITIVE ADAPTER
-        ExecutorService servicio = Executors.newFixedThreadPool(3);
-        FutureTask<StatsAdapterDetail> positivetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
+        positivetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
             @Override
             public StatsAdapterDetail call() throws Exception {
                 return positiveAdapter.inicializaInstalledList(mContext);
             }
-        }){
+        }) {
             @Override
             public void done() {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        positiveAdapter.notifyDataSetChanged();
-                        mAplicacionViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
-                            @Override
-                            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
-                                spinnerPos.setVisibility(View.GONE);
-                                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
-                                apps = mHandler.quitaSinTiempo(apps);
-                                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
-                                positiveAdapter.fitToDb(apps);
-                            }
-                        });
+                        try {
+                            positiveAdapter.notifyDataSetChanged();
+                            mAplicacionViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                                @Override
+                                public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
+                                    spinnerPos.setVisibility(View.GONE);
+                                    List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
+                                    apps = mHandler.quitaSinTiempo(apps);
+                                    apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
+                                    positiveAdapter.fitToDb(apps);
+                                }
+                            });
+                        } catch (IllegalStateException e) {
+                            Log.d(TAG, "error getting lifecycle owner, you probably skipped this screen before the load ended", e);
+                        }
                     }
                 });
             }
         };
 
         // NEGATIVE ADAPTER
-        FutureTask<StatsAdapterDetail> negativetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
+        negativetask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
             @Override
             public StatsAdapterDetail call() throws Exception {
                 return negativeadapter.inicializaInstalledList(mContext);
             }
-        }){
+        }) {
             @Override
             public void done() {
+
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        negativeadapter.notifyDataSetChanged();
-                        mAplicacionViewModel.getNegativeApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
-                            @Override
-                            public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
-                                spinnerNeg.setVisibility(View.GONE);
-                                List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
-                                apps = mHandler.quitaSinTiempo(apps);
-                                apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
-                                negativeadapter.fitToDb(apps);
-                            }
-                        });
+                        try {
+                            negativeadapter.notifyDataSetChanged();
+                            mAplicacionViewModel.getNegativeApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                                @Override
+                                public void onChanged(@Nullable final List<AplicacionListada> aplicacionesListadas) {
+                                    spinnerNeg.setVisibility(View.GONE);
+                                    List<AplicacionListada> apps = mHandler.quitarDesinstaladas(aplicacionesListadas);
+                                    apps = mHandler.quitaSinTiempo(apps);
+                                    apps = mHandler.ordenaPorTiempo(apps, mHandler.getTimeComparator());
+                                    negativeadapter.fitToDb(apps);
+                                }
+                            });
+                        } catch (IllegalStateException e) {
+                            Log.d(TAG, "error getting lifecycle owner, you probably skipped this screen before the load ended", e);
+                        }
                     }
                 });
             }
         };
 
         // NEUTRAL ADAPTER
-        FutureTask<StatsAdapterDetail> neutraltask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
+        neutraltask = new FutureTask<StatsAdapterDetail>(new Callable<StatsAdapterDetail>() {
             @Override
             public StatsAdapterDetail call() throws Exception {
                 return neutralAdapter.inicializaInstalledList(mContext);
             }
-        }){
+        }) {
             @Override
             public void done() {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        neutralAdapter.notifyDataSetChanged();
-                        mAplicacionViewModel.getmAppsPositivasNegativas().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
-                            @Override
-                            public void onChanged(List<AplicacionListada> aplicacionListadas) {
-                                spinnerNeut.setVisibility(View.GONE);
-                                List<AplicacionListada> app = mHandler.quitarDesinstaladas(aplicacionListadas);
-                                app = mHandler.dameTodasLasNeutras(app);
-                                app = mHandler.quitaSinTiempo(app);
-                                app = mHandler.ordenaPorTiempo(app, mHandler.getTimeComparator());
-                                neutralAdapter.fitToDb(app);
-                            }
-                        });
+                        try {
+                            neutralAdapter.notifyDataSetChanged();
+                            mAplicacionViewModel.getmAppsPositivasNegativas().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                                @Override
+                                public void onChanged(List<AplicacionListada> aplicacionListadas) {
+                                    spinnerNeut.setVisibility(View.GONE);
+                                    List<AplicacionListada> app = mHandler.quitarDesinstaladas(aplicacionListadas);
+                                    app = mHandler.dameTodasLasNeutras(app);
+                                    app = mHandler.quitaSinTiempo(app);
+                                    app = mHandler.ordenaPorTiempo(app, mHandler.getTimeComparator());
+                                    neutralAdapter.fitToDb(app);
+                                }
+                            });
+                        } catch (IllegalStateException e) {
+                            Log.d(TAG, "error getting lifecycle owner, you probably skipped this screen before the load ended", e);
+                        }
                     }
                 });
             }
         };
-
-        servicio.execute(positivetask);
-        servicio.execute(negativetask);
-        servicio.execute(neutraltask);
 
         positiveRecyclerView.setAdapter(positiveAdapter);
         negativeRecyclerView.setAdapter(negativeadapter);
         neutralRecyclerView.setAdapter(neutralAdapter);
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        servicio.execute(positivetask);
+        servicio.execute(negativetask);
+        servicio.execute(neutraltask);
     }
 }
