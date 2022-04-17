@@ -87,6 +87,9 @@ public class ReviewGroupFragment extends Fragment {
     private ITimeBlockFacade mTimeBlockFacade;
     private GrupoPositivoViewModel mGrupoPositivoViewModel;
 
+    ExecutorService servicio = Executors.newFixedThreadPool(1);
+    FutureTask<AppLister> fillAdapterTask;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +109,7 @@ public class ReviewGroupFragment extends Fragment {
         mContext = getActivity();
         mainHandler = new Handler(mContext.getMainLooper());
 
-        if (savedInstanceState != null && !savedInstanceState.isEmpty()){
+        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
         }
 
@@ -161,8 +164,7 @@ public class ReviewGroupFragment extends Fragment {
         mAppsAdapter.resetLoaded();
         ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
 
-        ExecutorService servicio = Executors.newFixedThreadPool(1);
-        FutureTask<AppLister> task = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
+        fillAdapterTask = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
             @Override
             protected void done() {
                 try {
@@ -170,17 +172,21 @@ public class ReviewGroupFragment extends Fragment {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mAppsAdapter.setAppLister(mAppLister);
-                            mAplicacionListadaViewModel = new ViewModelProvider(ReviewGroupFragment.this, factory).get(AplicacionListadaViewModel.class);
-                            mAplicacionListadaViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
-                                @Override
-                                public void onChanged(List<AplicacionListada> aplicacionListadas) {
-                                    spinner.setVisibility(View.GONE);
-                                    mAppsAdapter.updateDataSet(aplicacionListadas);
-                                    appsPositivas = aplicacionListadas;
-                                    Log.d(TAG, "updateDataSet with register qty: " + aplicacionListadas.size());
-                                }
-                            });
+                            try {
+                                mAppsAdapter.setAppLister(mAppLister);
+                                mAplicacionListadaViewModel = new ViewModelProvider(ReviewGroupFragment.this, factory).get(AplicacionListadaViewModel.class);
+                                mAplicacionListadaViewModel.getPositiveApps().observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
+                                    @Override
+                                    public void onChanged(List<AplicacionListada> aplicacionListadas) {
+                                        spinner.setVisibility(View.GONE);
+                                        mAppsAdapter.updateDataSet(aplicacionListadas);
+                                        appsPositivas = aplicacionListadas;
+                                        Log.d(TAG, "updateDataSet with register qty: " + aplicacionListadas.size());
+                                    }
+                                });
+                            } catch (IllegalStateException e) {
+                                Log.d(TAG, "error getting lifecycle owner, you probably skipped this screen before the load ended", e);
+                            }
                         }
                     });
                 } catch (ExecutionException e) {
@@ -190,7 +196,6 @@ public class ReviewGroupFragment extends Fragment {
                 }
             }
         };
-        servicio.execute(task);
 
         recyclerApps.setAdapter(mAppsAdapter);
         LinearLayoutManager layoutApps = new LinearLayoutManager(mContext);
@@ -267,10 +272,10 @@ public class ReviewGroupFragment extends Fragment {
             public void giveFeedback(int tipo, AppToGroup feedback, Object... args) {
                 switch (tipo) {
                     case ReviewGroupAppsAdapter.FEEDBACK_SET_APPTOGROUP:
-                        mAppToGroupViewModel.insert((AppToGroup)feedback);
+                        mAppToGroupViewModel.insert((AppToGroup) feedback);
                         break;
                     case ReviewGroupAppsAdapter.FEEDBACK_DEL_APPTOGROUP:
-                        mAppToGroupViewModel.deleteById(((AppToGroup)feedback).getId());
+                        mAppToGroupViewModel.deleteById(((AppToGroup) feedback).getId());
                         break;
                     default:
                         break;
@@ -297,6 +302,13 @@ public class ReviewGroupFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        servicio.execute(fillAdapterTask);
     }
 
     public void setGroupId(Integer groupId) {
