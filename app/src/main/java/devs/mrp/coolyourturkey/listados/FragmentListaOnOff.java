@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public class FragmentListaOnOff extends Fragment {
@@ -72,6 +70,9 @@ public class FragmentListaOnOff extends Fragment {
     public static final String DIALOG_CONFIRMACION = "Dialogo Confirmacion";
 
     ViewModelProvider.Factory factory;
+
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
+    private FutureTask<AppLister> updateDatasetTask;
 
     @Override
     public void onAttach(Context context) {
@@ -112,8 +113,7 @@ public class FragmentListaOnOff extends Fragment {
         mAdapter = new AppsListAdapter(mContext, tipoActual);
         mAdapter.resetLoaded();
 
-        ExecutorService servicio = Executors.newFixedThreadPool(1);
-        FutureTask<AppLister> task = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
+        updateDatasetTask = new FutureTask<AppLister>(new ListerConstructor(mContext)) {
             @Override
             protected void done() {
                 try {
@@ -133,7 +133,6 @@ public class FragmentListaOnOff extends Fragment {
                 }
             }
         };
-        servicio.execute(task);
 
         recyclerView.setAdapter(mAdapter);
         // observar la db por cambios, y si los hay notificarle al adapter
@@ -179,6 +178,13 @@ public class FragmentListaOnOff extends Fragment {
         setTitulo(tipoActual);
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        executor.execute(updateDatasetTask);
     }
 
     private void setTemporaryAdapter() {

@@ -281,8 +281,8 @@ public class AddGroupConditionFragment extends Fragment {
                     } else {
                         condition.setFiletarget("");
                     }
-                    condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
-                    condition.setConditionalrandomcheckid(blocksObjectList.get(mRandomCheckSpinner.getSelectedItemPosition()).getId());
+                    condition.setConditionalgroupid(mTargetGroupSpinner.getSelectedItemPosition() >= 0 ? groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
+                    condition.setConditionalrandomcheckid(mRandomCheckSpinner.getSelectedItemPosition() >= 0 ? blocksObjectList.get(mRandomCheckSpinner.getSelectedItemPosition()).getId() : -1);
 
                     Integer ltime = 0;
                     if(!mUsedHoursEditText.getText().toString().equals("")){

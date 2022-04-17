@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,7 +29,12 @@ public class AppLister {
         pm = c.getPackageManager();
         mContext = c;
         // obtener lista de aplicaciones instaladas
-        mPackages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        try {
+            mPackages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        } catch (Exception e) {
+            mPackages = Collections.emptyList();
+            Log.d(TAG, "error getting installed applications, default to empty list", e);
+        }
         removeCurrentApp(); // don't list this app for positive-negative
         mPackages.sort(new MyComp());
         mPackagesList = new ArrayList<>(mPackages); // set baseline for operations
