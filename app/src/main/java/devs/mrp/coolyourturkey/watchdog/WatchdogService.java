@@ -27,6 +27,7 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
+import devs.mrp.coolyourturkey.watchdog.actionchain.AbstractHandler;
 import devs.mrp.coolyourturkey.watchdog.actionchain.ActionRequestorInterface;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -52,7 +53,7 @@ public class WatchdogService extends LifecycleService {
     ContadorRepository mContadorRepo;
     private Exporter mExporter;
     private Importer mImporter;
-    private ActionRequestorInterface actionRequestor;
+    private AbstractHandler actionRequestor;
     private CheckManager mCheckManager;
 
     private WatchDogData mData;
@@ -63,7 +64,7 @@ public class WatchdogService extends LifecycleService {
 
         mExporter = new Exporter(this);
         mImporter = new Importer(this, this.getApplication());
-        actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor();
+        actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor().getHandlerChain();
         mCheckManager = CheckManager.getInstance(this.getApplication(), this);
 
         mData = MyBeanFactory.getWatchDogDataFactory().create(this)
@@ -245,7 +246,7 @@ public class WatchdogService extends LifecycleService {
         //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
         data.setProporcion(data.getMisPreferencias().getProporcionTrabajoOcio());
         // fire up the chain to handle positive/negative/netrual app time
-        actionRequestor.getHandlerChain().receiveRequest(ltipo, data);
+        actionRequestor.receiveRequest(ltipo, data);
     }
 
     private void closeUpCurrentLoopCycle(WatchDogData data) {

@@ -17,7 +17,7 @@ public class NeutralAction extends AbstractHandler{
     protected void handle(WatchDogData data) {
         data.setEstaNotif(ForegroundAppChecker.NEUTRO);
         data.setTiempoAcumulado(data.getUltimoContador().getAcumulado());
-        if (data.getEstaNotif() != data.getUltimanotif() || !data.getUltimoNombre().equals(data.getPackageName()) || Math.abs(data.getTiempoAcumulado() - data.getUltimoAcumulado()) > data.getTimeDifferenceToUpdate() || data.getWasPausado()) {
+        if (data.getEstaNotif() != data.getUltimanotif() || !data.getUltimoNombre().equals(data.getPackageName()) || Math.abs(data.getTiempoAcumulado() - data.getUltimoAcumulado()) > data.getTimeDifferenceToUpdate() || data.getWasPausado() ||data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             data.setNotification(data.getWatchDogHandler().getNotificacionNeutra(data.getPackageName(), data.getTiempoAcumulado() + data.getTiempoImportado(), data.getProporcion()));
             data.setUpdated(true);
         } else {
