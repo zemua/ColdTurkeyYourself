@@ -87,8 +87,8 @@ public class ReviewGroupFragment extends Fragment {
     private ITimeBlockFacade mTimeBlockFacade;
     private GrupoPositivoViewModel mGrupoPositivoViewModel;
 
-    ExecutorService servicio = Executors.newFixedThreadPool(1);
-    FutureTask<AppLister> fillAdapterTask;
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
+    private FutureTask<AppLister> fillAdapterTask;
 
 
     @Override
@@ -308,7 +308,7 @@ public class ReviewGroupFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        servicio.execute(fillAdapterTask);
+        executor.execute(fillAdapterTask);
     }
 
     public void setGroupId(Integer groupId) {

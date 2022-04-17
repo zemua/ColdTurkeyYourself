@@ -52,7 +52,7 @@ public class StatsFragmentDoble extends Fragment {
 
     private ViewModelProvider.Factory factory;
 
-    private ExecutorService servicio = Executors.newFixedThreadPool(3);
+    private ExecutorService executor = Executors.newFixedThreadPool(3);
     private FutureTask<StatsAdapterDetail> positivetask;
     private FutureTask<StatsAdapterDetail> negativetask;
     private FutureTask<StatsAdapterDetail> neutraltask;
@@ -212,8 +212,8 @@ public class StatsFragmentDoble extends Fragment {
     public void onResume() {
         super.onResume();
 
-        servicio.execute(positivetask);
-        servicio.execute(negativetask);
-        servicio.execute(neutraltask);
+        executor.execute(positivetask);
+        executor.execute(negativetask);
+        executor.execute(neutraltask);
     }
 }
