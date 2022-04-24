@@ -35,6 +35,8 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.watchdog.groups.ConditionChecker;
+import devs.mrp.coolyourturkey.watchdog.groups.ConditionCheckerFactory;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNegativeToGroup>> {
@@ -243,43 +245,10 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
      */
 
     private void observeTimeLoggedOnFile(ConditionNegativeToGroup condition) {
-        Uri uri = Uri.parse(condition.getFiletarget());
-        if (FileReader.ifHaveReadingRights(mContext, uri)) {
-            /**
-             * Important, the file content must be in the following format and have one single entry:
-             * YYYY-MM-DD-XXXXX
-             * YYYY = year
-             * MM = month
-             * DD = day
-             * XXXXX = time to be accounted in milliseconds
-             */
-            String value = FileReader.readTextFromUri(mApplication, uri);
-            if (value.matches("^\\d{4}-\\d{2}-\\d{2}-\\d+$")) {
-                String[] values = value.split("-");
-                Long year = Long.valueOf(values[0]);
-                Long month = Long.valueOf(values[1]);
-                Long day = Long.valueOf(values[2]);
-                Long consumption = Long.valueOf(values[3]);
-
-                Calendar.Builder builder = new Calendar.Builder();
-                builder.setDate(year.intValue(), month.intValue(), day.intValue());
-                builder.setTimeZone(TimeZone.getTimeZone("GMT"));
-                Calendar cal = builder.build();
-                Long dateMilis = cal.getTimeInMillis();
-                Long offset = offsetDayInMillis(condition.getFromlastndays().longValue());
-                if (dateMilis >= offset) {
-                    mTimeByConditionIdMap.put(condition.getId(), consumption);
-                } else {
-                    mTimeByConditionIdMap.put(condition.getId(), 0L);
-                    Log.d(TAG, "days offset of file doesn't match requirements for " + condition.getFiletarget());
-                }
-            } else {
-                mTimeByConditionIdMap.put(condition.getId(), 0L);
-                Log.d(TAG, "content of file doesn't match requirements for " + condition.getFiletarget());
-            }
-        } else {
-            Log.d(TAG, "no rights to read file " + condition.getFiletarget());
-        }
+        ConditionChecker checker = ConditionCheckerFactory.getChecker();
+        checker.getConsumptionByDay(mApplication, condition.getFiletarget());
+        checker.addConsumptionByDaysToMap(mTimeByConditionIdMap); // add all the times read from the file
+        mTimeByConditionIdMap.put(condition.getId(), checker.consumptionSinceDays(condition.getFromlastndays())); // if this doesn't exist in the file add 0
     }
 
     public void refreshTimeLoggedOnFiles() {

@@ -22,8 +22,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.channels.FileChannel;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
 
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionFragment;
@@ -35,6 +39,25 @@ public class FileReader {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(ConfiguracionFragment.TEXT_MIME_TYME);
         fragment.startActivityForResult(intent, requestCode);
+    }
+
+    public static class DayConsumption {
+        private LocalDate localDate;
+        private long consumption;
+
+        public DayConsumption(String s) {
+            String[] values = s.split("-");
+            localDate = LocalDate.of(Integer.valueOf(values[0]), Integer.valueOf(values[1])-1, Integer.valueOf(values[2]));
+            consumption = Long.valueOf(values[3]);
+        }
+
+        public LocalDate getLocalDate() {
+            return localDate;
+        }
+
+        public long getConsumption() {
+            return consumption;
+        }
     }
 
     public static Uri getFileReadPermission(Context context, Intent resultData){
@@ -50,6 +73,10 @@ public class FileReader {
         return null;
     }
 
+    private static boolean isCorrectImportFormat(String s) {
+        return s.matches("^\\d{4}-\\d{2}-\\d{2}-\\d+$");
+    }
+
     public static String readTextFromUri(Application app, Uri uri){
         String longString = "";
         try {
@@ -60,6 +87,28 @@ public class FileReader {
             e.printStackTrace();
         }
         return longString;
+    }
+
+    public static Map<Long,DayConsumption> readPastDaysConsumption(Application app, Uri uri) {
+        Map<Long,DayConsumption> map = new HashMap<>();
+        try {
+            if (ifHaveReadingRights(app, uri)) {
+                try (InputStream inputStream = app.getContentResolver().openInputStream(uri);
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (isCorrectImportFormat(line)) {
+                            DayConsumption dayConsumption = new DayConsumption(line);
+                            long lastDays = dayConsumption.getLocalDate().until(LocalDate.now(), ChronoUnit.DAYS);
+                            map.put(lastDays, dayConsumption);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     public static boolean ifHaveReadingRights(Context context, Uri uri) {

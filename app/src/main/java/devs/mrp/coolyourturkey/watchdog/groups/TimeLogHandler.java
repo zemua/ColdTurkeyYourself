@@ -12,13 +12,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
@@ -216,20 +214,36 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private class TimeSummary {
         private Integer groupId;
         private Integer conditionGroupId;
+        private Integer days;
         private Long summedTime;
-        TimeSummary(Integer groupId, Integer conditionGroupId, Long summedTime) {
+        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days, Long summedTime) {
             this.groupId = groupId;
             this.conditionGroupId = conditionGroupId;
             this.summedTime = summedTime;
+            this.days = days;
         }
-        TimeSummary(Integer groupId, Integer conditionGroupId) {
+        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days) {
             this.groupId = groupId;
             this.conditionGroupId = conditionGroupId;
+            this.days = days;
         }
-        String getKey() { return "A" + groupId + "B" + conditionGroupId; }
+        String getKey() { return "A" + groupId + "B" + conditionGroupId + "C" + days; }
         Integer getGroupId() { return groupId; }
         Integer getConditionGroupId() { return conditionGroupId; }
         Long getSummedTime() { return summedTime; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TimeSummary that = (TimeSummary) o;
+            return groupId.equals(that.groupId) && conditionGroupId.equals(that.conditionGroupId) && days.equals(that.days) && summedTime.equals(that.summedTime);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(groupId, conditionGroupId, days, summedTime);
+        }
     }
 
     private class NegativeTimeSummary {
@@ -545,7 +559,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     public Long getTimeCountedOnGroupCondition(ConditionToGroup cond) {
         Long time;
-        TimeSummary ts = new TimeSummary(cond.getGroupid(), cond.getConditionalgroupid());
+        TimeSummary ts = new TimeSummary(cond.getGroupid(), cond.getConditionalgroupid(), cond.getFromlastndays());
         if (cond.getType().equals(ConditionToGroup.ConditionType.GROUP) && mTimeLoggersByConditionId.containsKey(cond.getId())) {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
         } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
@@ -651,46 +665,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
      */
 
     private void observeTimeLoggedOnFile(ConditionToGroup condition){
-        Uri uri = Uri.parse(condition.getFiletarget());
-        if (FileReader.ifHaveReadingRights(mContext, uri)) {
-            /**
-             * Important, the file content must be in the following format and have one single entry:
-             * YYYY-MM-DD-XXXXX
-             * YYYY = year
-             * MM = month
-             * DD = day
-             * XXXXX = time to be accounted in milliseconds
-             */
-            String value = FileReader.readTextFromUri(mApplication, uri);
-            if (value.matches("^\\d{4}-\\d{2}-\\d{2}-\\d+$")) {
-                String[] values = value.split("-");
-                Long year = Long.valueOf(values[0]);
-                Long month = Long.valueOf(values[1]);
-                Long day = Long.valueOf(values[2]);
-                Long consumption = Long.valueOf(values[3]);
-
-                Calendar.Builder builder = new Calendar.Builder();
-                builder.setDate(year.intValue(), month.intValue(), day.intValue());
-                builder.setTimeZone(TimeZone.getDefault());
-                Calendar cal = builder.build();
-                Long dateMilis = cal.getTimeInMillis();
-                Long offset = offsetDayInMillis(condition.getFromlastndays().longValue());
-                if (dateMilis >= offset) {
-                    TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), consumption);
+        ConditionChecker checker = ConditionCheckerFactory.getChecker();
+        Map<Long,FileReader.DayConsumption> dayConsumptionMap = checker.getConsumptionByDay(mApplication, condition.getFiletarget());
+        dayConsumptionMap.entrySet()
+                .stream().forEach(entry -> {
+                    int groupId = condition.getGroupid();
+                    int conditionalGroupId = condition.getConditionalgroupid();
+                    int days = entry.getKey().intValue();
+                    long consumption = entry.getValue().getConsumption();
+                    TimeSummary ts = new TimeSummary(groupId, conditionalGroupId, days, consumption);
                     mFileTimeSummaryMap.put(ts.getKey(), ts);
-                } else {
-                    TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), 0L);
-                    mFileTimeSummaryMap.put(ts.getKey(), ts);
-                    Log.d(TAG, "days offset of file doesn't match requirements for " + condition.getFiletarget());
-                }
-            } else {
-                TimeSummary ts = new TimeSummary(condition.getGroupid(), condition.getConditionalgroupid(), 0L);
-                mFileTimeSummaryMap.put(ts.getKey(), ts);
-                Log.d(TAG, "content of file doesn't match requirements for " + condition.getFiletarget());
-            }
-        } else {
-            Log.d(TAG, "no rights to read file " + condition.getFiletarget());
-        }
+        });
     }
 
     private void refreshTimeLoggedOnFiles() {
@@ -729,7 +714,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                         Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId())
                                 .stream()
                                 // filter only those values that are after the given offset day
-                                .filter(tl -> MilisToTime.millistToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
+                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
                                 .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());
