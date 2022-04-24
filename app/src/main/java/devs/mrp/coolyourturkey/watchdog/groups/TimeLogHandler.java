@@ -720,9 +720,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
             mLastFilesExported = now;
             mGrupoExportList.stream().forEach(export -> {
                 if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(export.getArchivo()))) {
-                    Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
-                    FileReader.writeTextToUri(mApplication, Uri.parse(export.getArchivo()), daysToFileFormat(export.getDays(), timeMillis));
-                    //Log.d(TAG, "exporting " + daysToFileFormat(export.getDays(), timeMillis) + " ......to..... " + export.getArchivo());
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < export.getDays(); i++) {
+                        Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+                        if (i > 0) {
+                            builder.append(System.lineSeparator());
+                        }
+                        builder.append(daysToFileFormat(i, timeMillis));
+                    }
+                    FileReader.writeTextToUri(mApplication, Uri.parse(export.getArchivo()), builder.toString());
                 }
             });
         }
