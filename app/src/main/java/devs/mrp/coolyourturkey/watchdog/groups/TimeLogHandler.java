@@ -11,6 +11,9 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -668,7 +671,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
                 Calendar.Builder builder = new Calendar.Builder();
                 builder.setDate(year.intValue(), month.intValue(), day.intValue());
-                builder.setTimeZone(TimeZone.getTimeZone("GMT"));
+                builder.setTimeZone(TimeZone.getDefault());
                 Calendar cal = builder.build();
                 Long dateMilis = cal.getTimeInMillis();
                 Long offset = offsetDayInMillis(condition.getFromlastndays().longValue());
@@ -722,7 +725,12 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 if (FileReader.ifHaveWrittingRights(mContext, Uri.parse(export.getArchivo()))) {
                     StringBuilder builder = new StringBuilder();
                     for (int i = 0; i < export.getDays(); i++) {
-                        Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId()).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+                        final long days = i;
+                        Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId())
+                                .stream()
+                                // filter only those values that are after the given offset day
+                                .filter(tl -> MilisToTime.millistToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
+                                .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());
                         }
