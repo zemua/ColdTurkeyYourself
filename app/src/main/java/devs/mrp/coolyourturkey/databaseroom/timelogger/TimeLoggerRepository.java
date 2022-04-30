@@ -4,8 +4,12 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 
+import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 
 public class TimeLoggerRepository {
@@ -39,6 +43,14 @@ public class TimeLoggerRepository {
 
     public LiveData<List<TimeLogger>> findByNewerThanAndGroupId(Long newerThan, Integer groupId) {
         return mDao.findByTimeNewerAndGroupId(newerThan, groupId);
+    }
+
+    public LiveData<List<TimeLogger>> findForDayAndGroupId(LocalDate date, Integer groupId) {
+        LocalDateTime initOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atStartOfDay().plusDays(1);
+        Long initMilis = MilisToTime.localDateTimeToMillis(initOfDay);
+        Long endMilis = MilisToTime.localDateTimeToMillis(endOfDay);
+        return mDao.findByTimeframeAndGroupId(initMilis, endMilis, groupId);
     }
 
     public LiveData<List<TimeLogger>> findAllTimeLogger() {

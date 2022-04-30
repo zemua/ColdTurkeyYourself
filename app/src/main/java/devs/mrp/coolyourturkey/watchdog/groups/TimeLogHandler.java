@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -715,6 +714,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                 .stream()
                                 // filter only those values that are after the given offset day
                                 .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
+                                // filter only those values that are within the same day
+                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isBefore(LocalDate.now().atStartOfDay().minusDays(days-1)))
                                 .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());

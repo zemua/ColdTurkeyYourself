@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
 
@@ -83,7 +84,7 @@ public class MilisToTime {
 
     public static long localDateTimeToMillis(LocalDateTime localDateTime) {
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
-        return zdt.get(ChronoField.MILLI_OF_SECOND);
+        return zdt.toInstant().toEpochMilli();
     }
 
     public static int milisToDayOfWeek(long milis) {
@@ -152,5 +153,9 @@ public class MilisToTime {
     public static long millisToEndOfDay(long milliseconds) {
         long days = daysFromMillis(milliseconds);
         return millisFromDays(days) + millisFromDays(1);
+    }
+
+    public static int hoursForChangeOfDay() {
+        return 0;
     }
 }
