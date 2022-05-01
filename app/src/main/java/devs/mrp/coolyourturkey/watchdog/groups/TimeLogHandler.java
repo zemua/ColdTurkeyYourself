@@ -681,6 +681,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     TimeSummary ts = new TimeSummary(groupId, conditionalGroupId, days, consumption);
                     mFileTimeSummaryMap.put(ts.getKey(), ts);
         });
+        giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
     }
 
     private void refreshTimeLoggedOnFiles() {

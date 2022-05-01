@@ -230,7 +230,7 @@ public class ReviewGroupFragment extends Fragment {
         recyclerConditions.setLayoutManager(layoutConditions);
 
         mConditionToGroupViewModel = new ViewModelProvider(this, factory).get(ConditionToGroupViewModel.class);
-        mConditionToGroupViewModel.findConditionToGroupByGroupId(getGroupId()).observe(this, new Observer<List<ConditionToGroup>>() {
+        mConditionToGroupViewModel.findConditionToGroupByGroupId(getGroupId()).observe(this.getViewLifecycleOwner(), new Observer<List<ConditionToGroup>>() {
             @Override
             public void onChanged(List<ConditionToGroup> conditionToGroups) {
                 mConditionsAdapter.setDataset(conditionToGroups);
@@ -238,7 +238,7 @@ public class ReviewGroupFragment extends Fragment {
         });
 
         mGrupoPositivoViewModel = new ViewModelProvider(this, factory).get(GrupoPositivoViewModel.class);
-        mGrupoPositivoViewModel.getAllGrupos().observe(this, new Observer<List<GrupoPositivo>>() {
+        mGrupoPositivoViewModel.getAllGrupos().observe(this.getViewLifecycleOwner(), new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
                 Map<Integer, GrupoPositivo> mapaGrupos = grupoPositivos.stream().collect(Collectors.toMap(GrupoPositivo::getId, g -> g));
