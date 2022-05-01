@@ -258,7 +258,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
         if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && mConditions != null) {
             mLastFilesChecked = now;
             mConditions.stream().forEach(c -> {
-                if (c.getType() == ConditionNegativeToGroup.ConditionType.FILE){
+                if (ConditionNegativeToGroup.ConditionType.FILE.equals(c.getType())){
                     observeTimeLoggedOnFile(c);
                 }
             });
