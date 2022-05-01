@@ -44,9 +44,7 @@ public class GrupoPositivoRepository {
     }
 
     public void insert(GrupoPositivo grupoPositivo){
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(()-> {
-            mDao.insert(grupoPositivo);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(()-> mDao.insert(grupoPositivo));
     }
 
     public LiveData<List<GrupoPositivo>> findAllGrupoPositivo() {

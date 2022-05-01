@@ -24,7 +24,6 @@ import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
-    // TODO random check on questions for positive reinforcement
     // TODO points on steps/walking like a pedometer
     // TODO Set time fragments/days of the week where negatives can be used freely, and/or positive don't sum
     // TODO set time fragments/days when toque de queda is not active, or has a different schedule
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
     }
 
     @Override
-    public void receiveFeedback(Fragment mfragment, int tipo, Object feedback, Object ... args) {
+    public void receiveFeedback(Fragment mfragment, int tipo, Object feedback, Object... args) {
         if (mfragment == fragment) {
             switch (tipo) {
                 case MainFragment.FEEDBACK_POSITIVAS:
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     }
                     break;
                 case MainFragment.FEEDBACK_REQ_PERMISO_ALERTA:
-                    if (feedback instanceof Boolean && feedback.equals(true)){
+                    if (feedback instanceof Boolean && feedback.equals(true)) {
                         requestPermisoAlertas(MainActivity.this);
                     }
                     break;
@@ -107,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                 case MainFragment.FEEDBACK_RANDOM_CHECK:
                     Intent intentoc = new Intent(MainActivity.this, RandomChecksActivity.class);
                     startActivity(intentoc);
+                    break;
+                case MainFragment.FEEDBACK_GRUPOS_NEGATIVOS:
+                    Intent intentGruposNegativos = new Intent(MainActivity.this, null);
+                    startActivity(intentGruposNegativos);
                     break;
             }
         }
