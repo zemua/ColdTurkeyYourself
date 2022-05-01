@@ -248,7 +248,6 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
         ConditionChecker checker = ConditionCheckerFactory.getChecker();
         checker.getConsumptionByDay(mApplication, condition.getFiletarget());
         checker.addConsumptionByDaysToMap(mTimeByConditionIdMap); // add all the times read from the file
-        mTimeByConditionIdMap.put(condition.getId(), checker.consumptionSinceDays(condition.getFromlastndays())); // if this doesn't exist in the file add 0
     }
 
     public void refreshTimeLoggedOnFiles() {
