@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -230,6 +231,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         Integer getGroupId() { return groupId; }
         Integer getConditionGroupId() { return conditionGroupId; }
         Long getSummedTime() { return summedTime; }
+        Integer getDays() {return days;}
 
         @Override
         public boolean equals(Object o) {
@@ -564,7 +566,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
             time = mRandomCheckLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getTimecounted()));
         } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE) && mFileTimeSummaryMap.containsKey(ts.getKey())) {
-            time = mFileTimeSummaryMap.get(ts.getKey()).getSummedTime();
+            time = mFileTimeSummaryMap.entrySet().stream()
+                    .map(Map.Entry::getValue)
+                    .filter(e -> e.getDays() <= cond.getFromlastndays())
+                    .map(TimeSummary::getSummedTime)
+                    .collect(Collectors.summingLong(Long::longValue));
         } else {
             time = 0L;
             Log.d(TAG, "entry for condition not found for " + cond.getType() + " checkid: " + cond.getConditionalrandomcheckid() + " groupid: " + cond.getConditionalgroupid());

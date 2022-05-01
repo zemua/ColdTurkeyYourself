@@ -47,7 +47,7 @@ public class FileReader {
 
         public DayConsumption(String s) {
             String[] values = s.split("-");
-            localDate = LocalDate.of(Integer.valueOf(values[0]), Integer.valueOf(values[1])-1, Integer.valueOf(values[2]));
+            localDate = LocalDate.of(Integer.valueOf(values[0]), Integer.valueOf(values[1])+1, Integer.valueOf(values[2]));
             consumption = Long.valueOf(values[3]);
         }
 
@@ -74,7 +74,7 @@ public class FileReader {
     }
 
     private static boolean isCorrectImportFormat(String s) {
-        return s.matches("^\\d{4}-\\d{2}-\\d{2}-\\d+$");
+        return s.matches("^\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\-\\d+$");
     }
 
     public static String readTextFromUri(Application app, Uri uri){
