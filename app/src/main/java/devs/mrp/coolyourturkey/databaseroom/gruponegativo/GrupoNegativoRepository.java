@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class GrupoNegativoRepository {
@@ -40,13 +39,13 @@ public class GrupoNegativoRepository {
         return mAllGrupoNegativo;
     }
 
-    public LiveData<List<GrupoNegativo>> findGrupoPositivoById(Integer id) {
+    public LiveData<List<GrupoNegativo>> findGrupoNegativoById(Integer id) {
         return mDao.findGrupoNegativoById(id);
     }
 
     public void deleteById(Integer id) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteById(id));
-        // TODO delete references from other tables like group conditions
+        // TODO delete references from other tables, like group conditions
     }
 
 }
