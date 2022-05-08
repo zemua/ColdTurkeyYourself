@@ -7,13 +7,13 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import devs.mrp.coolyourturkey.grupos.GrupoDto;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.grupos.GruposAdapter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class GruposNegativosAdapter extends GruposAdapter {
 
-    public GruposNegativosAdapter(List<GrupoDto> dataset, Context context, TimeLogHandler timeLogHandler) {
+    public GruposNegativosAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
         super(dataset, context, timeLogHandler);
     }
 

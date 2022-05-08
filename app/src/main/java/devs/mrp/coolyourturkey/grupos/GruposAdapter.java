@@ -14,21 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
-public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.GruposViewHolder> implements Feedbacker<GrupoDto> {
+public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.GruposViewHolder> implements Feedbacker<Grupo> {
 
     protected abstract String getTag();
 
-    protected List<GrupoDto> mDataset;
+    protected List<Grupo> mDataset;
     protected Context mContext;
     protected TimeLogHandler mTimeLogHandler;
 
-    private ArrayList<FeedbackListener<GrupoDto>> listeners = new ArrayList<>();
+    private ArrayList<FeedbackListener<Grupo>> listeners = new ArrayList<>();
 
-    public GruposAdapter(List<GrupoDto> dataset, Context context, TimeLogHandler timeLogHandler) {
+    public GruposAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
         mDataset = dataset;
         mContext = context;
         mTimeLogHandler = timeLogHandler;
@@ -61,26 +62,26 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
     }
 
     @Override
-    public void giveFeedback(int tipo, GrupoDto feedback) {
+    public void giveFeedback(int tipo, Grupo feedback) {
         listeners.forEach((item) -> item.giveFeedback(tipo, feedback));
     }
 
     @Override
-    public void addFeedbackListener(FeedbackListener<GrupoDto> listener) {
+    public void addFeedbackListener(FeedbackListener<Grupo> listener) {
         listeners.add(listener);
     }
 
     public static class GruposViewHolder extends RecyclerView.ViewHolder {
         protected TextView textView;
         protected Integer id;
-        protected GrupoDto grupo;
+        protected Grupo grupo;
         public GruposViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.templateTextView);
         }
     }
 
-    public void updateDataset(List<GrupoDto> grupos) {
+    public void updateDataset(List<Grupo> grupos) {
         Log.d(getTag(), "received updated dataset size: " + grupos.size());
         mDataset = grupos;
         this.notifyDataSetChanged();

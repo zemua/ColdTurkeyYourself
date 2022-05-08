@@ -9,37 +9,37 @@ import java.util.List;
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
-public class GrupoNegativoRepository {
+public class GrupoRepository {
 
-    private GrupoNegativoDao mDao;
-    private LiveData<List<GrupoNegativo>> mAllGrupoNegativo;
-    private static GrupoNegativoRepository mRepo;
+    private GrupoDao mDao;
+    private LiveData<List<Grupo>> mAllGrupoNegativo;
+    private static GrupoRepository mRepo;
     // TODO ConditionNegativeToGroupRepository
     private TimeLoggerRepository timeLoggerRepository;
 
-    private GrupoNegativoRepository(Application application) {
+    private GrupoRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoNegativoDao();
         mAllGrupoNegativo = mDao.findAllGrupoNegativo();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
     }
 
-    public static GrupoNegativoRepository getRepo(Application application) {
+    public static GrupoRepository getRepo(Application application) {
         if (mRepo == null) {
-            mRepo = new GrupoNegativoRepository(application);
+            mRepo = new GrupoRepository(application);
         }
         return mRepo;
     }
 
-    public void insert(GrupoNegativo grupoNegativo) {
+    public void insert(Grupo grupoNegativo) {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.insert(grupoNegativo));
     }
 
-    public LiveData<List<GrupoNegativo>> findAllGrupoNegativo() {
+    public LiveData<List<Grupo>> findAllGrupoNegativo() {
         return mAllGrupoNegativo;
     }
 
-    public LiveData<List<GrupoNegativo>> findGrupoNegativoById(Integer id) {
+    public LiveData<List<Grupo>> findGrupoNegativoById(Integer id) {
         return mDao.findGrupoNegativoById(id);
     }
 

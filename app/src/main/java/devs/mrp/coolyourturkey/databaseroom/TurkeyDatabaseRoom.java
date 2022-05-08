@@ -14,7 +14,6 @@ import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockDao;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockAndChecksCrossRef;
-import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExport;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExportDao;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
@@ -31,8 +30,8 @@ import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitDao;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportDao;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoNegativo;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoNegativoDao;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoDao;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoDao;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
@@ -50,7 +49,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, GrupoNegativo.class}, version = 21)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class}, version = 21)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -59,7 +58,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract ContadorDao contadorDao();
     public abstract ImportablesDao importablesDao();
     public abstract GrupoPositivoDao grupoPositivoDao();
-    public abstract GrupoNegativoDao grupoNegativoDao();
+    public abstract GrupoDao grupoNegativoDao();
     public abstract AppToGroupDao appToGroupDao();
     public abstract ConditionToGroupDao conditionToGroupDao();
     public abstract ConditionNegativeToGroupDao conditionNegativeToGroupDao();
@@ -352,7 +351,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     static final Migration MIGRATION_21_22 = new Migration(21, 22) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS 'gruponegativo' ('id' INTEGER NOT NULL, 'nombre' TEXT NOT NULL, PRIMARY KEY('id'))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'gruponegativo' ('id' INTEGER NOT NULL, 'nombre' TEXT NOT NULL, 'type' TEXT NOT NULL, PRIMARY KEY('id'))");
         }
     };
 

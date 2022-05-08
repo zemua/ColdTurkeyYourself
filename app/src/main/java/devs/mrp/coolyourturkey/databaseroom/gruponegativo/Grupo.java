@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "gruponegativo")
-public class GrupoNegativo {
+public class Grupo {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -17,7 +17,11 @@ public class GrupoNegativo {
     @ColumnInfo(name = "nombre")
     private String nombre;
 
-    public GrupoNegativo(String nomnre) {this.nombre = nombre;}
+    @NonNull
+    @ColumnInfo(name = "type")
+    private GrupoType type;
+
+    public Grupo(String nombre) {this.nombre = nombre;}
 
     @NonNull
     public Integer getId() {
