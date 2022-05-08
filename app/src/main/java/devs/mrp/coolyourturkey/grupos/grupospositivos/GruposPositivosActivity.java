@@ -1,7 +1,6 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +11,7 @@ import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
-import devs.mrp.coolyourturkey.usagestats.StatsFragmentDoble;
 
 public class GruposPositivosActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
     private static final int LAUNCH_ADD = 1;

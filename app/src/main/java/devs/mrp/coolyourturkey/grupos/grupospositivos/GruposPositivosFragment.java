@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -61,7 +61,7 @@ public class GruposPositivosFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_grupospositivos, container, false);
+        View v = inflater.inflate(R.layout.fragment_grupos, container, false);
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication());
         mTimeLogHandler = new TimeLogHandler(mContext, getActivity().getApplication(), getViewLifecycleOwner());
 

@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.grupos.grupospositivos.conditions;
 
 import android.content.Context;
 import android.view.LayoutInflater;

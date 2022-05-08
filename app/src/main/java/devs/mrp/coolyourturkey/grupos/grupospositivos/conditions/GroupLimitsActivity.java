@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.grupos.grupospositivos.conditions;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.grupospositivos.ReviewGroupFragment;
 
 public class GroupLimitsActivity extends AppCompatActivity {
 

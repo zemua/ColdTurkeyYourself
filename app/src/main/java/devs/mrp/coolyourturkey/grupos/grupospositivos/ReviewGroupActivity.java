@@ -1,9 +1,8 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -12,9 +11,8 @@ import androidx.fragment.app.FragmentManager;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity;
-import devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos.conditions.AddGroupConditionActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos.conditions.GroupLimitsActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class ReviewGroupActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {

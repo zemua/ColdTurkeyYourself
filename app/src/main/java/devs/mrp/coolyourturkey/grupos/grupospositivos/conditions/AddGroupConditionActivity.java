@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.grupos.grupospositivos.conditions;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
-import devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class AddGroupConditionActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {

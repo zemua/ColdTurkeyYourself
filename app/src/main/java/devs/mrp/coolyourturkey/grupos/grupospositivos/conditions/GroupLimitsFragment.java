@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.grupos.grupospositivos.conditions;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -24,10 +24,8 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
-import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public class GroupLimitsFragment extends Fragment {
 

@@ -1,14 +1,12 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -17,10 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;

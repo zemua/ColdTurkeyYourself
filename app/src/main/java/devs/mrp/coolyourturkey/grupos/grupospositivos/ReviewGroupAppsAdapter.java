@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;

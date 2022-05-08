@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,7 +15,7 @@ import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
-import devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos.GruposPositivosActivity;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity;

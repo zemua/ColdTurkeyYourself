@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;

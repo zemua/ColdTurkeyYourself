@@ -38,17 +38,17 @@
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity">
+        <activity android:name=".grupos.grupospositivos.GruposPositivosActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.AddGroupActivity">
+        <activity android:name=".grupos.grupospositivos.AddGroupActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity">
+        <activity android:name=".grupos.grupospositivos.ReviewGroupActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity">
+        <activity android:name=".grupos.grupospositivos.conditions.AddGroupConditionActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ExportGroupTimeActivity">
+        <activity android:name=".grupos.grupospositivos.ExportGroupTimeActivity">
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity">
+        <activity android:name=".grupos.grupospositivos.conditions.GroupLimitsActivity">
         </activity>
         <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity">
         </activity>

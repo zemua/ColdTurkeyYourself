@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.app.AlertDialog;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,8 +7,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import java.nio.charset.Charset;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
