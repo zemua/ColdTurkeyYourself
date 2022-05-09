@@ -19,7 +19,7 @@ public class GrupoRepository {
 
     private GrupoRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
-        mDao = db.grupoNegativoDao();
+        mDao = db.grupoDao();
         mAllGrupoNegativo = mDao.findAllGrupoNegativo();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
     }

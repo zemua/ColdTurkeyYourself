@@ -12,15 +12,15 @@ import java.util.List;
 public interface GrupoDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Grupo grupoNegativo);
+    void insert(Grupo grupo);
 
-    @Query("DELETE FROM Grupo WHERE id = :id")
+    @Query("DELETE FROM grupo WHERE id = :id")
     void deleteById(Integer id);
 
-    @Query("SELECT * FROM Grupo ORDER BY id ASC")
+    @Query("SELECT * FROM grupo ORDER BY id ASC")
     LiveData<List<Grupo>> findAllGrupoNegativo();
 
-    @Query("SELECT * FROM Grupo WHERE id = :id")
+    @Query("SELECT * FROM grupo WHERE id = :id")
     LiveData<List<Grupo>> findGrupoNegativoById(Integer id);
 
 }

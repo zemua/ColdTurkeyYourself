@@ -58,7 +58,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract ContadorDao contadorDao();
     public abstract ImportablesDao importablesDao();
     public abstract GrupoPositivoDao grupoPositivoDao();
-    public abstract GrupoDao grupoNegativoDao();
+    public abstract GrupoDao grupoDao();
     public abstract AppToGroupDao appToGroupDao();
     public abstract ConditionToGroupDao conditionToGroupDao();
     public abstract ConditionNegativeToGroupDao conditionNegativeToGroupDao();
@@ -344,14 +344,14 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
      * Migrate from:
      * version 21
      * to
-     * version 22 - new table grupopositivo
+     * version 22 - new table grupo
      * with primary key id, autogenerate
      * with field string nombre
      */
     static final Migration MIGRATION_21_22 = new Migration(21, 22) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS 'gruponegativo' ('id' INTEGER NOT NULL, 'nombre' TEXT NOT NULL, 'type' TEXT NOT NULL, PRIMARY KEY('id'))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'grupo' ('id' INTEGER NOT NULL, 'nombre' TEXT NOT NULL, 'type' TEXT NOT NULL, PRIMARY KEY('id'))");
         }
     };
 

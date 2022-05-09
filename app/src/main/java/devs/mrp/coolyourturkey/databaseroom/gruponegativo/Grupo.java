@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-@Entity(tableName = "gruponegativo")
+@Entity(tableName = "grupo")
 public class Grupo {
 
     @PrimaryKey(autoGenerate = true)

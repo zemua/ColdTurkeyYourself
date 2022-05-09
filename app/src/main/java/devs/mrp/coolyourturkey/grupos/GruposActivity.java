@@ -10,7 +10,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
 
-public abstract class GruposActivity extends SingleFragmentActivity<Object> {
+public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
 
     private static final int LAUNCH_ADD = 1;
     private static final int LAUNCH_REVIEW = 2;

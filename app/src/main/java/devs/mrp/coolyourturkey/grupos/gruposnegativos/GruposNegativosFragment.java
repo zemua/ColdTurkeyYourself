@@ -10,6 +10,7 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoRepository;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoType;
 import devs.mrp.coolyourturkey.grupos.GruposAdapter;
 import devs.mrp.coolyourturkey.grupos.GruposFragment;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -33,6 +34,7 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
 
     @Override
     public void addGrupoToDb(Grupo grupo) {
+        grupo.setType(GrupoType.NEGATIVE);
         getViewModel().insert(grupo);
     }
 
