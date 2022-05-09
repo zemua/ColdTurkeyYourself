@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 @Entity(tableName = "gruponegativo")
 public class Grupo {
@@ -19,6 +20,7 @@ public class Grupo {
 
     @NonNull
     @ColumnInfo(name = "type")
+    @TypeConverters(GrupoTypeConverter.class)
     private GrupoType type;
 
     public Grupo(String nombre) {this.nombre = nombre;}
@@ -39,5 +41,14 @@ public class Grupo {
 
     public void setNombre(@NonNull String nombre) {
         this.nombre = nombre;
+    }
+
+    @NonNull
+    public GrupoType getType() {
+        return type;
+    }
+
+    public void setType(@NonNull GrupoType type) {
+        this.type = type;
     }
 }
