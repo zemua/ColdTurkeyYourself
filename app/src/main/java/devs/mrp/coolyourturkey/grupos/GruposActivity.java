@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
@@ -21,7 +22,7 @@ public abstract class GruposActivity extends SingleFragmentActivity<Object> {
         if (requestCode == LAUNCH_ADD) {
             if (resultCode == Activity.RESULT_OK){
                 String result = data.getStringExtra(AddGroupActivity.EXTRA_NAME);
-                GrupoPositivo g = new GrupoPositivo(result);
+                Grupo g = new Grupo(result);
                 if (getFragment() instanceof GruposFragment) {
                     ((GruposFragment)getFragment()).addGrupoToDb(g);
                 }

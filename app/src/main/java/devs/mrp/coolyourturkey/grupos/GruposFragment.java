@@ -20,17 +20,19 @@ import java.util.List;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoViewModel;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
-public abstract class GruposFragment<T> extends FeedbackerFragment<Intent> {
+public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment<Intent> {
 
     public static final int LAUNCH_INTENT = 0;
 
     private ViewModelProvider.Factory viewModelFactory;
     private TimeLogHandler mTimeLogHandler;
     private GruposAdapter mAdapter;
+    private GrupoViewModel mGrupoViewModel;
 
     private Button mAddGrupoButton;
     private RecyclerView mGroupsRecyclerView;
@@ -67,7 +69,17 @@ public abstract class GruposFragment<T> extends FeedbackerFragment<Intent> {
             }
         });
 
+        mGrupoViewModel = new ViewModelProvider(this, viewModelFactory).get(GrupoViewModel.class);
+        mGrupoViewModel.getAllGrupos().observe(getViewLifecycleOwner(),(grupos) -> {
+            mGroupList = grupos;
+            mAdapter.updateDataset(mGroupList);
+        });
+
         return v;
+    }
+
+    protected GrupoViewModel getViewModel() {
+        return mGrupoViewModel;
     }
 
     protected abstract TimeLogHandler returnTimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner);
