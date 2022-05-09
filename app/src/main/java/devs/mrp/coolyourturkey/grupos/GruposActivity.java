@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.fragment.app.Fragment;
+
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
 public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
 
@@ -38,6 +42,19 @@ public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    protected void stuffAfterOnCreate(Fragment frgmnt) {
+        if (frgmnt instanceof GruposFragment){
+            GruposFragment fragment = (GruposFragment) frgmnt;
+            fragment.addFeedbackListener(new FeedbackListener<Intent>() {
+                @Override
+                public void giveFeedback(int tipo, Intent feedback, Object... args) {
+                    startActivityForResult(feedback, LAUNCH_ADD);
+                }
+            });
         }
     }
 }

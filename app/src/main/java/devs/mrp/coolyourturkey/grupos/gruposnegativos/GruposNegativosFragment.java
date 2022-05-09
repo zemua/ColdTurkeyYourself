@@ -23,8 +23,7 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
 
     @Override
     protected TimeLogHandler returnTimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner) {
-        // TODO make TimeLogHandler for negatives?
-        return null;
+        return new TimeLogHandler(context, application, lifecycleOwner);
     }
 
     @Override

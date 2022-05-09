@@ -15,6 +15,7 @@ import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
+import devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.GruposPositivosActivity;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     startActivity(intentoc);
                     break;
                 case MainFragment.FEEDBACK_GRUPOS_NEGATIVOS:
-                    Intent intentGruposNegativos = new Intent(MainActivity.this, null);
+                    Intent intentGruposNegativos = new Intent(MainActivity.this, GruposNegativosActivity.class);
                     startActivity(intentGruposNegativos);
                     break;
             }
