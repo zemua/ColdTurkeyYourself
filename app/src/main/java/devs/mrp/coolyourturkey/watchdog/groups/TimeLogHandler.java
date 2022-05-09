@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -37,6 +36,7 @@ import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
+import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
@@ -861,22 +861,41 @@ public class TimeLogHandler implements Feedbacker<Object> {
     public Long todayTimeOnAppGroup(String packageName) {
         AppToGroup group = appsToGroupContainsPackageName(packageName);
         if (group.getId() != null) {
-            return todayTimeOnGroup(group.getGroupId());
+            return todayTimeOnPositiveGroup(group.getGroupId());
         } else {
             return 0L;
         }
     }
 
-    public Long todayTimeOnGroup(Integer groupId) {
+    public Long todayTimeOnPositiveGroup(Integer groupId) {
         if (mTodayTimeByGroupMap.containsKey(groupId)) {
-            return mTodayTimeByGroupMap.get(groupId).stream().collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+            return mTodayTimeByGroupMap.get(groupId).stream()
+                    // let pass only positive
+                    .filter(logger -> !TimeLogger.Type.NEGATIVE.equals(logger.getPositivenegative()))
+                    .filter(logger -> !TimeLogger.Type.NEUTRAL.equals(logger.getPositivenegative()))
+                    .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
         } else {
             return 0L;
         }
     }
 
-    public String todayStringTimeOnGroup(GrupoPositivo group) {
-        return MilisToTime.getFormatedHM(todayTimeOnGroup(group.getId()));
+    public String todayStringTimeOnPositiveGroup(GrupoPositivo group) {
+        return MilisToTime.getFormatedHM(todayTimeOnPositiveGroup(group.getId()));
+    }
+
+    public Long todayTimeOnNegativeGroup(Integer groupId) {
+        if (mTodayTimeByGroupMap.containsKey(groupId)) {
+            return mTodayTimeByGroupMap.get(groupId).stream()
+                    // let pass only negative
+                    .filter(logger -> TimeLogger.Type.NEGATIVE.equals(logger.getPositivenegative()))
+                    .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+        } else {
+            return 0L;
+        }
+    }
+
+    public String todayStringTimeOnNegativeGroup(Grupo group) {
+        return MilisToTime.getFormatedHM(todayTimeOnNegativeGroup(group.getId()));
     }
 
 }
