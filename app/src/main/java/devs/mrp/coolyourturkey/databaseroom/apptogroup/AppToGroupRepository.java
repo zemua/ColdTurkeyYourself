@@ -28,33 +28,23 @@ public class AppToGroupRepository {
     }
 
     public void insert(AppToGroup appToGroup) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.insert(appToGroup);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.insert(appToGroup));
     }
 
     public void deleteById(Integer id) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteById(id);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteById(id));
     }
 
     public void deleteByIds(List<Integer> ids) {
-        ids.forEach(id -> {
-            deleteById(id);
-        });
+        ids.forEach(id -> deleteById(id));
     }
 
     public void deleteByGroupId(Integer groupid) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteByGroupId(groupid);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteByGroupId(groupid));
     }
 
     public void deleteByPackage(String apppackage) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteByPackage(apppackage);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteByPackage(apppackage));
     }
 
     public LiveData<List<AppToGroup>> findAllAppToGroup() {

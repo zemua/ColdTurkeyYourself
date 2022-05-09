@@ -21,7 +21,9 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.GruposViewHolder> implements Feedbacker<Grupo> {
 
-    protected abstract String getTag();
+    public static final int FEEDBACK_ITEM_CLICKED = 0;
+
+    protected abstract String getLoggerTag();
 
     protected List<Grupo> mDataset;
     protected Context mContext;
@@ -75,14 +77,27 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
         protected TextView textView;
         protected Integer id;
         protected Grupo grupo;
+
         public GruposViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.templateTextView);
         }
+
+        public TextView getTextView() {
+            return textView;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public Grupo getGrupo() {
+            return grupo;
+        }
     }
 
     public void updateDataset(List<Grupo> grupos) {
-        Log.d(getTag(), "received updated dataset size: " + grupos.size());
+        Log.d(getLoggerTag(), "received updated dataset size: " + grupos.size());
         mDataset = grupos;
         this.notifyDataSetChanged();
     }

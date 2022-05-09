@@ -13,18 +13,20 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class GruposNegativosAdapter extends GruposAdapter {
 
+    private static final String TAG = "GruposNegativosAdapter";
+
     public GruposNegativosAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
         super(dataset, context, timeLogHandler);
     }
 
     @Override
-    protected String getTag() {
-        return "GruposNegativosAdapter";
+    protected String getLoggerTag() {
+        return TAG;
     }
 
     @Override
     protected void onItemClicked(View v, GruposViewHolder vh) {
-        // TODO giveFeedback
+        giveFeedback(FEEDBACK_ITEM_CLICKED, vh.getGrupo());
     }
 
     @Override
