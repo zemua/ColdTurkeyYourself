@@ -19,15 +19,16 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment<Intent> {
 
-    public static final int LAUNCH_INTENT = 0;
+    public static final int ADD_INTENT = 0;
+    public static final int REVIEW_INTENT = 1;
 
     private ViewModelProvider.Factory viewModelFactory;
     private TimeLogHandler mTimeLogHandler;
@@ -49,7 +50,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
         mAddGrupoButton = (Button) v.findViewById(R.id.button_add_group);
         mAddGrupoButton.setOnClickListener((view) -> {
             Intent intent = new Intent(getAttachContext(), AddGroupActivity.class);
-            giveFeedback(LAUNCH_INTENT, intent);
+            giveFeedback(ADD_INTENT, intent);
         });
 
         mAdapter = returnGruposAdapter(mGroupList, getAttachContext(), mTimeLogHandler);
@@ -62,7 +63,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
             Intent intent = new Intent(getAttachContext(), ReviewGroupActivity.class);
             intent.putExtra(ReviewGroupActivity.EXTRA_GROUP_ID, feedback.getId());
             intent.putExtra(ReviewGroupActivity.EXTRA_GROUP_NAME, feedback.getNombre());
-            giveFeedback(LAUNCH_INTENT, intent);
+            giveFeedback(REVIEW_INTENT, intent);
         });
         mTimeLogHandler.addFeedbackListener((tipo, feedback, args) -> {
             if (tipo == TimeLogHandler.FEEDBACK_LOGGERS_CHANGED) {

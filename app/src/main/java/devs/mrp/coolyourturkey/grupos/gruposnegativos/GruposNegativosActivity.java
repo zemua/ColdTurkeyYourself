@@ -3,8 +3,6 @@ package devs.mrp.coolyourturkey.grupos.gruposnegativos;
 import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
-import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
 import devs.mrp.coolyourturkey.grupos.GruposActivity;
 
 public class GruposNegativosActivity extends GruposActivity {

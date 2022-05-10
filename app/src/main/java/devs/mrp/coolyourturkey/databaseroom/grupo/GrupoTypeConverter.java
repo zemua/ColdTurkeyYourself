@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.databaseroom.gruponegativo;
+package devs.mrp.coolyourturkey.databaseroom.grupo;
 
 import androidx.room.TypeConverter;
 

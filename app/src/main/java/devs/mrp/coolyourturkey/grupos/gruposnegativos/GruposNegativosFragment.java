@@ -8,9 +8,9 @@ import androidx.lifecycle.LifecycleOwner;
 
 import java.util.List;
 
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoRepository;
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.GrupoType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
 import devs.mrp.coolyourturkey.grupos.GruposAdapter;
 import devs.mrp.coolyourturkey.grupos.GruposFragment;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;

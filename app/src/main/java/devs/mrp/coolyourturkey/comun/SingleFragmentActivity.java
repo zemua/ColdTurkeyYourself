@@ -23,10 +23,10 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
             fragment = returnFragmentType();
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
-        stuffAfterOnCreate(fragment);
+        initListeners(fragment);
     }
 
-    protected abstract void stuffAfterOnCreate(Fragment frgmnt);
+    protected abstract void initListeners(Fragment frgmnt);
 
     protected abstract String getTag();
 

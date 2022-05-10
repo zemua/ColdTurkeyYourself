@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import devs.mrp.coolyourturkey.databaseroom.gruponegativo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.grupos.GruposAdapter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
