@@ -2,12 +2,19 @@ package devs.mrp.coolyourturkey.grupos.gruposnegativos;
 
 import android.content.Intent;
 
+import androidx.fragment.app.Fragment;
+
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.grupos.GruposActivity;
 
 public class GruposNegativosActivity extends GruposActivity {
 
     private static String TAG = "GruposNegativosActivity";
+
+    @Override
+    protected void initFragmentVariables(Fragment f) {
+        // nothing here
+    }
 
     @Override
     protected String getTag() {

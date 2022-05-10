@@ -6,58 +6,72 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/groupNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Group Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/const2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonDelete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/groupNameText">
 
-        <TextView
-            android:id="@+id/textapps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/apps_en_este_grupo"
-            app:layout_constraintEnd_toStartOf="@id/textGroupNameb"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textGroupNameb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/nombre_del_grupo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textapps"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerAppsGrupo"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tabApps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/apps" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tabControles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/controles_aleatorios" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tabExternal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/externo" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tabCondiciones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/condiciones" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/groupViewPager"
+            android:layout_width="409dp"
+            android:layout_height="617dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textapps" />
-
-        <ProgressBar
-            android:id="@+id/groupAppSpinner"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textGroupNameb" />
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -71,7 +85,7 @@
         android:text="@string/borrar"
         app:icon="@drawable/trash_can_outline"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonAddCondition"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonExp" />
 
     <Button
@@ -86,17 +100,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/buttonAddCondition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/condiciones"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonDelete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

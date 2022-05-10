@@ -22,7 +22,7 @@ import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
+import devs.mrp.coolyourturkey.grupos.reviewer.ReviewerActivity;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment<Intent> {
@@ -60,9 +60,10 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
         mGroupsRecyclerView.setAdapter(mAdapter);
 
         mAdapter.addFeedbackListener((tipo, feedback, args) -> {
-            Intent intent = new Intent(getAttachContext(), ReviewGroupActivity.class);
-            intent.putExtra(ReviewGroupActivity.EXTRA_GROUP_ID, feedback.getId());
-            intent.putExtra(ReviewGroupActivity.EXTRA_GROUP_NAME, feedback.getNombre());
+            Intent intent = new Intent(getAttachContext(), ReviewerActivity.class);
+            intent.putExtra(ReviewerActivity.EXTRA_GROUP_ID, feedback.getId());
+            intent.putExtra(ReviewerActivity.EXTRA_GROUP_NAME, feedback.getNombre());
+            intent.putExtra(ReviewerActivity.EXTRA_GROUP_TYPE, feedback.getType().toString());
             giveFeedback(REVIEW_INTENT, intent);
         });
         mTimeLogHandler.addFeedbackListener((tipo, feedback, args) -> {

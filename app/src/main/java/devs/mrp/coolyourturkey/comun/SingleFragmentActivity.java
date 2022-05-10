@@ -21,12 +21,15 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
         fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = returnFragmentType();
+            initFragmentVariables(fragment);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         initListeners(fragment);
     }
 
-    protected abstract void initListeners(Fragment frgmnt);
+    protected abstract void initFragmentVariables(Fragment f);
+
+    protected abstract void initListeners(Fragment f);
 
     protected abstract String getTag();
 
