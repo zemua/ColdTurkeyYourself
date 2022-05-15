@@ -62,9 +62,10 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        ReviewerPagerAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mContext);
+        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mContext);
+        FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(adapter.getPositionName(position))).attach();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();
 
         return v;
     }
@@ -81,12 +82,12 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         this.mGroupType = mGroupType;
     }
 
-    private ReviewerPagerAdapter.Type pagerType() {
+    private ReviewerPagerChooser.Type pagerType() {
         switch (this.mGroupType) {
             case NEGATIVE:
-                return ReviewerPagerAdapter.Type.NEGATIVE;
+                return ReviewerPagerChooser.Type.NEGATIVE;
             case POSITIVE:
-                return ReviewerPagerAdapter.Type.POSITIVE;
+                return ReviewerPagerChooser.Type.POSITIVE;
             default:
                 return null;
         }
