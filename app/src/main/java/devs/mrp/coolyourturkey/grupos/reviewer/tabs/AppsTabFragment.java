@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import devs.mrp.coolyourturkey.R;
@@ -45,6 +47,7 @@ public class AppsTabFragment extends Fragment {
     private Type type;
 
     private FutureTask<AppLister> fillAdapterTask;
+    private ExecutorService executor = Executors.newFixedThreadPool(1);
 
     public AppsTabFragment(Type type) {
         super();
@@ -135,5 +138,11 @@ public class AppsTabFragment extends Fragment {
             return -1;
         }
         return mGroupId;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        executor.execute(fillAdapterTask);
     }
 }
