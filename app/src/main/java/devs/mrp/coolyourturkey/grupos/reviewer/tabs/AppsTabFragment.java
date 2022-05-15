@@ -118,6 +118,12 @@ public class AppsTabFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
+        super.onSaveInstanceState(outState);
+    }
+
     public enum Type {
         POSITIVE, NEGATIVE;
     }
