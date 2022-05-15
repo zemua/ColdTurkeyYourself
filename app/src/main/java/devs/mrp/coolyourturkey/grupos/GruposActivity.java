@@ -18,6 +18,15 @@ import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
 
+    private ActivityResultLauncher<Intent> addLauncher;
+    private ActivityResultLauncher<Intent> reviewLauncher;
+
+    @Override
+    protected void initCallbackRegisters() {
+        addLauncher = addLauncher();
+        reviewLauncher = reviewLauncher();
+    }
+
     @Override
     protected void initListeners(Fragment frgmnt) {
         if (frgmnt instanceof GruposFragment){
@@ -27,10 +36,10 @@ public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
                 public void giveFeedback(int tipo, Intent feedback, Object... args) {
                     switch (tipo) {
                         case GruposFragment.ADD_INTENT:
-                            addLauncher().launch(feedback);
+                            addLauncher.launch(feedback);
                             break;
                         case GruposFragment.REVIEW_INTENT:
-                            reviewLauncher().launch(feedback);
+                            reviewLauncher.launch(feedback);
                             break;
                     }
                 }

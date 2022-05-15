@@ -24,8 +24,16 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
             initFragmentVariables(fragment);
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
+        initCallbackRegisters();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         initListeners(fragment);
     }
+
+    protected abstract void initCallbackRegisters();
 
     protected abstract void initFragmentVariables(Fragment f);
 

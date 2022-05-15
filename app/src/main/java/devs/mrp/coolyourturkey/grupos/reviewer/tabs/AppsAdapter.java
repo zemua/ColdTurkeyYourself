@@ -62,7 +62,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
 
         vh.switchView.setOnClickListener((view) -> {
             Switch s = (Switch) view;
-            ElementToGroup element = new ElementToGroup().withType(ElementType.APP).withName(vh.packageName).withGroupId(mThisGroupId);
+            ElementToGroup element = new ElementToGroup().withType(ElementType.APP).withName(vh.packageName).withGroupId(mThisGroupId).withToId(-1L);
             if (!s.isChecked() && ifInThisGroup(element.getName())) {
                 element.setId(mapAppsSetted.get(element.getName()).getId()); // set the id of the ElementToGroup to de-register by id
                 unRegisterFromDb(element);

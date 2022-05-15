@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
@@ -62,7 +63,8 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         viewPager = v.findViewById(R.id.groupViewPager);
 
         FragmentStateAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
-
+        viewPager.setAdapter(adapter);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText("tab " + position)).attach();
 
         return v;
     }

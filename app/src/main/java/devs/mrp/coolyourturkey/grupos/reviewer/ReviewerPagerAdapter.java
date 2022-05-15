@@ -6,6 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
+
 public class ReviewerPagerAdapter extends FragmentStateAdapter {
 
     public ReviewerPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
@@ -20,13 +22,17 @@ public class ReviewerPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        // TODO
-        return null;
+        switch (position) {
+            case 0:
+                return new AppsTabFragment(AppsTabFragment.Type.NEGATIVE);
+            default:
+                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE);
+        }
     }
 
     @Override
     public int getItemCount() {
         // TODO
-        return 0;
+        return 1;
     }
 }

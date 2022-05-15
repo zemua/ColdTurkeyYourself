@@ -68,6 +68,11 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     }
 
     @Override
+    protected void initCallbackRegisters() {
+        // no callbacks here
+    }
+
+    @Override
     protected String getTag() {
         return TAG;
     }

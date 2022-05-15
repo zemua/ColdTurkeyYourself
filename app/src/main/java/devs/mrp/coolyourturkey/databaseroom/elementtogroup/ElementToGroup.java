@@ -17,13 +17,16 @@ public class ElementToGroup {
     @ColumnInfo(name = "name")
     private String name;
 
+    @NonNull
     @ColumnInfo(name = "toid")
     private Long toId;
 
+    @NonNull
     @ColumnInfo(name = "type")
     @TypeConverters(ElementTypeConverter.class)
     private ElementType type;
 
+    @NonNull
     @ColumnInfo(name = "groupid")
     private Integer groupId;
 
