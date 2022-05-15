@@ -62,9 +62,9 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        FragmentStateAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+        /*FragmentStateAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
         viewPager.setAdapter(adapter);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText("tab " + position)).attach();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText("tab " + position)).attach();*/
 
         return v;
     }

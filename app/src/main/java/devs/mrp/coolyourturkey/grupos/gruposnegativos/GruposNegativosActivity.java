@@ -12,17 +12,12 @@ public class GruposNegativosActivity extends GruposActivity {
     private static String TAG = "GruposNegativosActivity";
 
     @Override
-    protected void initFragmentVariables(Fragment f) {
-        // nothing here
-    }
-
-    @Override
     protected String getTag() {
         return TAG;
     }
 
     @Override
-    protected FeedbackerFragment<Intent> returnFragmentType() {
+    protected FeedbackerFragment<Intent> returnFragmentInstance() {
         return new GruposNegativosFragment();
     }
 }

@@ -26,32 +26,6 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private String mGroupName;
     private GrupoType mGroupType;
 
-    private ActivityResultLauncher<Intent> myLauncher() {
-        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == Activity.RESULT_OK){
-                    // TODO
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void initFragmentVariables(Fragment f) {
-        if (!(f instanceof ReviewerFragment)) {
-            return;
-        }
-        ReviewerFragment fragment = (ReviewerFragment) f;
-        Intent intent = getIntent();
-        mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
-        mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
-        mGroupType = GrupoType.valueOf(intent.getStringExtra(EXTRA_GROUP_TYPE));
-        fragment.setGroupId(mGroupId);
-        fragment.setGroupType(mGroupType);
-        fragment.setGroupName(mGroupName);
-    }
-
     @Override
     protected void initListeners(Fragment frgmnt) {
         if (frgmnt instanceof ReviewerFragment) {
@@ -59,9 +33,9 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
             fragment.addFeedbackListener(new FeedbackListener<Intent>() {
                 @Override
                 public void giveFeedback(int tipo, Intent feedback, Object... args) {
-                    switch (tipo) {
+                    //switch (tipo) {
                         // TODO init listeners on fragment
-                    }
+                    //}
                 }
             });
         }
@@ -69,7 +43,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
 
     @Override
     protected void initCallbackRegisters() {
-        // no callbacks here
+        // TODO register callbacks for activity results
     }
 
     @Override
@@ -78,8 +52,16 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     }
 
     @Override
-    protected FeedbackerFragment<Intent> returnFragmentType() {
-        return new ReviewerFragment();
+    protected FeedbackerFragment<Intent> returnFragmentInstance() {
+        ReviewerFragment fragment = new ReviewerFragment();
+        Intent intent = getIntent();
+        mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+        mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
+        mGroupType = GrupoType.valueOf(intent.getStringExtra(EXTRA_GROUP_TYPE));
+        fragment.setGroupId(mGroupId);
+        fragment.setGroupType(mGroupType);
+        fragment.setGroupName(mGroupName);
+        return fragment;
     }
 
 }

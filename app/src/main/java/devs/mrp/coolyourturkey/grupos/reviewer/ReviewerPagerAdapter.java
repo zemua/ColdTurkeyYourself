@@ -26,13 +26,12 @@ public class ReviewerPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new AppsTabFragment(AppsTabFragment.Type.NEGATIVE);
             default:
-                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE);
+                return null;
         }
     }
 
     @Override
     public int getItemCount() {
-        // TODO
-        return 1;
+        return 4;
     }
 }

@@ -20,22 +20,14 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
-            fragment = returnFragmentType();
-            initFragmentVariables(fragment);
+            fragment = returnFragmentInstance();
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         initCallbackRegisters();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         initListeners(fragment);
     }
 
     protected abstract void initCallbackRegisters();
-
-    protected abstract void initFragmentVariables(Fragment f);
 
     protected abstract void initListeners(Fragment f);
 
@@ -45,6 +37,6 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
         return fragment;
     }
 
-    protected abstract FeedbackerFragment<T> returnFragmentType();
+    protected abstract FeedbackerFragment<T> returnFragmentInstance();
 
 }
