@@ -138,9 +138,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     @Override
     public void giveFeedback(int tipo, AppToGroup feedback) {
-        listeners.forEach(listener -> {
-            listener.giveFeedback(tipo, feedback);
-        });
+        listeners.forEach(listener -> listener.giveFeedback(tipo, feedback));
     }
 
     @Override

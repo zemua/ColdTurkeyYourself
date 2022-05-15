@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.grupos.reviewer.tabs;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
@@ -26,10 +27,12 @@ import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
-public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder> implements Feedbacker<Object> { // TODO
+public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder> implements Feedbacker<ElementToGroup> {
 
     public static final int FEEDBACK_SET_APPTOGROUP = 0;
     public static final int FEEDBACK_DEL_APPTOGROUP = 1;
+
+    private List<FeedbackListener<ElementToGroup>> listeners = new ArrayList<>();
 
     private AppLister mDataset;
     private Map<String, ApplicationInfo> mapDataset;
@@ -42,6 +45,11 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
     public AppsAdapter(AppLister dataset, Context context, Integer thisGroupId) {
         this.mDataset = dataset;
         this.mapDataset = mapDataset(dataset.getList());
+        this.mContext = context;
+        this.mThisGroupId = thisGroupId;
+    }
+
+    public AppsAdapter(Context context, Integer thisGroupId) {
         this.mContext = context;
         this.mThisGroupId = thisGroupId;
     }
@@ -68,22 +76,80 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull AppsViewHolder holder, int position) {
+        try {
+            String packageName = mDataset.getNombre(position);
+            PackageManager packageManager = mContext.getPackageManager();
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
+            holder.imageView.setImageDrawable(packageManager.getApplicationIcon(applicationInfo));
+            holder.textView.setText(packageManager.getApplicationLabel(applicationInfo));
+            holder.packageName = packageName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
+        if (listaAppsSetted != null) {
+            setSwitchesAccordingToDb(holder.switchView, mDataset.getNombre(position));
+        }
+        setTextOfSwitch(holder);
+    }
+
+    private void setSwitchesAccordingToDb(Switch switchView, String lnombre) {
+        if (mapDataset.containsKey(lnombre)) {
+            // assigned already
+            if (ifInThisGroup(lnombre)) {
+                // to this group
+                checkAndEnableSwitch(switchView);
+            } else {
+                // to another group
+                uncheckAndDisableSwitch(switchView, lnombre);
+            }
+        } else {
+            // not yet assigned
+            uncheckAndEnableSwitch(switchView);
+        }
+    }
+
+    private void checkAndEnableSwitch(Switch switchView) {
+        if (!switchView.isChecked()) {
+            switchView.setChecked(true);
+            switchView.setEnabled(true);
+        }
+    }
+
+    private void uncheckAndDisableSwitch(Switch switchView, String lnombre) {
+        if (switchView.isChecked()) {
+            switchView.setChecked(false);
+        }
+        if (ifInOtherGroup(lnombre)) {
+            switchView.setEnabled(false);
+        } else {
+            switchView.setEnabled(true);
+        }
+    }
+
+    private void uncheckAndEnableSwitch(Switch switchView) {
+        if (switchView.isChecked()) {
+            switchView.setChecked(false);
+            switchView.setEnabled(true);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        if (mDataset == null) {
+            return 0;
+        }
+        return mDataset.getList().size();
     }
 
     @Override
-    public void giveFeedback(int tipo, Object feedback) {
-
+    public void giveFeedback(int tipo, ElementToGroup feedback) {
+        listeners.forEach(l -> l.giveFeedback(tipo, feedback));
     }
 
     @Override
-    public void addFeedbackListener(FeedbackListener<Object> listener) {
-
+    public void addFeedbackListener(FeedbackListener<ElementToGroup> listener) {
+        listeners.add(listener);
     }
 
     protected static class AppsViewHolder extends RecyclerView.ViewHolder {
@@ -99,6 +165,12 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
             switchView = itemView.findViewById(R.id.switch1);
             packageName = null;
         }
+    }
+
+    public void setAppLister(AppLister lister) {
+        this.mDataset = lister;
+        mapDataset = mapDataset(mDataset.getList());
+        this.notifyDataSetChanged();
     }
 
     public void updateDataset(List<AplicacionListada> apps) {
