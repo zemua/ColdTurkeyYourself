@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -92,5 +93,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
     public abstract void addGrupoToDb(T grupo);
 
     public abstract void removeGrupoFromDb(Integer id);
+
+    protected abstract LiveData<List<Grupo>> findGrupos();
 
 }

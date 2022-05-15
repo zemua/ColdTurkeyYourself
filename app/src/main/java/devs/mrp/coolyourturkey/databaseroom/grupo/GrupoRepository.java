@@ -12,7 +12,9 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 public class GrupoRepository {
 
     private GrupoDao mDao;
-    private LiveData<List<Grupo>> mAllGrupoNegativo;
+    private LiveData<List<Grupo>> mAllGrupos;
+    private LiveData<List<Grupo>> mGruposNegativos;
+    private LiveData<List<Grupo>> mGruposPositivos;
     private static GrupoRepository mRepo;
     // TODO ConditionNegativeToGroupRepository
     private TimeLoggerRepository timeLoggerRepository;
@@ -20,8 +22,10 @@ public class GrupoRepository {
     private GrupoRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoDao();
-        mAllGrupoNegativo = mDao.findAllGrupoNegativo();
+        mAllGrupos = mDao.findAllGrupos();
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
+        mGruposNegativos = mDao.findGruposByType(GrupoType.NEGATIVE);
+        mGruposPositivos = mDao.findGruposByType(GrupoType.POSITIVE);
     }
 
     public static GrupoRepository getRepo(Application application) {
@@ -31,16 +35,24 @@ public class GrupoRepository {
         return mRepo;
     }
 
-    public void insert(Grupo grupoNegativo) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.insert(grupoNegativo));
+    public void insert(Grupo grupo) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.insert(grupo));
     }
 
-    public LiveData<List<Grupo>> findAllGrupoNegativo() {
-        return mAllGrupoNegativo;
+    public LiveData<List<Grupo>> findAllGrupos() {
+        return mAllGrupos;
     }
 
-    public LiveData<List<Grupo>> findGrupoNegativoById(Integer id) {
-        return mDao.findGrupoNegativoById(id);
+    public LiveData<List<Grupo>> findGrupoById(Integer id) {
+        return mDao.findGrupoById(id);
+    }
+
+    public LiveData<List<Grupo>> findGruposNegativos() {
+        return mGruposNegativos;
+    }
+
+    public LiveData<List<Grupo>> findGruposPositivos() {
+        return mGruposPositivos;
     }
 
     public void deleteById(Integer id) {

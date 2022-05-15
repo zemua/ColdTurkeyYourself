@@ -17,6 +17,7 @@ import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos.GruposPositivosActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     nuevaStatsActivity(StatsActivity.TIPO_LISTA_AMBAS);
                     break;
                 case MainFragment.FEEDBACK_GRUPOS_POSITIVOS:
-                    Intent intento = new Intent(MainActivity.this, GruposPositivosActivity.class);
+                    Intent intento = new Intent(MainActivity.this, GruposPositivosActivityV2.class);
                     startActivity(intento);
                     break;
                 case MainFragment.FEEDBACK_CONDICIONES_NEGATIVAS:

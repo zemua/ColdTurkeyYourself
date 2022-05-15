@@ -18,9 +18,12 @@ public interface GrupoDao {
     void deleteById(Integer id);
 
     @Query("SELECT * FROM grupo ORDER BY id ASC")
-    LiveData<List<Grupo>> findAllGrupoNegativo();
+    LiveData<List<Grupo>> findAllGrupos();
 
     @Query("SELECT * FROM grupo WHERE id = :id")
-    LiveData<List<Grupo>> findGrupoNegativoById(Integer id);
+    LiveData<List<Grupo>> findGrupoById(Integer id);
+
+   @Query("SELECT * FROM grupo WHERE type = :type ORDER BY id ASC")
+   LiveData<List<Grupo>> findGruposByType(GrupoType type);
 
 }

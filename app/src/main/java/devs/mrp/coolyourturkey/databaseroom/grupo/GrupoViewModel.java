@@ -16,7 +16,7 @@ public class GrupoViewModel extends AndroidViewModel {
     public GrupoViewModel(@NonNull Application application) {
         super(application);
         mRepo = GrupoRepository.getRepo(application);
-        mAllGrupos = mRepo.findAllGrupoNegativo();
+        mAllGrupos = mRepo.findAllGrupos();
     }
 
     public void insert(Grupo grupoNegativo) {mRepo.insert(grupoNegativo);}
@@ -24,7 +24,7 @@ public class GrupoViewModel extends AndroidViewModel {
     public LiveData<List<Grupo>> getAllGrupos() {return mAllGrupos;}
 
     public LiveData<List<Grupo>> findGrupoNegativoById(Integer id) {
-        return mRepo.findGrupoNegativoById(id);
+        return mRepo.findGrupoById(id);
     }
 
     public void deleteById(Integer id) {mRepo.deleteById(id);}
