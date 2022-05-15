@@ -62,9 +62,9 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        /*FragmentStateAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+        ReviewerPagerAdapter adapter = new ReviewerPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mContext);
         viewPager.setAdapter(adapter);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText("tab " + position)).attach();*/
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(adapter.getPositionName(position))).attach();
 
         return v;
     }
@@ -79,5 +79,16 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
 
     public void setGroupType(GrupoType mGroupType) {
         this.mGroupType = mGroupType;
+    }
+
+    private ReviewerPagerAdapter.Type pagerType() {
+        switch (this.mGroupType) {
+            case NEGATIVE:
+                return ReviewerPagerAdapter.Type.NEGATIVE;
+            case POSITIVE:
+                return ReviewerPagerAdapter.Type.POSITIVE;
+            default:
+                return null;
+        }
     }
 }
