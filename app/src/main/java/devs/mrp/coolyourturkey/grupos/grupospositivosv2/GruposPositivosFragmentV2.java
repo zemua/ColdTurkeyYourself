@@ -52,6 +52,6 @@ public class GruposPositivosFragmentV2 extends GruposFragment<Grupo> {
 
     @Override
     protected LiveData<List<Grupo>> findGrupos() {
-        return getViewModel().getAllGrupos();
+        return getViewModel().findAllGruposPositivos();
     }
 }

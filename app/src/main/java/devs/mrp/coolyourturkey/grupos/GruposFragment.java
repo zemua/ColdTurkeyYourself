@@ -74,7 +74,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
         });
 
         mGrupoViewModel = new ViewModelProvider(this, viewModelFactory).get(GrupoViewModel.class);
-        mGrupoViewModel.getAllGrupos().observe(getViewLifecycleOwner(),(grupos) -> {
+        findGrupos().observe(getViewLifecycleOwner(),(grupos) -> {
             mGroupList = grupos;
             mAdapter.updateDataset(mGroupList);
         });

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
@@ -48,5 +49,10 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
         }
         grupoRepository.deleteById(id);
         Log.d(TAG, "deleted the group");
+    }
+
+    @Override
+    protected LiveData<List<Grupo>> findGrupos() {
+        return getViewModel().findAllGruposNegativos();
     }
 }
