@@ -56,7 +56,7 @@ public class MainFragment extends Fragment {
     private Button mRandomCheckButton;
     private Button mNegativeButton;
     private Button mNegativeGroupsButton;
-    private Button mNegativeConditionsButton;
+    //private Button mNegativeConditionsButton;
     private Button mTiempoButton;
     private Button mPositiveTime;
     private Button mNegativeTime;
@@ -103,7 +103,7 @@ public class MainFragment extends Fragment {
         mPositiveGroupsButton = (Button) v.findViewById(R.id.grupos_positivos);
         mNegativeButton = (Button) v.findViewById(R.id.negativas);
         mNegativeGroupsButton = (Button) v.findViewById(R.id.buttonNegativeGroups);
-        mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
+        //mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
         mRandomCheckButton = (Button) v.findViewById(R.id.buttonRandomCheck);
@@ -116,7 +116,7 @@ public class MainFragment extends Fragment {
         mRandomCheckButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_RANDOM_CHECK, mRandomCheckButton));
         mNegativeButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_NEGATIVAS, mNegativeButton));
         mNegativeGroupsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_GRUPOS_NEGATIVOS, mNegativeGroupsButton));
-        mNegativeConditionsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton));
+        //mNegativeConditionsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton));
         mTiempoButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_DOBLE, mTiempoButton));
         mConfigButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TO_CONFIG, mConfigButton));
 

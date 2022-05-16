@@ -96,18 +96,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/condiciones_negativas"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/condiciones_negativas"
-                    app:icon="@drawable/lock_question"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/negativas"
-                    app:layout_constraintTop_toBottomOf="@id/buttonNegativeGroups" />
-
-                <Button
                     android:id="@+id/buttonNegativeGroups"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
