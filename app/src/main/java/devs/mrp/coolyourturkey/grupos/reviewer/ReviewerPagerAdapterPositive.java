@@ -13,10 +13,12 @@ import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
     private Context mContext;
+    private Integer mGroupId;
 
-    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context) {
+    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId) {
         super(fragmentManager, lifecycle);
         this.mContext = context;
+        this.mGroupId = groupId;
     }
 
     @NonNull
@@ -24,7 +26,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE);
+                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE, mGroupId);
             case 1:
                 // TODO return new ChecksTabFragment();
             case 2:
@@ -32,7 +34,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 3:
                 // TODO return new ConditionsTabFragment();
             default:
-                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE);
+                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE, mGroupId);
         }
     }
 

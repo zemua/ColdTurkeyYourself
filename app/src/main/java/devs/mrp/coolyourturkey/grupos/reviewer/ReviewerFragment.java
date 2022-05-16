@@ -62,7 +62,7 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mContext);
+        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext);
         FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();

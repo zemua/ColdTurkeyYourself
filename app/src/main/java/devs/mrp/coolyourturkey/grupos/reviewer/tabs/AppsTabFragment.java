@@ -49,9 +49,10 @@ public class AppsTabFragment extends Fragment {
     private FutureTask<AppLister> fillAdapterTask;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    public AppsTabFragment(Type type) {
+    public AppsTabFragment(Type type, Integer groupId) {
         super();
         this.type = type;
+        this.mGroupId = groupId;
     }
 
 
@@ -112,6 +113,17 @@ public class AppsTabFragment extends Fragment {
             @Override
             public void onChanged(List<ElementToGroup> elementToGroups) {
                 mAppsAdapter.firstGroupDbLoad(elementToGroups);
+            }
+        });
+
+        mAppsAdapter.addFeedbackListener((tipo, feedback, parameters) -> {
+            switch (tipo) {
+                case AppsAdapter.FEEDBACK_SET_APPTOGROUP:
+                    elementToGroupViewModel.insert(feedback);
+                    break;
+                case AppsAdapter.FEEDBACK_DEL_APPTOGROUP:
+                    elementToGroupViewModel.deleteById(feedback.getId());
+                    break;
             }
         });
 
