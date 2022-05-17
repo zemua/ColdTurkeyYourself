@@ -8,8 +8,6 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
-
 public class ConditionNegativeToGroupViewModel extends AndroidViewModel {
 
     private ConditionNegativeToGroupRepository mRepo;

@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 
 public class ConditionNegativeToGroupRepository {
 

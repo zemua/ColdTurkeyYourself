@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.databaseroom.conditiontogroup;
+package devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated;
 
 import android.app.Application;
 
@@ -7,9 +7,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-
-import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 
 public class ConditionToGroupViewModel extends AndroidViewModel {
 

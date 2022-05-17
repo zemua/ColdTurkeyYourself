@@ -1,10 +1,9 @@
-package devs.mrp.coolyourturkey.databaseroom.conditiontogroup;
+package devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
 import java.util.ArrayList;

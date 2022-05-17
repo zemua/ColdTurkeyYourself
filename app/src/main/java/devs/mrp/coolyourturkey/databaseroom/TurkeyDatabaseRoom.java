@@ -22,14 +22,16 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockS
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.schedules.TimeBlockScheduleDao;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupDao;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupDao;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorDao;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupDao;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitDao;
+import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionDao;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportDao;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
@@ -51,7 +53,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class}, version = 23)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class, GrupoCondition.class}, version = 24)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -62,6 +64,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     public abstract GrupoPositivoDao grupoPositivoDao();
     public abstract GrupoDao grupoDao();
     public abstract ElementToGroupDao elementToGroupDao();
+    public abstract GrupoConditionDao grupoConditionDao();
     public abstract AppToGroupDao appToGroupDao();
     public abstract ConditionToGroupDao conditionToGroupDao();
     public abstract ConditionNegativeToGroupDao conditionNegativeToGroupDao();
@@ -372,6 +375,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 23
+     * to
+     * version 24
+     */
+    static final Migration MIGRATION_23_24 = new Migration(23, 24) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS 'grupocondition' ('id' INTEGER NOT NULL, 'groupid' INTEGER NOT NULL, 'conditionalgroupid' INTEGER NOT NULL, 'conditionalminutes' INTEGER NOT NULL, 'fromlastndays' INTEGER NOT NULL, PRIMARY KEY('id'))");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -387,7 +403,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8,
                                     MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15,
                                     MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22,
-                                    MIGRATION_22_23)
+                                    MIGRATION_22_23, MIGRATION_23_24)
                             .build();
                 }
             }

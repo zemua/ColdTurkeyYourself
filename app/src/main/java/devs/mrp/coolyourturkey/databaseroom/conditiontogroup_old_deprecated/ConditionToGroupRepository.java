@@ -1,11 +1,10 @@
-package devs.mrp.coolyourturkey.databaseroom.conditiontogroup;
+package devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 
@@ -29,27 +28,19 @@ public class ConditionToGroupRepository {
     }
 
     public void insert(ConditionToGroup conditionToGroup) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.insert(conditionToGroup);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.insert(conditionToGroup));
     }
 
     public void deleteById(Integer id) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteById(id);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteById(id));
     }
 
     public void deleteByGroupId(Integer groupId) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteByGroupId(groupId);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteByGroupId(groupId));
     }
 
     public void deleteByConditionalGroupId(Integer conditionalGroupId) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
-            mDao.deleteByConditionalGroupId(conditionalGroupId);
-        });
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteByConditionalGroupId(conditionalGroupId));
     }
 
     public LiveData<List<ConditionToGroup>> findAllConditionToGroup() {

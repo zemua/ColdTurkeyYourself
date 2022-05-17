@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.databaseroom.conditiontogroup;
+package devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

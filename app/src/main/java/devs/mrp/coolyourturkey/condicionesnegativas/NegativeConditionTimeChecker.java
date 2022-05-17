@@ -2,7 +2,6 @@ package devs.mrp.coolyourturkey.condicionesnegativas;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
@@ -10,19 +9,14 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -30,14 +24,12 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogg
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.ConditionChecker;
 import devs.mrp.coolyourturkey.watchdog.groups.ConditionCheckerFactory;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNegativeToGroup>> {
 

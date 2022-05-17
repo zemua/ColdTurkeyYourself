@@ -5,8 +5,6 @@ import android.app.Application;
 import java.util.Map;
 
 import devs.mrp.coolyourturkey.comun.FileReader;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
 
 public interface ConditionChecker {
 

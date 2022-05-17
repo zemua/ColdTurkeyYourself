@@ -8,8 +8,7 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
 import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;

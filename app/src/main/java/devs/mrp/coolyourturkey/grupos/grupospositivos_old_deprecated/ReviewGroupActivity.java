@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
 import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.conditions.AddGroupConditionActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.conditions.GroupLimitsActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
