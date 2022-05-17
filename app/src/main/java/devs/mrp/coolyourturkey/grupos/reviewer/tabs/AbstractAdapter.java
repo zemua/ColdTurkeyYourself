@@ -64,7 +64,7 @@ public abstract class AbstractAdapter<VH extends RecyclerView.ViewHolder, ID, DA
         this.notifyDataSetChanged();
     }
 
-    protected abstract Map<ID, ElementToGroup> mapSettedElements(List<ElementToGroup> checksToGroup);
+    protected abstract Map<ID, ElementToGroup> mapSettedElements(List<ElementToGroup> elementsToGroup);
 
     protected boolean ifInOtherGroup(ID toId) {
         if (mapSettedElements != null && mapSettedElements.containsKey(toId)) {

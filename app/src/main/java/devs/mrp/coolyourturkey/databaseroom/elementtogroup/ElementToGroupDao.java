@@ -38,4 +38,7 @@ public interface ElementToGroupDao {
     @Query("SELECT * FROM elementtogroup WHERE type = :type ORDER BY id ASC")
     LiveData<List<ElementToGroup>> findAllElementsOfType(ElementType type);
 
+    @Query("SELECT * FROM elementtogroup WHERE type = :type AND groupid = :groupid ORDER BY id ASC")
+    LiveData<List<ElementToGroup>> findElementsOfGroupAndType(Integer groupid, ElementType type);
+
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ChecksTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ExternalTabFragment;
 
 public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
@@ -31,7 +32,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 1:
                 return new ChecksTabFragment(ChecksTabFragment.Type.POSITIVE, mGroupId);
             case 2:
-                // TODO return new ExternalsTabFragment();
+                return new ExternalTabFragment(ExternalTabFragment.Type.POSITIVE, mGroupId);
             case 3:
                 // TODO return new ConditionsTabFragment();
             default:
@@ -44,6 +45,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
         return 4;
     }
 
+    @Override
     public String getPositionName(int position) {
         switch (position) {
             case 0:

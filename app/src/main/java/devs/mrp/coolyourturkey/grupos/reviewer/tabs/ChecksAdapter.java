@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;

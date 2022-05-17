@@ -97,8 +97,4 @@ public class AppsAdapter extends AbstractSwitchesAdapter<AppsAdapter.AppsViewHol
         }
     }
 
-    private Map<String, ApplicationInfo> mapDataset(List<ApplicationInfo> apps) {
-        return apps.stream().collect(Collectors.toMap(app -> app.packageName, app -> app));
-    }
-
 }

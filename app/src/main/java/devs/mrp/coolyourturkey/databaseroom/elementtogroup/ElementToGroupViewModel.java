@@ -54,4 +54,8 @@ public class ElementToGroupViewModel extends AndroidViewModel {
     public LiveData<List<ElementToGroup>> findElementsOfType(ElementType type) {
         return mRepo.findElementsOfType(type);
     }
+
+    public LiveData<List<ElementToGroup>> findElementsOfGroupAndType(Integer groupId, ElementType type) {
+        return mRepo.findElementsOfGroupAndType(groupId, type);
+    }
 }

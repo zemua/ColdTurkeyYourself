@@ -40,6 +40,7 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
         return 2;
     }
 
+    @Override
     public String getPositionName(int position) {
         switch (position) {
             case 0:
