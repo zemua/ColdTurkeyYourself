@@ -26,6 +26,7 @@ import java.util.concurrent.FutureTask;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.listados.AppLister;
@@ -109,7 +110,7 @@ public class AppsTabFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutApps);
 
         elementToGroupViewModel = new ViewModelProvider(this, viewModelFactory).get(ElementToGroupViewModel.class);
-        elementToGroupViewModel.findAllElementToGroup().observe(getViewLifecycleOwner(), new Observer<List<ElementToGroup>>() {
+        elementToGroupViewModel.findElementsOfType(ElementType.APP).observe(getViewLifecycleOwner(), new Observer<List<ElementToGroup>>() {
             @Override
             public void onChanged(List<ElementToGroup> elementToGroups) {
                 mAppsAdapter.firstGroupDbLoad(elementToGroups);

@@ -59,4 +59,8 @@ public class ElementToGroupRepository {
         return mDao.findElementToGroupById(id);
     }
 
+    public LiveData<List<ElementToGroup>> findElementsOfType(ElementType type) {
+        return mDao.findAllElementsOfType(type);
+    }
+
 }

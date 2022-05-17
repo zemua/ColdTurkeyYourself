@@ -50,4 +50,8 @@ public class ElementToGroupViewModel extends AndroidViewModel {
     public LiveData<List<ElementToGroup>> findElementToGroupById(Integer id) {
         return mRepo.findElementToGroupById(id);
     }
+
+    public LiveData<List<ElementToGroup>> findElementsOfType(ElementType type) {
+        return mRepo.findElementsOfType(type);
+    }
 }
