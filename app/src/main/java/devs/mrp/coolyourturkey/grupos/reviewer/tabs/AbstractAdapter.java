@@ -38,12 +38,16 @@ public abstract class AbstractAdapter<VH extends RecyclerView.ViewHolder, ID, DA
         listeners.add(listener);
     }
 
+    public void loopedGroupDbLoad(List<ElementToGroup> checksToGroup) {
+        mSettedElements = checksToGroup;
+        mapSettedElements = mapSettedElements(mSettedElements);
+        loaded = true;
+        this.notifyDataSetChanged();
+    }
+
     public void firstGroupDbLoad(List<ElementToGroup> checksToGroup) {
         if (!loaded) {
-            mSettedElements = checksToGroup;
-            mapSettedElements = mapSettedElements(mSettedElements);
-            loaded = true;
-            this.notifyDataSetChanged();
+            loopedGroupDbLoad(checksToGroup);
         }
     }
 

@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupos.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated;
 
 import android.app.Activity;
 import android.content.Intent;

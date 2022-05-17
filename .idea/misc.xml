@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/ic_turkey_dices.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/layout/fragment_addcondition.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_addgroup.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_button_and_recycler.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/fragment_checks_listing.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_condiciones_negativas.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_configuracion.xml" value="0.22" />
@@ -28,6 +29,7 @@
         <entry key="app/src/main/res/layout/grupos.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/view_holder_apps_list_adapter_texto.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_imports.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_list_adapter_texto_button.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/view_holder_list_adapter_texto_switch.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/view_holder_simple_image.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_simple_text.xml" value="0.2265625" />

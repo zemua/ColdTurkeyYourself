@@ -16,7 +16,6 @@ import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.GruposPositivosActivity;
 import devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;

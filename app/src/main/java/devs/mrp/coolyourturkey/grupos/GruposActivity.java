@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment;
 
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.ReviewGroupActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.AddGroupActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.ReviewGroupActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public abstract class GruposActivity extends SingleFragmentActivity<Intent> {

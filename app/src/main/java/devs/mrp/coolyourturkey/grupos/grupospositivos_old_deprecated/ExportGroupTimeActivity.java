@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupos.grupospositivos;
+package devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.conditions.AddGroupConditionActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.conditions.AddGroupConditionActivity;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class ExportGroupTimeActivity extends AppCompatActivity {

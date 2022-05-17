@@ -22,7 +22,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
-import devs.mrp.coolyourturkey.grupos.grupospositivos.AddGroupActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.AddGroupActivity;
 import devs.mrp.coolyourturkey.grupos.reviewer.ReviewerActivity;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 

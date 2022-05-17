@@ -196,4 +196,5 @@
     <string name="condiciones">Condiciones</string>
     <string name="apps">Apps</string>
     <string name="externo">Externo</string>
+    <string name="no_anhadido_ya_existe">No añadido, ya existe</string>
 </resources>

@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.grupos.grupospositivos.conditions;
+package devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.conditions;
 
 import android.app.Activity;
 import android.app.AlertDialog;
