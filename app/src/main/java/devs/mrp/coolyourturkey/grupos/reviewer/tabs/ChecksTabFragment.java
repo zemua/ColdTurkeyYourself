@@ -6,15 +6,19 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -22,6 +26,8 @@ import java.util.concurrent.FutureTask;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockViewModel;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 
 public class ChecksTabFragment extends Fragment {
 
@@ -32,12 +38,11 @@ public class ChecksTabFragment extends Fragment {
     private Context mContext;
     private ViewModelProvider.Factory viewModelFactory;
     private Integer mGroupId;
+    private ElementToGroupViewModel elementToGroupViewModel;
     private Type type;
 
+    private CheckTimeBlockViewModel checkTimeBlockViewModel;
     private ChecksAdapter mChecksAdapter;
-
-    private FutureTask<CheckTimeBlock> fillAdapterTask;
-    private ExecutorService executor = Executors.newFixedThreadPool(1);
 
     public ChecksTabFragment(Type type, Integer groupId) {
         super();
@@ -61,6 +66,34 @@ public class ChecksTabFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.recyclerView);
 
         mChecksAdapter = new ChecksAdapter(mContext, mGroupId);
+        mChecksAdapter.resetLoaded();
+        ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
+
+        checkTimeBlockViewModel = new ViewModelProvider(ChecksTabFragment.this, viewModelFactory).get(CheckTimeBlockViewModel.class);
+        checkTimeBlockViewModel.findAllTimeBlocks().observe(getViewLifecycleOwner(), (checkTimeBlocks) -> {
+            spinner.setVisibility(View.GONE);
+            mChecksAdapter.updateDataSet(checkTimeBlocks);
+        });
+
+        mRecyclerView.setAdapter(mChecksAdapter);
+        LinearLayoutManager layoutChecks = new LinearLayoutManager(mContext);
+        mRecyclerView.setLayoutManager(layoutChecks);
+
+        elementToGroupViewModel = new ViewModelProvider(this, viewModelFactory).get(ElementToGroupViewModel.class);
+        elementToGroupViewModel.findElementsOfType(ElementType.CHECK).observe(getViewLifecycleOwner(), (elementToGroups) -> {
+            mChecksAdapter.firstGroupDbLoad(elementToGroups);
+        });
+
+        mChecksAdapter.addFeedbackListener((tipo, feedback, parameters) -> {
+            switch (tipo) {
+                case ChecksAdapter.FEEDBACK_SET_CHECKTOGROUP:
+                    elementToGroupViewModel.insert(feedback);
+                    break;
+                case ChecksAdapter.FEEDBACK_DEL_CHECKTOGROUP:
+                    elementToGroupViewModel.deleteById(feedback.getId());
+                    break;
+            }
+        });
 
         return v;
     }
@@ -87,12 +120,6 @@ public class ChecksTabFragment extends Fragment {
             return -1;
         }
         return mGroupId;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        executor.execute(fillAdapterTask);
     }
 
 }

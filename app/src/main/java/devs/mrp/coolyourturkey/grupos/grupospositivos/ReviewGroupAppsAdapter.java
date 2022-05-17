@@ -170,7 +170,7 @@ public class ReviewGroupAppsAdapter extends RecyclerView.Adapter<ReviewGroupApps
 
     public void updateDataSet(List<AplicacionListada> positiveApps) {
         if (mDataset != null) {
-            mDataset.setPositiveList(positiveApps);
+            mDataset.setListedApps(positiveApps);
             setMapDataset(mDataset.getList());
             this.notifyDataSetChanged();
             Log.d(TAG, "updateDataSet done");

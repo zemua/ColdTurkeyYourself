@@ -65,9 +65,9 @@ public class AppLister {
         return mPackages;
     }
 
-    public List<ApplicationInfo> setPositiveList(List<AplicacionListada> positiveApps){
+    public List<ApplicationInfo> setListedApps(List<AplicacionListada> listedApps){
         mPackages = new ArrayList<>(mPackagesList); // baseline
-        Map<String, String> map = positiveApps.stream().collect(Collectors.toMap(AplicacionListada::getNombre, AplicacionListada::getLista));
+        Map<String, String> map = listedApps.stream().collect(Collectors.toMap(AplicacionListada::getNombre, AplicacionListada::getLista));
         ListIterator<ApplicationInfo> iterator = mPackages.listIterator();
         while (iterator.hasNext()){
             ApplicationInfo app = iterator.next();

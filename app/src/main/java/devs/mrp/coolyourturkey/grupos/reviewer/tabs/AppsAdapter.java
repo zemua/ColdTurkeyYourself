@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -175,16 +176,16 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
 
     public void updateDataset(List<AplicacionListada> apps) {
         if (mDataset != null) {
-            mDataset.setPositiveList(apps);
+            mDataset.setListedApps(apps);
             mapDataset = mapDataset(mDataset.getList());
             this.notifyDataSetChanged();
         }
     }
 
     public void firstGroupDbLoad(List<ElementToGroup> appsToGroup) {
-        listaAppsSetted = appsToGroup;
-        mapAppsSetted = mapAppToGroup(listaAppsSetted);
         if (!loaded) {
+            listaAppsSetted = appsToGroup;
+            mapAppsSetted = mapAppToGroup(listaAppsSetted);
             loaded = true;
             this.notifyDataSetChanged();
         }
@@ -219,7 +220,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
 
     private boolean ifInThisGroup(String packageName) {
         if (mapAppsSetted != null && mapAppsSetted.containsKey(packageName)) {
-            return mapAppsSetted.get(packageName).getGroupId().equals(mThisGroupId);
+            return Optional.ofNullable(mapAppsSetted.get(packageName).getGroupId()).map(gid -> gid.equals(mThisGroupId)).orElse(false);
         }
         return false;
     }
