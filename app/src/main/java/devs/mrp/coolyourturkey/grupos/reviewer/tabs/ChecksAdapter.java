@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,11 +53,10 @@ public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckVi
 
     @Override
     public void onBindViewHolder(@NonNull ChecksAdapter.CheckViewHolder holder, int position) {
-        if (mSettedElements != null) {
-            holder.textView.setText(mSettedElements.get(position).getName());
-            holder.checkId = mSettedElements.get(position).getToId();
-            setSwitchAccordingToDb(holder.switchView, holder.checkId);
-        }
+        CheckTimeBlock block = mDataSet.get(position);
+        holder.textView.setText(block.getName());
+        holder.checkId = Long.valueOf(block.getBlockid());
+        setSwitchAccordingToDb(holder.switchView, holder.checkId);
         setTextOfSwitch(holder.switchView, holder.checkId);
     }
 

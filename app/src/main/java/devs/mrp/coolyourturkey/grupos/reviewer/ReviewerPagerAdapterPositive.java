@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ChecksTabFragment;
 
 public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
@@ -28,7 +29,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 0:
                 return new AppsTabFragment(AppsTabFragment.Type.POSITIVE, mGroupId);
             case 1:
-                // TODO return new ChecksTabFragment();
+                return new ChecksTabFragment(ChecksTabFragment.Type.POSITIVE, mGroupId);
             case 2:
                 // TODO return new ExternalsTabFragment();
             case 3:
