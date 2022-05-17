@@ -1,12 +1,19 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs;
 
+import android.content.Context;
 import android.widget.Switch;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 import devs.mrp.coolyourturkey.R;
 
 public abstract class AbstractSwitchesAdapter<VH extends RecyclerView.ViewHolder, ID, DATA> extends AbstractAdapter<VH, ID, DATA>{
+
+    public AbstractSwitchesAdapter(Context context, Integer groupId) {
+        super(context, groupId);
+    }
 
     protected void setTextOfSwitch(Switch switchView, ID id) {
         if (ifInOtherGroup(id)) {
@@ -17,7 +24,7 @@ public abstract class AbstractSwitchesAdapter<VH extends RecyclerView.ViewHolder
     }
 
     protected void setSwitchAccordingToDb(Switch switchView, ID id) {
-        if (mapSettedElements.containsKey(id)){
+        if (Objects.nonNull(mapSettedElements) && mapSettedElements.containsKey(id)){
             // assigned already
             if (ifInThisGroup(id)) {
                 // to this group

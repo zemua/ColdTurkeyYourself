@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs;
 
+import android.content.Context;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -15,10 +17,16 @@ public abstract class AbstractAdapter<VH extends RecyclerView.ViewHolder, ID, DA
 
     private List<FeedbackListener<ElementToGroup>> listeners = new ArrayList<>();
     protected Map<ID, ElementToGroup> mapSettedElements;
-    private List<ElementToGroup> mSettedElements;
-    private List<DATA> mDataSet;
+    protected List<ElementToGroup> mSettedElements;
+    protected List<DATA> mDataSet;
     protected Integer mGroupId;
     protected boolean loaded;
+    protected Context mContext;
+
+    AbstractAdapter(Context context, Integer groupId) {
+        this.mContext = context;
+        this.mGroupId = groupId;
+    }
 
     @Override
     public void giveFeedback(int tipo, ElementToGroup feedback) {

@@ -83,13 +83,12 @@ public class AppsTabFragment extends Fragment {
                     mAppLister = get();
                     mainHandler.post(() -> {
                         try {
-                            mAppsAdapter.setAppLister(mAppLister);
                             mAplicacionListadaViewModel = new ViewModelProvider(AppsTabFragment.this, viewModelFactory).get(AplicacionListadaViewModel.class);
                             getApps(mAplicacionListadaViewModel).observe(getViewLifecycleOwner(), new Observer<List<AplicacionListada>>() {
                                 @Override
                                 public void onChanged(List<AplicacionListada> aplicacionListadas) {
                                     spinner.setVisibility(View.GONE);
-                                    mAppsAdapter.updateDataset(aplicacionListadas);
+                                    mAppsAdapter.updateDataSet(mAppLister.setListedApps(aplicacionListadas));
 
                                 }
                             });

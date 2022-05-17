@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,14 +26,8 @@ public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckVi
     public static final int FEEDBACK_SET_CHECKTOGROUP = 0;
     public static final int FEEDBACK_DEL_CHECKTOGROUP = 1;
 
-    private List<CheckTimeBlock> mDataSet;
-    private List<ElementToGroup> mSettedChecks;
-    private Map<Long, ElementToGroup> mapSettedChecks;
-    private Context mContext;
-
     public ChecksAdapter(Context context, Integer thisGroupId) {
-        this.mContext = context;
-        this.mGroupId = thisGroupId;
+        super(context, thisGroupId);
     }
 
     @NonNull
@@ -45,7 +40,7 @@ public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckVi
             Switch s = (Switch) view;
             ElementToGroup element = new ElementToGroup().withType(ElementType.CHECK).withName(vh.textView.getText().toString()).withGroupId(mGroupId).withToId(vh.checkId);
             if (!s.isChecked() && ifInThisGroup(element.getToId())) {
-                element.setId(mapSettedChecks.get(element.getToId()).getId()); // set id of the ElementToGroup to de-register by id
+                element.setId(mapSettedElements.get(element.getToId()).getId()); // set id of the ElementToGroup to de-register by id
                 giveFeedback(FEEDBACK_DEL_CHECKTOGROUP, element);
             } else if (s.isChecked() && !ifInThisGroup(element.getToId())) {
                 giveFeedback(FEEDBACK_SET_CHECKTOGROUP, element);
@@ -57,9 +52,9 @@ public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckVi
 
     @Override
     public void onBindViewHolder(@NonNull ChecksAdapter.CheckViewHolder holder, int position) {
-        if (mSettedChecks != null) {
-            holder.textView.setText(mSettedChecks.get(position).getName());
-            holder.checkId = mSettedChecks.get(position).getToId();
+        if (mSettedElements != null) {
+            holder.textView.setText(mSettedElements.get(position).getName());
+            holder.checkId = mSettedElements.get(position).getToId();
             setSwitchAccordingToDb(holder.switchView, holder.checkId);
         }
         setTextOfSwitch(holder.switchView, holder.checkId);
@@ -81,6 +76,8 @@ public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckVi
 
     @Override
     protected Map<Long, ElementToGroup> mapSettedElements(List<ElementToGroup> checksToGroup) {
-        return checksToGroup.stream().collect(Collectors.toMap(ElementToGroup::getToId, Function.identity()));
+        Map<Long, ElementToGroup> map = new HashMap<>();
+        checksToGroup.stream().forEach(element -> map.put(element.getToId(), element));
+        return map;
     }
 }
