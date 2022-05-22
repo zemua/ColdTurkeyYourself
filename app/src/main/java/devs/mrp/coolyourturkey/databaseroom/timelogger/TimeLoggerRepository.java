@@ -45,6 +45,10 @@ public class TimeLoggerRepository {
         return mDao.findByTimeNewerAndGroupId(newerThan, groupId);
     }
 
+    public LiveData<List<TimeLogger>> findByNewerThan(Long newerThan) {
+        return mDao.findByNewerThan(newerThan);
+    }
+
     public LiveData<List<TimeLogger>> findForDayAndGroupId(LocalDate date, Integer groupId) {
         LocalDateTime initOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atStartOfDay().plusDays(1);

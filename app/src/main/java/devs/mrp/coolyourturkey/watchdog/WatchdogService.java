@@ -69,7 +69,7 @@ public class WatchdogService extends LifecycleService {
         mImporter = new Importer(this, this.getApplication());
         actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor().getHandlerChain();
         mCheckManager = CheckManager.getInstance(this.getApplication(), this);
-        mEntryCleaner = new EntryCleanerImpl(this.getApplication());
+        mEntryCleaner = new EntryCleanerImpl(this.getApplication(), this);
 
         mData = MyBeanFactory.getWatchDogDataFactory().create(this)
                 .setSleepTime(1000 * 3) // 3 seconds between checks

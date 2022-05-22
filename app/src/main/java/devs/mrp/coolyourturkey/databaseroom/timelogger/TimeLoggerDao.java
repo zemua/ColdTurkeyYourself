@@ -48,4 +48,7 @@ public interface TimeLoggerDao {
 
     @Query("SELECT * FROM timelogger WHERE millistimestamp >= :from AND groupid = :groupid")
     LiveData<List<TimeLogger>> findByTimeNewerAndGroupId(Long from, Integer groupid);
+
+    @Query("SELECT * FROM timelogger WHERE millistimestamp >= :from")
+    LiveData<List<TimeLogger>> findByNewerThan(Long from);
 }

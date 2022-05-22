@@ -2,6 +2,8 @@ package devs.mrp.coolyourturkey.databaseroom;
 
 import android.app.Application;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
@@ -14,8 +16,10 @@ public class EntryCleanerImpl implements EntryCleaner {
 
     private TimeLoggerRepository loggerRepo;
     private ContadorRepository contadorRepo;
+    private LifecycleOwner mOwner;
 
-    public EntryCleanerImpl(Application app) {
+    public EntryCleanerImpl(Application app, LifecycleOwner owner) {
+        mOwner = owner;
         loggerRepo = TimeLoggerRepository.getRepo(app);
         contadorRepo = ContadorRepository.getRepo(app);
     }
@@ -37,6 +41,11 @@ public class EntryCleanerImpl implements EntryCleaner {
     }
 
     private void cleanContador(long olderThan) {
-        contadorRepo.clearOlderThan(olderThan);
+        // make sure that we have at least one entry that is not going to be deleted
+        contadorRepo.getUltimoContador().observe(mOwner, contadores -> {
+            if (contadores.size() > 0 && contadores.get(0).getDayOfEpoch()>olderThan) {
+                contadorRepo.clearOlderThan(olderThan);
+            }
+        });
     }
 }
