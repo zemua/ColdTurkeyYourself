@@ -20,10 +20,12 @@ import devs.mrp.coolyourturkey.comun.SingleExecutor;
 import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
+import devs.mrp.coolyourturkey.databaseroom.EntryCleanerImpl;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
+import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
@@ -55,6 +57,7 @@ public class WatchdogService extends LifecycleService {
     private Importer mImporter;
     private AbstractHandler actionRequestor;
     private CheckManager mCheckManager;
+    private EntryCleaner mEntryCleaner;
 
     private WatchDogData mData;
 
@@ -66,6 +69,7 @@ public class WatchdogService extends LifecycleService {
         mImporter = new Importer(this, this.getApplication());
         actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor().getHandlerChain();
         mCheckManager = CheckManager.getInstance(this.getApplication(), this);
+        mEntryCleaner = new EntryCleanerImpl(this.getApplication());
 
         mData = MyBeanFactory.getWatchDogDataFactory().create(this)
                 .setSleepTime(1000 * 3) // 3 seconds between checks
@@ -206,6 +210,7 @@ public class WatchdogService extends LifecycleService {
             data.getNegativeConditionTimeChecker().refreshTimeLoggedOnFiles(); // refresh time from external files
             data.getNegativeConditionTimeChecker().refreshNotifications(); // send notification if proceeds
             data.getTimeBlockExporter().refresh();
+            mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {
