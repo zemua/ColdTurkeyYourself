@@ -11,6 +11,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ChecksTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ExternalTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
 
 public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
@@ -28,15 +29,15 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE, mGroupId);
+                return new AppsTabFragment(GroupType.POSITIVE, mGroupId);
             case 1:
-                return new ChecksTabFragment(ChecksTabFragment.Type.POSITIVE, mGroupId);
+                return new ChecksTabFragment(GroupType.POSITIVE, mGroupId);
             case 2:
-                return new ExternalTabFragment(ExternalTabFragment.Type.POSITIVE, mGroupId);
+                return new ExternalTabFragment(GroupType.POSITIVE, mGroupId);
             case 3:
                 // TODO return new ConditionsTabFragment();
             default:
-                return new AppsTabFragment(AppsTabFragment.Type.POSITIVE, mGroupId);
+                return new AppsTabFragment(GroupType.POSITIVE, mGroupId);
         }
     }
 

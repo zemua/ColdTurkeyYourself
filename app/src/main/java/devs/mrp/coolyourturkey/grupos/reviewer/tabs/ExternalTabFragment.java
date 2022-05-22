@@ -46,9 +46,9 @@ public class ExternalTabFragment extends Fragment {
     private Integer mGroupId;
     private ExternalAdapter mExternalAdapter;
     private ElementToGroupViewModel elementToGroupViewModel;
-    private Type type;
+    private GroupType type;
 
-    public ExternalTabFragment(Type type, Integer groupId) {
+    public ExternalTabFragment(GroupType type, Integer groupId) {
         super();
         this.type = type;
         this.mGroupId = groupId;
@@ -98,10 +98,6 @@ public class ExternalTabFragment extends Fragment {
         mButton.setOnClickListener((view) -> openFile());
 
         return v;
-    }
-
-    public enum Type {
-        POSITIVE, NEGATIVE;
     }
 
     @Override

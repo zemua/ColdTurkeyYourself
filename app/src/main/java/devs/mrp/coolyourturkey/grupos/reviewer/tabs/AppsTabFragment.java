@@ -45,12 +45,12 @@ public class AppsTabFragment extends Fragment {
     private AppsAdapter mAppsAdapter;
     private AplicacionListadaViewModel mAplicacionListadaViewModel;
     private ElementToGroupViewModel elementToGroupViewModel;
-    private Type type;
+    private GroupType type;
 
     private FutureTask<AppLister> fillAdapterTask;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    public AppsTabFragment(Type type, Integer groupId) {
+    public AppsTabFragment(GroupType type, Integer groupId) {
         super();
         this.type = type;
         this.mGroupId = groupId;
@@ -136,12 +136,8 @@ public class AppsTabFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public enum Type {
-        POSITIVE, NEGATIVE;
-    }
-
     private LiveData<List<AplicacionListada>> getApps(AplicacionListadaViewModel model) {
-        if (Type.NEGATIVE.equals(this.type)) {
+        if (GroupType.NEGATIVE.equals(this.type)) {
             return model.getNegativeApps();
         }
         return model.getPositiveApps();

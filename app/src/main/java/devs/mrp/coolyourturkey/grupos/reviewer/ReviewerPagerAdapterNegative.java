@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
 
 public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
 
@@ -27,11 +28,11 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new AppsTabFragment(AppsTabFragment.Type.NEGATIVE, mGroupId);
+                return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
             case 1:
                 // TODO return new ConditionsTabFragment();
             default:
-                return new AppsTabFragment(AppsTabFragment.Type.NEGATIVE, mGroupId);
+                return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
         }
     }
 

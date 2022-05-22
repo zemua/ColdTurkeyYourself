@@ -218,7 +218,7 @@ public class AddGroupConditionFragment extends Fragment {
         groupSpinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTargetGroupSpinner.setAdapter(groupSpinerAdapter);
         GrupoPositivoRepository grupoRepo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
-        grupoRepo.findAllGrupoPositivo().observe(AddGroupConditionFragment.this, new Observer<List<GrupoPositivo>>() {
+        grupoRepo.findAllGrupoPositivo().observe(getViewLifecycleOwner(), new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
                 mGruposPositivos.clear();

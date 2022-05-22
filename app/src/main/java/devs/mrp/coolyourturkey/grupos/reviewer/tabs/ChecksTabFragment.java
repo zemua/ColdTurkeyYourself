@@ -39,12 +39,12 @@ public class ChecksTabFragment extends Fragment {
     private ViewModelProvider.Factory viewModelFactory;
     private Integer mGroupId;
     private ElementToGroupViewModel elementToGroupViewModel;
-    private Type type;
+    private GroupType type;
 
     private CheckTimeBlockViewModel checkTimeBlockViewModel;
     private ChecksAdapter mChecksAdapter;
 
-    public ChecksTabFragment(Type type, Integer groupId) {
+    public ChecksTabFragment(GroupType type, Integer groupId) {
         super();
         this.type = type;
         this.mGroupId = groupId;
@@ -104,12 +104,8 @@ public class ChecksTabFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public enum Type {
-        POSITIVE, NEGATIVE;
-    }
-
     private LiveData<List<CheckTimeBlock>> getChecks(CheckTimeBlockViewModel model) {
-        if (Type.POSITIVE.equals(this.type)) {
+        if (GroupType.POSITIVE.equals(this.type)) {
             return model.findAllTimeBlocks();
         }
         return null;
