@@ -27,7 +27,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private GrupoType mGroupType;
 
     @Override
-    protected void initListeners(Fragment frgmnt) {
+    protected void initListeners(FeedbackerFragment frgmnt) {
         if (frgmnt instanceof ReviewerFragment) {
             ReviewerFragment fragment = (ReviewerFragment) frgmnt;
             fragment.addFeedbackListener(new FeedbackListener<Intent>() {

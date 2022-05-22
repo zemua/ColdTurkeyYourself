@@ -24,12 +24,14 @@ public abstract class SingleFragmentActivity<T> extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
         initCallbackRegisters();
-        initListeners(fragment);
+        if ( fragment instanceof FeedbackerFragment) {
+            initListeners((FeedbackerFragment) fragment);
+        }
     }
 
     protected abstract void initCallbackRegisters();
 
-    protected abstract void initListeners(Fragment f);
+    protected abstract void initListeners(FeedbackerFragment f);
 
     protected abstract String getTag();
 

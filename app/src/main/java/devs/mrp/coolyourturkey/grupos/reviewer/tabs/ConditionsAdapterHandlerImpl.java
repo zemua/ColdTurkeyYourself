@@ -9,6 +9,7 @@ import java.util.Map;
 
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class ConditionsAdapterHandlerImpl implements AdapterHandler<GrupoCondition> {
 
@@ -19,17 +20,22 @@ public class ConditionsAdapterHandlerImpl implements AdapterHandler<GrupoConditi
     }
 
     @Override
-    public RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
-        return null;
+    public RecyclerView.Adapter getAdapter() {
+        return conditionsAdapter;
     }
 
     @Override
     public void setDataset(List<GrupoCondition> dataSet) {
-
+        conditionsAdapter.setDataset(dataSet);
     }
 
     @Override
     public void setGrupos(Map<Integer, Grupo> grupos) {
+        conditionsAdapter.setGrupos(grupos);
+    }
 
+    @Override
+    public void addFeedbackListener(FeedbackListener<GrupoCondition> listener) {
+        conditionsAdapter.addFeedbackListener(listener);
     }
 }

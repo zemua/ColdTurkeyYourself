@@ -10,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.grupos.grupospositivos_old_deprecated.AddGroupActivity;
@@ -28,7 +29,7 @@ public abstract class GruposActivity extends SingleFragmentActivity<Intent> {
     }
 
     @Override
-    protected void initListeners(Fragment frgmnt) {
+    protected void initListeners(FeedbackerFragment frgmnt) {
         if (frgmnt instanceof GruposFragment){
             GruposFragment fragment = (GruposFragment) frgmnt;
             fragment.addFeedbackListener(new FeedbackListener<Intent>() {
