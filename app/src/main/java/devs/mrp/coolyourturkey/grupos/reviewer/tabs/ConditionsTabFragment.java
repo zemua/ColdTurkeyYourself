@@ -33,14 +33,12 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionViewModel;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.ConditionActionConstants;
 
 public class ConditionsTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
-    private static final String KEY_BUNDLE_NAME_ACTUAL = "key.bundle.name.actual";
-    private static final String KEY_BUNDLE_GRUPOS_LIST = "key.bundle.grupos.list";
-    private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
-    private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
 
     private Context mContext;
     private Integer mGroupId;
@@ -111,8 +109,9 @@ public class ConditionsTabFragment extends Fragment {
     }
 
     private void launchAddCondition() {
-        // TODO create intent and launch
-        Intent intent = new Intent();
+        Intent intent = new Intent(getActivity(), AddConditionActivity.class);
+        intent.putExtra(ConditionActionConstants.EXTRA_GROUP_ID, mGroupId);
+        intent.putExtra(ConditionActionConstants.EXTRA_GROUP_NAME, mGroupName);
         startActivity(intent);
     }
 

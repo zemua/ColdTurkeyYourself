@@ -1,7 +1,6 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
@@ -27,6 +26,10 @@ public class AddConditionActivity extends SingleFragmentActivity {
         f.addFeedbackListener(new FeedbackListener<GrupoCondition>() {
             @Override
             public void giveFeedback(int tipo, GrupoCondition feedback, Object... args) {
+                if (mGroupId == -1) {
+                    finish();
+                    return;
+                }
                 switch (tipo) {
                     case ConditionActionConstants.ACTION_SAVE:
                         mGrupoConditionRepository.insert(feedback);

@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ChecksTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ExternalTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
 
@@ -17,11 +18,13 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
     private Context mContext;
     private Integer mGroupId;
+    private String mGroupName;
 
-    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId) {
+    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName) {
         super(fragmentManager, lifecycle);
         this.mContext = context;
         this.mGroupId = groupId;
+        this.mGroupName = groupName;
     }
 
     @NonNull
@@ -35,7 +38,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 2:
                 return new ExternalTabFragment(GroupType.POSITIVE, mGroupId);
             case 3:
-                // TODO return new ConditionsTabFragment();
+                return new ConditionsTabFragment(mGroupId, mGroupName);
             default:
                 return new AppsTabFragment(GroupType.POSITIVE, mGroupId);
         }

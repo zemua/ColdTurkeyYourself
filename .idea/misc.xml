@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/gray_border.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/drawable/ic_turkey_dices.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/layout/fragment_addcondition.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_addcondition_group.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_addgroup.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_button_and_recycler.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/fragment_checks_listing.xml" value="0.2265625" />

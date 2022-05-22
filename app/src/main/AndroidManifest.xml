@@ -55,6 +55,7 @@
         <activity android:name="devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.ReviewerActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity"></activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

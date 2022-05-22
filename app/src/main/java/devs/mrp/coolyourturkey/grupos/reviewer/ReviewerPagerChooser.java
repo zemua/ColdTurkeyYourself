@@ -11,8 +11,8 @@ public class ReviewerPagerChooser {
 
     private ReviewerPagerAdapter adapter;
 
-    public ReviewerPagerChooser(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Integer groupId, Context context) {
-        set(fragmentManager, lifecycle, type, context, groupId);
+    public ReviewerPagerChooser(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Integer groupId, Context context, String groupName) {
+        set(fragmentManager, lifecycle, type, context, groupId, groupName);
     }
 
     public FragmentStateAdapter get() {
@@ -23,13 +23,13 @@ public class ReviewerPagerChooser {
         return adapter.getPositionName(position);
     }
 
-    private void set(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Context context, Integer groupId) {
+    private void set(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Context context, Integer groupId, String groupName) {
         switch (type) {
             case NEGATIVE:
-                adapter = new ReviewerPagerAdapterNegative(fragmentManager, lifecycle, context, groupId);
+                adapter = new ReviewerPagerAdapterNegative(fragmentManager, lifecycle, context, groupId, groupName);
                 break;
             case POSITIVE:
-                adapter = new ReviewerPagerAdapterPositive(fragmentManager, lifecycle, context, groupId);
+                adapter = new ReviewerPagerAdapterPositive(fragmentManager, lifecycle, context, groupId, groupName);
                 break;
             default:
                 break;

@@ -10,17 +10,20 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
 
 public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
 
     private Context mContext;
     private Integer mGroupId;
+    private String mGroupName;
 
-    public ReviewerPagerAdapterNegative(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId) {
+    public ReviewerPagerAdapterNegative(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName) {
         super(fragmentManager, lifecycle);
         this.mContext = context;
         this.mGroupId = groupId;
+        this.mGroupName = groupName;
     }
 
     @NonNull
@@ -30,7 +33,7 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
             case 0:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
             case 1:
-                // TODO return new ConditionsTabFragment();
+                return new ConditionsTabFragment(mGroupId, mGroupName);
             default:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
         }
