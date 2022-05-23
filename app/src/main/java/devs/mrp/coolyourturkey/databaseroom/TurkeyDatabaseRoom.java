@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class, GrupoCondition.class}, version = 24)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class, GrupoCondition.class}, version = 25)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -388,6 +388,19 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 24
+     * to
+     * version 25
+     */
+    static final Migration MIGRATION_24_25 = new Migration(24, 25) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'timeblocklogger' ADD 'groupid' INTEGER");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -403,7 +416,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8,
                                     MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15,
                                     MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22,
-                                    MIGRATION_22_23, MIGRATION_23_24)
+                                    MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25)
                             .build();
                 }
             }

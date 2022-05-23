@@ -47,4 +47,8 @@ public class TimeBlockLoggerRepository {
         return mDao.findByTimeNewerAndBlockId(from, blockid);
     }
 
+    public LiveData<List<TimeBlockLogger>> findByTimeNewerAndGroupId(Long from, Integer groupId) {
+        return mDao.findByTimeNewerAndGroupId(from, groupId);
+    }
+
 }

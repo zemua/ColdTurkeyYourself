@@ -21,6 +21,8 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
@@ -55,6 +57,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     private CheckTimeBlockRepository mRepo;
     private TimeBlockLoggerRepository mLogger;
+    private ElementToGroupRepository mElementRepo;
+    private int mGroupId = -1;
 
     private MisPreferencias mPreferencias;
 
@@ -102,6 +106,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
         mRepo = CheckTimeBlockRepository.getRepo(getApplication());
         mLogger = TimeBlockLoggerRepository.getRepo(getApplication());
+        mElementRepo = ElementToGroupRepository.getRepo(getApplication());
         LiveData<List<TimeBlockWithChecks>> ld = mRepo.getTimeBlockWithChecksById(blockId);
         ld.observe(CheckPerformerActivity.this, timeBlockWithChecks -> {
             ld.removeObservers(CheckPerformerActivity.this);
@@ -185,7 +190,7 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 summed = true; // prevent double tap and so double sum
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
                 timePusher.add(System.currentTimeMillis(), mPremio, this);
-                mLogger.insert(new TimeBlockLogger(blockId, mPremio, System.currentTimeMillis()));
+                mLogger.insert(new TimeBlockLogger(blockId, mPremio, System.currentTimeMillis(), mGroupId));
                 PrizeConfirmationFragment fr = new PrizeConfirmationFragment();
                 fr.addObserver((tp, fdbck) -> {
                     CheckPerformerActivity.this.finalizar();
@@ -195,6 +200,14 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 //finalizar();
             } else {
                 CheckPerformerActivity.this.finalizar();
+            }
+        });
+    }
+
+    private void setGroupId() {
+        mElementRepo.findElementOfTypeAndElementId(ElementType.CHECK, blockId).observe(this, elements -> {
+            if (elements.size()>0) {
+                mGroupId = elements.get(0).getGroupId();
             }
         });
     }

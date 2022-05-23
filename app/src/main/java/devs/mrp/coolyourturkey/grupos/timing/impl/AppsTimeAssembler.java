@@ -13,12 +13,12 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.grupos.timing.GroupTimeAssembler;
 
-public class GroupAppsTimeAssembler implements GroupTimeAssembler {
+public class AppsTimeAssembler implements GroupTimeAssembler {
 
     private LifecycleOwner owner;
     private TimeLoggerRepository timeLoggerRepository;
 
-    public GroupAppsTimeAssembler(LifecycleOwner owner, Application app) {
+    public AppsTimeAssembler(LifecycleOwner owner, Application app) {
         this.owner = owner;
         timeLoggerRepository = TimeLoggerRepository.getRepo(app);
     }
