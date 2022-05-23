@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.databaseroom;
 
 import android.app.Application;
+import android.content.Context;
+import android.os.Handler;
 
 import androidx.lifecycle.LifecycleOwner;
 
@@ -17,11 +19,13 @@ public class EntryCleanerImpl implements EntryCleaner {
     private TimeLoggerRepository loggerRepo;
     private ContadorRepository contadorRepo;
     private LifecycleOwner mOwner;
+    private Context mContext;
 
-    public EntryCleanerImpl(Application app, LifecycleOwner owner) {
+    public EntryCleanerImpl(Application app, LifecycleOwner owner, Context context) {
         mOwner = owner;
         loggerRepo = TimeLoggerRepository.getRepo(app);
         contadorRepo = ContadorRepository.getRepo(app);
+        mContext = context;
     }
 
     @Override
@@ -42,10 +46,14 @@ public class EntryCleanerImpl implements EntryCleaner {
 
     private void cleanContador(long olderThan) {
         // make sure that we have at least one entry that is not going to be deleted
-        contadorRepo.getUltimoContador().observe(mOwner, contadores -> {
-            if (contadores.size() > 0 && contadores.get(0).getDayOfEpoch()>olderThan) {
-                contadorRepo.clearOlderThan(olderThan);
-            }
+        Handler mainLooper = new Handler(mContext.getMainLooper());
+        mainLooper.post(() -> {
+            contadorRepo.getUltimoContador().observe(mOwner, contadores -> {
+                if (contadores.size() > 0) {
+                    long lastEpoch = contadores.get(0).getDayOfEpoch();
+                    contadorRepo.clearOlderThan(lastEpoch>olderThan ? olderThan : lastEpoch);
+                }
+            });
         });
     }
 }
