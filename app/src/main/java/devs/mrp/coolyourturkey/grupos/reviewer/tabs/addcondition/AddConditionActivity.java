@@ -1,11 +1,11 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
-import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
+import devs.mrp.coolyourturkey.comun.IntentAttacher;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
+import devs.mrp.coolyourturkey.comun.impl.IntentAttacherImpl;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -58,11 +58,11 @@ public class AddConditionActivity extends SingleFragmentActivity {
         Intent intent = getIntent();
         mGroupId = intent.getIntExtra(ConditionActionConstants.EXTRA_GROUP_ID, -1);
         mGroupName = intent.getStringExtra(ConditionActionConstants.EXTRA_GROUP_NAME);
-        if (!intent.hasExtra(ConditionActionConstants.EXTRA_BUNDLE_WITH_CONDITION)) {
+        IntentAttacher attacher = new IntentAttacherImpl(intent);
+        if (!attacher.isRead()) {
             return new AddConditionFragment(mGroupId, mGroupName);
         }
-        Bundle bundle = intent.getBundleExtra(ConditionActionConstants.EXTRA_BUNDLE_WITH_CONDITION);
-        GrupoCondition condition = (GrupoCondition) ((ObjectWrapperForBinder)bundle.getBinder(ConditionActionConstants.EXTRA_GROUP_CONDITION)).getData();
+        GrupoCondition condition = (GrupoCondition) attacher.read(ConditionActionConstants.EXTRA_GROUP_CONDITION, GrupoCondition.class, new GrupoCondition());
         return new AddConditionFragment(mGroupId, mGroupName, condition, true);
     }
 }

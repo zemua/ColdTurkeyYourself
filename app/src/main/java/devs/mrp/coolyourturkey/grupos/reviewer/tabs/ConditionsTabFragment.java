@@ -27,7 +27,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.IntentAttacher;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
+import devs.mrp.coolyourturkey.comun.impl.IntentAttacherImpl;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
@@ -110,9 +112,8 @@ public class ConditionsTabFragment extends Fragment {
 
     private void launchEditCondition(GrupoCondition condition) {
         Intent intent = getIntentForAddConditionActivity();
-        Bundle bundle = new Bundle();
-        bundle.putBinder(ConditionActionConstants.EXTRA_GROUP_CONDITION, new ObjectWrapperForBinder(condition));
-        intent.putExtra(ConditionActionConstants.EXTRA_BUNDLE_WITH_CONDITION, bundle);
+        IntentAttacher attacher = new IntentAttacherImpl(intent);
+        attacher.attach(ConditionActionConstants.EXTRA_GROUP_CONDITION, condition);
         startActivity(intent);
     }
 
