@@ -42,6 +42,11 @@ public class IntentAttacherImpl implements IntentAttacher {
         return isRead;
     }
 
+    @Override
+    public boolean contains(String name) {
+        return bundle.containsKey(name);
+    }
+
     private void setBundle(Intent intent) {
         if (!intent.hasExtra(bundleKey)) {
             intent.putExtra(bundleKey, bundle);
