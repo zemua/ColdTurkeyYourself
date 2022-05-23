@@ -23,7 +23,7 @@ import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
-import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionHelper;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionBuildHelper;
 
 public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
 
@@ -38,7 +38,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private List<Grupo> mGrupos;
     private GrupoCondition mGrupoCondition;
     private boolean mIsEdit = false;
-    private ConditionHelper mConditionHelper;
+    private ConditionBuildHelper mConditionHelper;
 
     private TextView mGroupNameTextView;
     private Spinner mTargetGroupSpinner;
@@ -72,7 +72,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         } else {
             mGrupos = new ArrayList<>();
         }
-        mConditionHelper = new ConditionHelper();
+        mConditionHelper = new ConditionBuildHelper();
     }
 
     @Override

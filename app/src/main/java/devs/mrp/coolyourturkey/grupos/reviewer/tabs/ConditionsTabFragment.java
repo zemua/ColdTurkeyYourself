@@ -91,7 +91,7 @@ public class ConditionsTabFragment extends Fragment {
         mConditionsAdapterHandler.addFeedbackListener((tipo, feedback, parameters) -> {
             switch (tipo) {
                 case AdapterHandler.FEEDBACK_ITEM_SELECTED:
-                    // TODO call to edit condition activity
+                    launchEditCondition(feedback);
                     break;
             }
         });
@@ -108,11 +108,24 @@ public class ConditionsTabFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    private void launchEditCondition(GrupoCondition condition) {
+        Intent intent = getIntentForAddConditionActivity();
+        Bundle bundle = new Bundle();
+        bundle.putBinder(ConditionActionConstants.EXTRA_GROUP_CONDITION, new ObjectWrapperForBinder(condition));
+        intent.putExtra(ConditionActionConstants.EXTRA_BUNDLE_WITH_CONDITION, bundle);
+        startActivity(intent);
+    }
+
     private void launchAddCondition() {
+        Intent intent = getIntentForAddConditionActivity();
+        startActivity(intent);
+    }
+
+    private Intent getIntentForAddConditionActivity() {
         Intent intent = new Intent(getActivity(), AddConditionActivity.class);
         intent.putExtra(ConditionActionConstants.EXTRA_GROUP_ID, mGroupId);
         intent.putExtra(ConditionActionConstants.EXTRA_GROUP_NAME, mGroupName);
-        startActivity(intent);
+        return intent;
     }
 
 }

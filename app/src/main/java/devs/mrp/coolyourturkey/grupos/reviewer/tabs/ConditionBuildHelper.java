@@ -10,7 +10,7 @@ import java.util.Objects;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 
-public class ConditionHelper {
+public class ConditionBuildHelper {
 
     private static final String TIME_REGEX = "[0-9]*";
     private static final String TIME_REGEX_NON_EMPTY = "[0-9]+";
