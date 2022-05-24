@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.grupos.timing.impl;
 
 import android.app.Application;
+import android.net.Uri;
 
 import androidx.lifecycle.LifecycleOwner;
 
@@ -18,8 +19,8 @@ public class ExternalTimeAssembler implements GroupTimeAssembler {
     private ElementToGroupRepository repo;
     private LifecycleOwner owner;
 
-    public ExternalTimeAssembler(Application app, LifecycleOwner owner, String uri) {
-        timer = new FileTimeGetterImpl(app, uri);
+    public ExternalTimeAssembler(Application app, LifecycleOwner owner) {
+        timer = new FileTimeGetterImpl(app);
         repo = ElementToGroupRepository.getRepo(app);
         this.owner = owner;
     }
@@ -32,7 +33,7 @@ public class ExternalTimeAssembler implements GroupTimeAssembler {
     @Override
     public void forGroupSinceDays(int groupId, int sinceDays, Consumer<Long> action) {
         repo.findElementsOfGroupAndType(groupId, ElementType.FILE).observe(owner, elements -> {
-            long result = elements.stream().mapToLong(e -> timer.fromFileLastDays(sinceDays)).sum();
+            long result = elements.stream().mapToLong(e -> timer.fromFileLastDays(sinceDays, Uri.parse(e.getName()))).sum();
             action.accept(result);
         });
     }

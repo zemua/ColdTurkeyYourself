@@ -29,6 +29,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.grupos.GroupType;
 
 public class ExternalTabFragment extends Fragment {
 

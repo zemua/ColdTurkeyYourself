@@ -12,22 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockViewModel;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.grupos.GroupType;
 
 public class ChecksTabFragment extends Fragment {
 

@@ -6,12 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionsTabFragment;
-import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
+import devs.mrp.coolyourturkey.grupos.GroupType;
 
 public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
 

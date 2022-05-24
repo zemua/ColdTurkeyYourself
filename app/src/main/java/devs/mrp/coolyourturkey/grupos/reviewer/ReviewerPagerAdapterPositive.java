@@ -12,7 +12,7 @@ import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AppsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ChecksTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionsTabFragment;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ExternalTabFragment;
-import devs.mrp.coolyourturkey.grupos.reviewer.tabs.GroupType;
+import devs.mrp.coolyourturkey.grupos.GroupType;
 
 public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
 
