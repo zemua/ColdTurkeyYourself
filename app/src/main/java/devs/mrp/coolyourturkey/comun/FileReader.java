@@ -77,7 +77,7 @@ public class FileReader {
         return s.matches("^\\d{4}\\-\\d{1,2}\\-\\d{1,2}\\-\\d+$");
     }
 
-    public static String readTextFromUri(Application app, Uri uri){
+    /*public static String readTextFromUri(Application app, Uri uri){
         String longString = "";
         try {
             if (ifHaveReadingRights(app, uri)) {
@@ -87,7 +87,7 @@ public class FileReader {
             e.printStackTrace();
         }
         return longString;
-    }
+    }*/
 
     public static Map<Long,DayConsumption> readPastDaysConsumption(Application app, Uri uri) {
         Map<Long,DayConsumption> map = new HashMap<>();
@@ -126,7 +126,7 @@ public class FileReader {
         return false;
     }
 
-    private static String extractTextFromUri(Application app, Uri uri) {
+    /*private static String extractTextFromUri(Application app, Uri uri) {
         StringBuilder stringBuilder = new StringBuilder();
         try (InputStream inputStream = app.getContentResolver().openInputStream(uri);
              BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
@@ -140,7 +140,7 @@ public class FileReader {
             e.printStackTrace();
         }
         return stringBuilder.toString();
-    }
+    }*/
 
     public static void createTextFile(Fragment fragment, int requestCode, String fileName) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -150,7 +150,7 @@ public class FileReader {
         fragment.startActivityForResult(intent, requestCode);
     }
 
-    public static Uri getFileWritePermissions(Context context, Intent resultData) {
+    /*public static Uri getFileWritePermissions(Context context, Intent resultData) {
         final int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         if (resultData != null) {
             Uri uri = resultData.getData();
@@ -161,7 +161,7 @@ public class FileReader {
             return uri;
         }
         return null;
-    }
+    }*/
 
     public static void writeTextToUri(Application app, Uri uri, String text) {
         try {
