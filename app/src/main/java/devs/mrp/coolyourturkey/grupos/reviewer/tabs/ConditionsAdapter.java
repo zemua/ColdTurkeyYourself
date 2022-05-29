@@ -142,7 +142,7 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
         mDataSet.stream().forEach(con -> {
             assembler.forGroupSinceDays(con.getConditionalgroupid(), con.getFromlastndays(), longResult -> {
                 spentOnTarget.put(con, longResult);
-                if (spentOnTarget.size() >= mDataSet.size()) {
+                if (spentOnTarget.size() == mDataSet.size()) {
                     notifyDataSetChanged();
                 }
             });
