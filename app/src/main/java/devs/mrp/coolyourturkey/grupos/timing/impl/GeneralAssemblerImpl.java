@@ -25,9 +25,9 @@ public class GeneralAssemblerImpl implements GroupGeneralAssembler {
     private Application app;
 
     public GeneralAssemblerImpl(GroupType type, LifecycleOwner owner, Application app) {
-        assemblers = buildAssemblers(type);
         this.owner = owner;
         this.app = app;
+        assemblers = buildAssemblers(type);
     }
 
     private List<GroupTimeAssembler> buildAssemblers(GroupType type) {
@@ -42,24 +42,26 @@ public class GeneralAssemblerImpl implements GroupGeneralAssembler {
     }
 
     @Override
-    public void forGroupToday(int groupId) {
-        // TODO
-        Set<String> counter = new HashSet<>();
-        AtomicLong result = new AtomicLong(0);
-        assemblers.stream().forEach(a -> {
-            BooleanWrap b = new BooleanWrap(false);
-            a.forGroupToday(groupId, l -> {
-
-            });
-        });
+    public void forGroupToday(int groupId, Consumer<Long> action) {
+        forGroupSinceDays(groupId, 0, action);
     }
 
     @Override
-    public void forGroupSinceDays(int groupId) {
-        // TODO
-    }
-
-    private void gatherAndTrigger(long sum, AtomicLong result, AtomicInteger counter) {
-
+    public void forGroupSinceDays(int groupId, int days, Consumer<Long> action) {
+        Set<String> counter = new HashSet<>();
+        AtomicLong result = new AtomicLong(0);
+        assemblers.stream().forEach(a -> {
+            String assemblerType = a.getClass().getSimpleName();
+            a.forGroupSinceDays(groupId, days, longValue -> {
+                if (counter.contains(assemblerType)){
+                    return;
+                }
+                counter.add(assemblerType);
+                Long longResult = result.addAndGet(longValue);
+                if (assemblers.size() >= counter.size()) {
+                    action.accept(longResult);
+                }
+            });
+        });
     }
 }

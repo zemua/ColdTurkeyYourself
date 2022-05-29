@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs;
 
+import android.app.Application;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,16 +8,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.grupos.GroupType;
+import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
+import devs.mrp.coolyourturkey.grupos.timing.impl.GeneralAssemblerImpl;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
@@ -25,15 +33,18 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
     public static final int FEEDBACK_CONDITION_SELECTED = 0;
 
     private List<GrupoCondition> mDataSet;
+    private Map<GrupoCondition, Long> spentOnTarget = new HashMap<>();
     private List<FeedbackListener<GrupoCondition>> listeners = new ArrayList<>();
 
     private Context mContext;
     private Map<Integer, Grupo> mGrupos;
+    private GroupGeneralAssembler assembler;
 
-    public ConditionsAdapter(Context context) {
+    public ConditionsAdapter(Context context, GroupType type, LifecycleOwner owner, Application app) {
         this.mContext = context;
         this.mDataSet = new ArrayList<>();
         this.mGrupos = new HashMap<>();
+        this.assembler = new GeneralAssemblerImpl(type, owner, app);
     }
 
     @NonNull
@@ -101,11 +112,11 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
         s.append(". ");
         s.append(mContext.getResources().getString(R.string.actualmente_ha_usado));
         s.append(" ");
-        s.append(11);//s.append(getLoggerMinutes(condition)/60); // TODO get total time spent on the group
+        s.append(MilisToTime.getHours(Optional.ofNullable(spentOnTarget.get(condition)).orElse(0L)));
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.h_de_horas));
         s.append(" ");
-        s.append(11);//s.append(getLoggerMinutes(condition)%60); // TODO get total time spent on the group
+        s.append(MilisToTime.getMinutes(Optional.ofNullable(spentOnTarget.get(condition)).orElse(0L)));
         s.append(" ");
         s.append(mContext.getResources().getString(R.string.m_de_minutos));
         return s.toString();
@@ -122,7 +133,15 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
 
     public void setDataset(List<GrupoCondition> dataSet) {
         mDataSet = dataSet;
-        notifyDataSetChanged();
+        spentOnTarget.clear();
+        mDataSet.stream().forEach(con -> {
+            assembler.forGroupSinceDays(con.getConditionalgroupid(), con.getFromlastndays(), longResult -> {
+                spentOnTarget.put(con, longResult);
+                if (spentOnTarget.size() >= mDataSet.size()) {
+                    notifyDataSetChanged();
+                }
+            });
+        });
     }
 
     public void setGrupos(Map<Integer, Grupo> grupos) {

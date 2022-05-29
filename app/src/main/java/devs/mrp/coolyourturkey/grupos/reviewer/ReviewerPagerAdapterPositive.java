@@ -38,7 +38,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 2:
                 return new ExternalTabFragment(GroupType.POSITIVE, mGroupId);
             case 3:
-                return new ConditionsTabFragment(mGroupId, mGroupName);
+                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.POSITIVE);
             default:
                 return new AppsTabFragment(GroupType.POSITIVE, mGroupId);
         }

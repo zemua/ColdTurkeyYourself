@@ -32,7 +32,7 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
             case 0:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
             case 1:
-                return new ConditionsTabFragment(mGroupId, mGroupName);
+                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.NEGATIVE);
             default:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
         }

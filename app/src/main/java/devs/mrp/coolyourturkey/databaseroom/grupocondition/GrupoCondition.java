@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity(tableName = "grupocondition")
 public class GrupoCondition {
 
@@ -81,4 +83,16 @@ public class GrupoCondition {
         return condition;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GrupoCondition that = (GrupoCondition) o;
+        return id.equals(that.id) && groupid.equals(that.groupid) && conditionalgroupid.equals(that.conditionalgroupid) && conditionalminutes.equals(that.conditionalminutes) && fromlastndays.equals(that.fromlastndays);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, groupid, conditionalgroupid, conditionalminutes, fromlastndays);
+    }
 }

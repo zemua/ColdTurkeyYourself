@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,9 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogg
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
@@ -62,7 +66,9 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private TimeLoggerRepository timeLoggerRepository;
     private TimeBlockLoggerRepository timeBlockLoggerRepository;
-    private AppToGroupRepository appToGroupRepository;
+    //private AppToGroupRepository appToGroupRepository;
+    private Map<String,ElementToGroup> elementsByPackageName;
+    private ElementToGroupRepository elementToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private GrupoExportRepository mGrupoExportRepository;
     private GrupoPositivoRepository mGrupoPositivoRepository;
@@ -79,7 +85,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<Integer, List<TimeBlockLogger>> mRandomCheckLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
-    private List<AppToGroup> mAppToGroups;
+    //private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
     private List<GrupoPositivo> mAllGruposPositivos;
@@ -114,7 +120,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         timeBlockLoggerRepository = TimeBlockLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
         mRandomCheckLoggersByConditionId = new HashMap<>();
-        appToGroupRepository = AppToGroupRepository.getRepo(application);
+        /*appToGroupRepository = AppToGroupRepository.getRepo(application);
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -123,6 +129,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     public void onChanged(List<AppToGroup> appToGroups) {
                         mAppToGroups = appToGroups;
                     }
+                });
+            }
+        });*/
+        elementToGroupRepository = ElementToGroupRepository.getRepo(application);
+        mMainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                elementToGroupRepository.findElementsOfType(ElementType.APP).observe(lifecycleOwner, elements -> {
+                    elementsByPackageName = elements.stream().collect(Collectors.toMap(e -> e.getName(), e->e));
                 });
             }
         });
@@ -252,7 +267,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     public boolean ifAllAppConditionsMet(String packageName) {
-        AppToGroup app = appsToGroupContainsPackageName(packageName);
+        ElementToGroup app = appsToGroupContainsPackageName(packageName);
         if (app != null){
             return ifAllGroupConditionsMet(app.getGroupId());
         } else {
@@ -271,27 +286,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
 
-    private AppToGroup appsToGroupContainsPackageName(String packageName){
-        IntegerWrap id = new IntegerWrap(-1);
-        StringBuilder name = new StringBuilder();
-        IntegerWrap groupId = new IntegerWrap(-1);
-        BooleanWrap containsKey = new BooleanWrap();
-        containsKey.set(false);
-        mAppToGroups.stream().forEach(k -> {
-            if(k.getAppName().equals(packageName)){
-                containsKey.set(true);
-                id.set(k.getId());
-                name.append(k.getAppName());
-                groupId.set(k.getGroupId());
-            }
-        });
-        if(containsKey.get()){
-            AppToGroup app = new AppToGroup(name.toString(), groupId.get());
-            app.setId(id.get());
-            return app;
-        } else {
-            return null;
-        }
+    private ElementToGroup appsToGroupContainsPackageName(String packageName){
+        return elementsByPackageName.containsKey(packageName) ? elementsByPackageName.get(packageName) : null;
     }
 
 
@@ -427,7 +423,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     private Integer getGroupIdFromPackageName(String name) {
-        AppToGroup app = appsToGroupContainsPackageName(name);
+        ElementToGroup app = appsToGroupContainsPackageName(name);
         if (app != null) {
             return app.getGroupId();
         } else {
@@ -818,14 +814,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
      */
 
     public boolean appIsGrouped(String packageName) {
-        BooleanWrap b = new BooleanWrap();
-        b.set(false);
-        mAppToGroups.stream().forEach(app -> {
-            if (app.getAppName().equals(packageName)) {
-                b.set(true);
-            }
-        });
-        return b.get();
+        return elementsByPackageName.containsKey(packageName);
     }
 
     private void observeTodayGroupTime(GrupoPositivo grupo) {
@@ -859,7 +848,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     public Long todayTimeOnAppGroup(String packageName) {
-        AppToGroup group = appsToGroupContainsPackageName(packageName);
+        ElementToGroup group = appsToGroupContainsPackageName(packageName);
         if (group.getId() != null) {
             return todayTimeOnPositiveGroup(group.getGroupId());
         } else {

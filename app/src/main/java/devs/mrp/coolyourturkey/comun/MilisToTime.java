@@ -100,7 +100,7 @@ public class MilisToTime {
     }
 
     public static long getHours(long millis) {
-        return millis/(1000*60/60);
+        return millis/(1000*60*60);
     }
 
     public static long getMinutes(long millis) {

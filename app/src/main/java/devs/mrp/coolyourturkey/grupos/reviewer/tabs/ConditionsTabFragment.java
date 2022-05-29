@@ -35,6 +35,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionViewModel;
+import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.ConditionActionConstants;
 
@@ -51,11 +52,13 @@ public class ConditionsTabFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Button mButton;
     private AdapterHandler<GrupoCondition> mConditionsAdapterHandler;
+    private GroupType type;
 
-    public ConditionsTabFragment(Integer groupId, String groupName) {
+    public ConditionsTabFragment(Integer groupId, String groupName, GroupType type) {
         super();
         this.mGroupId = groupId;
         this.mGroupName = groupName;
+        this.type = type;
     }
 
     @Nullable
@@ -72,7 +75,7 @@ public class ConditionsTabFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.recyclerView);
         mButton = v.findViewById(R.id.button);
 
-        mConditionsAdapterHandler = new ConditionsAdapterHandlerImpl(mContext);
+        mConditionsAdapterHandler = new ConditionsAdapterHandlerImpl(mContext, type, getViewLifecycleOwner(), getActivity().getApplication());
         ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
 
         grupoConditionViewModel = new ViewModelProvider(ConditionsTabFragment.this, viewModelFactory).get(GrupoConditionViewModel.class);
