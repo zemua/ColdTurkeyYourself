@@ -7,6 +7,8 @@ import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
@@ -255,12 +257,12 @@ public class WatchDogData {
         return this.mGenericTimedToaster;
     }
 
-    private NegativeConditionTimeChecker negativeConditionTimeChecker;
-    public WatchDogData setNegativeConditionTimeChecker(NegativeConditionTimeChecker checker) {
+    private ConditionCheckerCommander negativeConditionTimeChecker;
+    public WatchDogData setConditionTimeChecker(ConditionCheckerCommander checker) {
         this.negativeConditionTimeChecker = checker;
         return this;
     }
-    public NegativeConditionTimeChecker getNegativeConditionTimeChecker() {
+    public ConditionCheckerCommander getConditionTimeChecker() {
         return this.negativeConditionTimeChecker;
     }
 

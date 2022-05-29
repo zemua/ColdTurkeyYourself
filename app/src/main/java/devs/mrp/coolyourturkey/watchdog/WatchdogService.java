@@ -17,7 +17,6 @@ import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.comun.SingleExecutor;
-import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.EntryCleanerImpl;
@@ -26,11 +25,11 @@ import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.AbstractHandler;
-import devs.mrp.coolyourturkey.watchdog.actionchain.ActionRequestorInterface;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
@@ -41,8 +40,6 @@ import java.util.Map;
 import static java.lang.Thread.sleep;
 
 public class WatchdogService extends LifecycleService {
-
-    // TODO periodically do some cleanup of old registers of ContadorRepository
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
     private static final Object LOCK_0 = new Object();
@@ -82,7 +79,7 @@ public class WatchdogService extends LifecycleService {
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
-                .setNegativeConditionTimeChecker(new NegativeConditionTimeChecker(this, this.getApplication(), this))
+                .setConditionTimeChecker(new GeneralConditionChecker(this.getApplication(), this))
                 .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this));
 
         if (ejecutor == null) {
@@ -206,9 +203,9 @@ public class WatchdogService extends LifecycleService {
             sleep(data.getSleepTime());
 
             data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
-            data.getNegativeConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
-            data.getNegativeConditionTimeChecker().refreshTimeLoggedOnFiles(); // refresh time from external files
-            data.getNegativeConditionTimeChecker().refreshNotifications(); // send notification if proceeds
+            data.getConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
+            data.getConditionTimeChecker().refreshTimeLoggedOnFiles(); // refresh time from external files
+            data.getConditionTimeChecker().refreshNotifications(); // send notification if proceeds
             data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
@@ -270,7 +267,7 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
         // check if we need to block
-        if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !data.getNegativeConditionTimeChecker().ifAllConditionsMet())) ||
+        if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !data.getConditionTimeChecker().ifAllConditionsMet())) ||
                 (data.getEstaNotif() == ForegroundAppChecker.POSITIVO && data.getTimeLogHandler().ifLimitReachedAndShallBlock(data.getPackageName()))) {
             if (PermisosChecker.checkPermisoAlertas(this)) {
                 data.getScreenBlock().go();
