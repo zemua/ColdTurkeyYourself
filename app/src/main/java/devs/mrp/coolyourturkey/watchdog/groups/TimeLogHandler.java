@@ -18,19 +18,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.comun.FileReader;
-import devs.mrp.coolyourturkey.comun.IntegerWrap;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
@@ -38,9 +34,9 @@ import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.Cond
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
@@ -66,7 +62,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private TimeLoggerRepository timeLoggerRepository;
     private TimeBlockLoggerRepository timeBlockLoggerRepository;
-    //private AppToGroupRepository appToGroupRepository;
     private Map<String,ElementToGroup> elementsByPackageName;
     private ElementToGroupRepository elementToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
@@ -85,7 +80,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<Integer, List<TimeBlockLogger>> mRandomCheckLoggersByConditionId;
     private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
-    //private List<AppToGroup> mAppToGroups;
     private List<ConditionToGroup> mAllConditionsToGroup;
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
     private List<GrupoPositivo> mAllGruposPositivos;
@@ -120,18 +114,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         timeBlockLoggerRepository = TimeBlockLoggerRepository.getRepo(application);
         mTimeLoggersByConditionId = new HashMap<>();
         mRandomCheckLoggersByConditionId = new HashMap<>();
-        /*appToGroupRepository = AppToGroupRepository.getRepo(application);
-        mMainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                appToGroupRepository.findAllAppToGroup().observe(lifecycleOwner, new Observer<List<AppToGroup>>() {
-                    @Override
-                    public void onChanged(List<AppToGroup> appToGroups) {
-                        mAppToGroups = appToGroups;
-                    }
-                });
-            }
-        });*/
         elementToGroupRepository = ElementToGroupRepository.getRepo(application);
         mMainHandler.post(new Runnable() {
             @Override
