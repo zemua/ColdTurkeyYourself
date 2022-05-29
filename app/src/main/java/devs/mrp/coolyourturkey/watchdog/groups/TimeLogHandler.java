@@ -24,8 +24,10 @@ import java.util.stream.Collectors;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
 import devs.mrp.coolyourturkey.comun.FileReader;
+import devs.mrp.coolyourturkey.comun.FileTimeGetter;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
@@ -79,7 +81,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<Integer, List<TimeBlockLogger>> mRandomCheckLoggersByConditionId;
-    private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
+    //private Map<String, TimeSummary> mFileTimeSummaryMap = new HashMap<>();
+    private FileTimeGetter fileTimeGetter;
     private List<ConditionToGroup> mAllConditionsToGroup;
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
     private List<GrupoPositivo> mAllGruposPositivos;
@@ -104,6 +107,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mNotificador = new Notificador(application, context);
         mMisPreferencias = new MisPreferencias(context);
         mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
+        fileTimeGetter = new FileTimeGetterImpl(application);
 
         mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
         mMapOfTimeBlockLoggerLiveDataObserversByConditionId = new HashMap<>();
@@ -191,7 +195,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
      */
     public void watchDog() {
         refreshDayCounting();
-        refreshTimeLoggedOnFiles();
         refreshTimeExportedToFiles();
         refreshNotifications();
     }
@@ -488,7 +491,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                             e.printStackTrace();
                                         }
                                     } else if (c.getType().equals(ConditionToGroup.ConditionType.FILE)) {
-                                        observeTimeLoggedOnFile(c);
+                                        giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
                                     }
                                 });
                             }
@@ -543,12 +546,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
         } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
             time = mRandomCheckLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getTimecounted()));
-        } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE) && mFileTimeSummaryMap.containsKey(ts.getKey())) {
-            time = mFileTimeSummaryMap.entrySet().stream()
-                    .map(Map.Entry::getValue)
-                    .filter(e -> e.getDays() <= cond.getFromlastndays())
-                    .map(TimeSummary::getSummedTime)
-                    .collect(Collectors.summingLong(Long::longValue));
+        } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+            time = fileTimeGetter.fromFileLastDays(cond.getFromlastndays(), Uri.parse(cond.getFiletarget()));
         } else {
             time = 0L;
             Log.d(TAG, "entry for condition not found for " + cond.getType() + " checkid: " + cond.getConditionalrandomcheckid() + " groupid: " + cond.getConditionalgroupid());
@@ -630,54 +629,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMapOfTimeBlockLoggerLiveDataObserversByConditionId.put(timeLoggedLD, observer);
         timeLoggedLD.observe(mLifecycleOwner, observer);
     }
-
-
-
-
-    /**
-     *
-     * From here the data to be read from files
-     * is to be handled
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
-
-    private void observeTimeLoggedOnFile(ConditionToGroup condition){
-        ConditionChecker checker = ConditionCheckerFactory.getChecker();
-        Map<Long,FileReader.DayConsumption> dayConsumptionMap = checker.getConsumptionByDay(mApplication, condition.getFiletarget());
-        dayConsumptionMap.entrySet()
-                .stream().forEach(entry -> {
-                    int groupId = condition.getGroupid();
-                    int conditionalGroupId = condition.getConditionalgroupid();
-                    int days = entry.getKey().intValue();
-                    long consumption = entry.getValue().getConsumption();
-                    TimeSummary ts = new TimeSummary(groupId, conditionalGroupId, days, consumption);
-                    mFileTimeSummaryMap.put(ts.getKey(), ts);
-        });
-        giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
-    }
-
-    private void refreshTimeLoggedOnFiles() {
-        if (mLastFilesChecked == null) {
-            mLastFilesChecked = 0L;
-        }
-        Long now = System.currentTimeMillis();
-        if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && mAllConditionsToGroup != null) {
-            mLastFilesChecked = now;
-            mAllConditionsToGroup.stream().forEach(c -> {
-                if (c.getType() == ConditionToGroup.ConditionType.FILE){
-                    observeTimeLoggedOnFile(c);
-                }
-            });
-        }
-    }
-
-
 
     /**
      * Of exporter for sync

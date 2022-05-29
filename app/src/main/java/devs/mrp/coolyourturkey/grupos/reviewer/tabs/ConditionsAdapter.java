@@ -23,6 +23,8 @@ import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.GroupType;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
 import devs.mrp.coolyourturkey.grupos.timing.impl.GeneralAssemblerImpl;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -39,12 +41,14 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
     private Context mContext;
     private Map<Integer, Grupo> mGrupos;
     private GroupGeneralAssembler assembler;
+    private ConditionCheckerCommander checker;
 
     public ConditionsAdapter(Context context, GroupType type, LifecycleOwner owner, Application app) {
         this.mContext = context;
         this.mDataSet = new ArrayList<>();
         this.mGrupos = new HashMap<>();
         this.assembler = new GeneralAssemblerImpl(type, owner, app);
+        this.checker = new GeneralConditionChecker(app, owner);
     }
 
     @NonNull
@@ -123,12 +127,13 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
     }
 
     private void setBackgroundOnConditionMet(ConditionViewHolder holder, GrupoCondition condition) {
-        //if (mTimeLogHandler.ifConditionMet(condition)) {
-        if (true) { // TODO check if conditions met for these groups
-            holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
-        } else {
-            holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
-        }
+        checker.onConditionMet(condition, isMet -> {
+            if (isMet) {
+                holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
+            } else {
+                holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
+            }
+        });
     }
 
     public void setDataset(List<GrupoCondition> dataSet) {
