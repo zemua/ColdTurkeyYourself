@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
@@ -26,23 +27,23 @@ public class ChangeNotifier implements ChangeChecker {
 
     private TimeBounded timer;
     private ConditionCheckerCommander checker;
-    private boolean previous = false;
     private Application app;
     private LifecycleOwner owner;
     private GrupoConditionRepository conditionRepository;
     private GrupoRepository grupoRepo;
     private MisPreferencias preferencias;
     private Notificador notificador;
+    private static Map<Integer,Boolean> beforeMap = new HashMap<>();
 
-    public ChangeNotifier(Application app, LifecycleOwner owner) {
-        this.app = app;
+    ChangeNotifier(Application app, LifecycleOwner owner, ConditionCheckerCommander checker, GrupoConditionRepository conditionRepository, GrupoRepository grupoRepository, TimeBounded timeBounded, MisPreferencias prefs, Notificador notificador) {
         this.owner = owner;
-        this.checker = new GeneralConditionChecker(app, owner);
-        this.conditionRepository = GrupoConditionRepository.getRepo(app);
-        this.grupoRepo = GrupoRepository.getRepo(app);
-        timer = new TimeBoundedImpl();
-        this.preferencias = new MisPreferencias(app);
-        this.notificador = new Notificador(app, app);
+        this.app = app;
+        this.checker = checker;
+        this.conditionRepository = conditionRepository;
+        this.grupoRepo = grupoRepository;
+        this.timer = timeBounded;
+        this.preferencias = prefs;
+        this.notificador = notificador;
     }
 
     @Override
@@ -51,20 +52,20 @@ public class ChangeNotifier implements ChangeChecker {
             return;
         }
         grupoRepo.findGrupoById(groupId).observe(owner, grupos -> {
-            conditionRepository.findConditionsByGroupId(groupId).observe(owner, conditions -> onConditionsMet(conditions, grupos.get(0).getNombre(), grupos.get(0).getType()));
+            conditionRepository.findConditionsByGroupId(groupId).observe(owner, conditions -> onConditionsMet(conditions, grupos.get(0).getId(), grupos.get(0).getNombre(), grupos.get(0).getType()));
         });
     }
 
-    private void onConditionsMet(List<GrupoCondition> conditions, String groupName, GrupoType type) {
+    private void onConditionsMet(List<GrupoCondition> conditions, int groupId, String groupName, GrupoType type) {
         Map<Integer,Boolean> meetMap = new HashMap<>();
         conditions.forEach(c -> checker.onConditionMet(c, booleanResult -> {
             meetMap.put(c.getId(), booleanResult);
             if (meetMap.size() == conditions.size()) {
                 boolean result = meetMap.values().stream().filter(b -> b.equals(false)).findAny().orElse(true);
-                if (!previous && result) {
-
+                if (!Optional.ofNullable(beforeMap.get(groupId)).orElse(false) && result) {
+                    notifyConditionsChanged(groupName, type);
                 }
-                previous = result;
+                beforeMap.put(groupId, result);
             }
         }));
     }
