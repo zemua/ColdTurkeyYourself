@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LifecycleOwner;
 
@@ -23,6 +25,7 @@ public class ChangeCheckerFactory {
         TimeBounded timeBounded = new TimeBoundedImpl();
         MisPreferencias prefs = new MisPreferencias(app);
         Notificador notificador = new Notificador(app, app);
-        return new ChangeNotifier(app, owner, checker, conditionRepository, grupoRepository, timeBounded, prefs, notificador);
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        return new ChangeNotifier(app, owner, checker, conditionRepository, grupoRepository, timeBounded, prefs, notificador, mainHandler);
     }
 }

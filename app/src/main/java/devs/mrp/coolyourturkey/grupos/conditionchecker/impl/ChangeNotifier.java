@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LifecycleOwner;
 
@@ -34,8 +36,9 @@ public class ChangeNotifier implements ChangeChecker {
     private MisPreferencias preferencias;
     private Notificador notificador;
     private static Map<Integer,Boolean> beforeMap = new HashMap<>();
+    private Handler mainHandler;
 
-    ChangeNotifier(Application app, LifecycleOwner owner, ConditionCheckerCommander checker, GrupoConditionRepository conditionRepository, GrupoRepository grupoRepository, TimeBounded timeBounded, MisPreferencias prefs, Notificador notificador) {
+    ChangeNotifier(Application app, LifecycleOwner owner, ConditionCheckerCommander checker, GrupoConditionRepository conditionRepository, GrupoRepository grupoRepository, TimeBounded timeBounded, MisPreferencias prefs, Notificador notificador, Handler mainHandler) {
         this.owner = owner;
         this.app = app;
         this.checker = checker;
@@ -44,6 +47,7 @@ public class ChangeNotifier implements ChangeChecker {
         this.timer = timeBounded;
         this.preferencias = prefs;
         this.notificador = notificador;
+        this.mainHandler = mainHandler;
     }
 
     @Override
@@ -51,9 +55,11 @@ public class ChangeNotifier implements ChangeChecker {
         if (!timer.isTimeExpired()) {
             return;
         }
-        grupoRepo.findAllGrupos().observe(owner, grupos -> {
-            grupos.stream().forEach(grupo ->{
-                conditionRepository.findConditionsByGroupId(grupo.getId()).observe(owner, conditions -> onConditionsMet(conditions, grupo.getId(), grupo.getNombre(), grupo.getType()));
+        mainHandler.post(() -> {
+            grupoRepo.findAllGrupos().observe(owner, grupos -> {
+                grupos.stream().forEach(grupo ->{
+                    conditionRepository.findConditionsByGroupId(grupo.getId()).observe(owner, conditions -> onConditionsMet(conditions, grupo.getId(), grupo.getNombre(), grupo.getType()));
+                });
             });
         });
     }
