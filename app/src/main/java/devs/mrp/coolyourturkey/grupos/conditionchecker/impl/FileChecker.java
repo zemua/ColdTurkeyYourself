@@ -4,11 +4,14 @@ import android.app.Application;
 import android.net.Uri;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.FileTimeGetter;
 import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
+import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
@@ -28,10 +31,11 @@ public class FileChecker implements ConditionChecker {
 
     @Override
     public void onTimeCounted(GrupoCondition condition, Consumer<Long> action) {
-        elementToGroupRepository.findElementsOfGroupAndType(condition.getConditionalgroupid(), ElementType.FILE)
-                .observe(owner, elements -> {
-                    long result = elements.stream().mapToLong(e -> fileTimeGetter.fromFileLastDays(condition.getFromlastndays(), Uri.parse(e.getName()))).sum();
-                    action.accept(result);
-                });
+        LiveData<List<ElementToGroup>> els = elementToGroupRepository.findElementsOfGroupAndType(condition.getConditionalgroupid(), ElementType.FILE);
+        els.observe(owner, elements -> {
+            els.removeObservers(owner);
+            long result = elements.stream().mapToLong(e -> fileTimeGetter.fromFileLastDays(condition.getFromlastndays(), Uri.parse(e.getName()))).sum();
+            action.accept(result);
+        });
     }
 }

@@ -30,7 +30,9 @@ public class AppsTimeAssembler implements GroupTimeAssembler {
 
     @Override
     public void forGroupSinceDays(int groupId, int sinceDays, Consumer<Long> action) {
-        getEntries(sinceDays, groupId).observe(owner, loggers -> {
+        LiveData<List<TimeLogger>> entries = getEntries(sinceDays, groupId);
+        entries.observe(owner, loggers -> {
+            entries.removeObservers(owner);
             long result = loggers.stream().mapToLong(TimeLogger::getUsedtimemilis).sum();
             action.accept(result);
         });

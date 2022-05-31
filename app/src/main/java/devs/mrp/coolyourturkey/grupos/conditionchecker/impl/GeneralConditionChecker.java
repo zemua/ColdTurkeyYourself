@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 import android.app.Application;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -67,7 +68,8 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
 
     @Override
     public void onAllConditionsMet(int groupId, Consumer<Boolean> action) {
-        conditionRepository.findConditionsByGroupId(groupId).observe(owner, conditions -> {
+        LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(groupId);
+        cons.observe(owner, conditions -> {
             Set<Integer> recorded = new HashSet<>();
             AtomicBoolean result = new AtomicBoolean(true);
             conditions.forEach(condition -> onConditionMet(condition, bool -> {
@@ -78,6 +80,7 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
                     result.set(false);
                 }
                 if (recorded.size() == conditions.size()) {
+                    cons.removeObservers(owner);
                     action.accept(result.get());
                 }
             }));

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.comun.TimeBounded;
 import devs.mrp.coolyourturkey.comun.impl.TimeBoundedImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
@@ -56,9 +58,15 @@ public class ChangeNotifier implements ChangeChecker {
             return;
         }
         mainHandler.post(() -> {
-            grupoRepo.findAllGrupos().observe(owner, grupos -> {
+            LiveData<List<Grupo>> gs= grupoRepo.findAllGrupos();
+            gs.observe(owner, grupos -> {
+                gs.removeObservers(owner);
                 grupos.stream().forEach(grupo ->{
-                    conditionRepository.findConditionsByGroupId(grupo.getId()).observe(owner, conditions -> onConditionsMet(conditions, grupo.getId(), grupo.getNombre(), grupo.getType()));
+                    LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(grupo.getId());
+                    cons.observe(owner, conditions -> {
+                        cons.removeObservers(owner);
+                        onConditionsMet(conditions, grupo.getId(), grupo.getNombre(), grupo.getType());
+                    });
                 });
             });
         });
