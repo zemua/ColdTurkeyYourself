@@ -17,7 +17,7 @@ public class ChangeCheckerFactory {
     public static ChangeChecker getChangeNotifier(Application app, LifecycleOwner owner) {
         Application application = app;
         LifecycleOwner lifecycleOwner = owner;
-        ConditionCheckerCommander checker = new GeneralConditionChecker(app, owner);
+        ConditionCheckerCommander checker = ConditionCheckerFactory.getConditionChecker(app, owner);
         GrupoConditionRepository conditionRepository = GrupoConditionRepository.getRepo(app);
         GrupoRepository grupoRepository = GrupoRepository.getRepo(app);
         TimeBounded timeBounded = new TimeBoundedImpl();

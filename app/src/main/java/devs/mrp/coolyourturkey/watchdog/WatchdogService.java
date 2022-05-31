@@ -25,7 +25,10 @@ import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ChangeCheckerFactory;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
+import devs.mrp.coolyourturkey.grupos.packagemapper.impl.PackageConditionsCheckerFactory;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
@@ -79,8 +82,10 @@ public class WatchdogService extends LifecycleService {
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
-                .setConditionTimeChecker(new GeneralConditionChecker(this.getApplication(), this))
-                .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this));
+                .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this))
+                .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
+                .setConditionChecker(ConditionCheckerFactory.getConditionChecker(this.getApplication(), this))
+                .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this));
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -203,9 +208,7 @@ public class WatchdogService extends LifecycleService {
             sleep(data.getSleepTime());
 
             data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
-            data.getConditionTimeChecker().refreshDayCounting(); // refresh time observers if day has changed
-            data.getConditionTimeChecker().refreshTimeLoggedOnFiles(); // refresh time from external files
-            data.getConditionTimeChecker().refreshNotifications(); // send notification if proceeds
+            data.getChangeNotificationChecker().onChangedToMet(); // send notification if some groups changes to meet conditions
             data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
@@ -267,14 +270,16 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
         // check if we need to block
-        if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !data.getConditionTimeChecker().ifAllConditionsMet())) ||
-                (data.getEstaNotif() == ForegroundAppChecker.POSITIVO && data.getTimeLogHandler().ifLimitReachedAndShallBlock(data.getPackageName()))) {
-            if (PermisosChecker.checkPermisoAlertas(this)) {
-                data.getScreenBlock().go();
+        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
+            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !areMet)) ||
+                    (data.getEstaNotif() == ForegroundAppChecker.POSITIVO && data.getTimeLogHandler().ifLimitReachedAndShallBlock(data.getPackageName()))) {
+                if (PermisosChecker.checkPermisoAlertas(this)) {
+                    data.getScreenBlock().go();
+                }
+            } else { // or else unblock if it is blocked
+                data.getScreenBlock().desbloquear();
             }
-        } else { // or else unblock if it is blocked
-            data.getScreenBlock().desbloquear();
-        }
+        });
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
         // decrease points for not going to sleep
         if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {

@@ -47,12 +47,14 @@ public class ChangeNotifier implements ChangeChecker {
     }
 
     @Override
-    public void onChangedToMet(int groupId) {
+    public void onChangedToMet() {
         if (!timer.isTimeExpired()) {
             return;
         }
-        grupoRepo.findGrupoById(groupId).observe(owner, grupos -> {
-            conditionRepository.findConditionsByGroupId(groupId).observe(owner, conditions -> onConditionsMet(conditions, grupos.get(0).getId(), grupos.get(0).getNombre(), grupos.get(0).getType()));
+        grupoRepo.findAllGrupos().observe(owner, grupos -> {
+            grupos.stream().forEach(grupo ->{
+                conditionRepository.findConditionsByGroupId(grupo.getId()).observe(owner, conditions -> onConditionsMet(conditions, grupo.getId(), grupo.getNombre(), grupo.getType()));
+            });
         });
     }
 

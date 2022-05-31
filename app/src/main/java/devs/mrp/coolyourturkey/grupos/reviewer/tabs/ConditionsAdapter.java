@@ -24,6 +24,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
 import devs.mrp.coolyourturkey.grupos.timing.impl.GeneralAssemblerImpl;
@@ -48,7 +49,7 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
         this.mDataSet = new ArrayList<>();
         this.mGrupos = new HashMap<>();
         this.assembler = new GeneralAssemblerImpl(type, owner, app);
-        this.checker = new GeneralConditionChecker(app, owner);
+        this.checker = ConditionCheckerFactory.getConditionChecker(app, owner);
     }
 
     @NonNull
