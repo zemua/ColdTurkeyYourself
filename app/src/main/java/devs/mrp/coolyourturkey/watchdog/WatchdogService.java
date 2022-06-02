@@ -207,7 +207,7 @@ public class WatchdogService extends LifecycleService {
         try {
             sleep(data.getSleepTime());
 
-            data.getTimeLogHandler().watchDog(); // perform periodic stuff in the handler
+            data.getTimeLogHandler().watchDog();
             data.getChangeNotificationChecker().onChangedToMet(); // send notification if some groups changes to meet conditions
             data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();

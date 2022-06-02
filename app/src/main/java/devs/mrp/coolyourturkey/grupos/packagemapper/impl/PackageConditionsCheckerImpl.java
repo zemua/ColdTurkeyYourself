@@ -21,9 +21,10 @@ public class PackageConditionsCheckerImpl implements PackageConditionsChecker {
         mapper.groupIdFromPackageName(packageName, groupId -> {
             if (groupId > 0) {
                 checker.onAllConditionsMet(groupId, isMet -> action.accept(isMet));
+            } else {
+                // if no assigned to group, then no conditions
+                action.accept(true);
             }
-            // if no assigned to group, then no conditions
-            action.accept(true);
         });
     }
 
