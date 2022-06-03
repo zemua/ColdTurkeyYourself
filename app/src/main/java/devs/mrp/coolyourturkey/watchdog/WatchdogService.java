@@ -270,7 +270,7 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
         // check if we need to block
-        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> { // TODO fix areMet always true
+        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !areMet)) ||
                     (data.getEstaNotif() == ForegroundAppChecker.POSITIVO && data.getTimeLogHandler().ifLimitReachedAndShallBlock(data.getPackageName()))) {
                 if (PermisosChecker.checkPermisoAlertas(this)) {

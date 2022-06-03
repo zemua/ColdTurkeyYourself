@@ -70,6 +70,9 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
     public void onAllConditionsMet(int groupId, Consumer<Boolean> action) {
         LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(groupId);
         cons.observe(owner, conditions -> {
+            if (conditions.size() == 0) {
+                action.accept(true); // no conditions for group, so true, all met
+            }
             Set<Integer> recorded = new HashSet<>();
             AtomicBoolean result = new AtomicBoolean(true);
             conditions.forEach(condition -> onConditionMet(condition, bool -> {
