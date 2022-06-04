@@ -71,6 +71,7 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
         LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(groupId);
         cons.observe(owner, conditions -> {
             if (conditions.size() == 0) {
+                cons.removeObservers(owner);
                 action.accept(true); // no conditions for group, so true, all met
             }
             Set<Integer> recorded = new HashSet<>();
@@ -82,7 +83,7 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
                 if (!bool) {
                     result.set(false);
                 }
-                if (recorded.size() == conditions.size()) {
+                if (recorded.size() >= conditions.size() || !result.get()) {
                     cons.removeObservers(owner);
                     action.accept(result.get());
                 }
