@@ -80,7 +80,7 @@ public class ExternalTabFragment extends Fragment {
             spinner.setVisibility(View.GONE);
             mExistingElements = elements;
             mExternalAdapter.updateDataSet(elements.stream().map(ElementToGroup::getName).collect(Collectors.toList()));
-            mExternalAdapter.loopedGroupDbLoad(elements);
+            mExternalAdapter.firstGroupDbLoad(elements);
         });
 
         mRecyclerView.setAdapter(mExternalAdapter);

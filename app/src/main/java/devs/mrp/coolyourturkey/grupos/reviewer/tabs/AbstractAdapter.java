@@ -42,12 +42,13 @@ public abstract class AbstractAdapter<VH extends RecyclerView.ViewHolder, ID, DA
         mSettedElements = checksToGroup;
         mapSettedElements = mapSettedElements(mSettedElements);
         loaded = true;
-        this.notifyDataSetChanged();
     }
 
     public void firstGroupDbLoad(List<ElementToGroup> checksToGroup) {
-        if (!loaded) {
-            loopedGroupDbLoad(checksToGroup);
+        boolean preloaded = this.loaded;
+        loopedGroupDbLoad(checksToGroup);
+        if (!preloaded) {
+            this.notifyDataSetChanged();
         }
     }
 

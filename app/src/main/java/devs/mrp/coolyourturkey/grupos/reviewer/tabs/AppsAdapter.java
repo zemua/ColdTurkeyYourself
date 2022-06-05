@@ -76,9 +76,9 @@ public class AppsAdapter extends AbstractSwitchesAdapter<AppsAdapter.AppsViewHol
     }
 
     @Override
-    protected Map<String, ElementToGroup> mapSettedElements(List<ElementToGroup> checksToGroup) {
+    protected Map<String, ElementToGroup> mapSettedElements(List<ElementToGroup> appsToGroup) {
         Map<String, ElementToGroup> map = new HashMap<>(); // avoid problems with repeated keys
-        checksToGroup.stream().forEach(element -> map.put(element.getName(), element));
+        appsToGroup.stream().forEach(element -> map.put(element.getName(), element));
         return map;
     }
 

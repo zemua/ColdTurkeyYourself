@@ -123,7 +123,9 @@ public class TimeLogHandler implements Feedbacker<Object> {
             @Override
             public void run() {
                 elementToGroupRepository.findElementsOfType(ElementType.APP).observe(lifecycleOwner, elements -> {
-                    elementsByPackageName = elements.stream().collect(Collectors.toMap(e -> e.getName(), e->e));
+                    Map<String,ElementToGroup> elementsMap = new HashMap<>();
+                    elements.stream().forEach(e -> elementsMap.put(e.getName(), e));
+                    elementsByPackageName = elementsMap;
                 });
             }
         });
