@@ -37,6 +37,7 @@ import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
 import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
@@ -68,16 +69,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private ElementToGroupRepository elementToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private GrupoExportRepository mGrupoExportRepository;
-    private GrupoPositivoRepository mGrupoPositivoRepository;
+    private GrupoRepository mGrupoRepository;
 
-    private LiveData<List<ConditionToGroup>> mConditionsLiveData; // to remove and re-add observer only
-    private Observer<List<ConditionToGroup>> mConditionsLiveDataObserver; // to be cleared from livedata only
-    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
-    private Map<LiveData<List<TimeBlockLogger>>, Observer<List<TimeBlockLogger>>> mMapOfTimeBlockLoggerLiveDataObserversByConditionId; // to clear observers from livedata only
-    private LiveData<List<GrupoExport>> mGrupoExportLiveData; // to clear observer from exports
-    private Observer<List<GrupoExport>> mGrupoExportObserver; // to clear observer from exports
-    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mMapOfLoggerLiveDataObserversByGroupId; // to clear observers from livedata only
-    private Map<LiveData<List<TimeLogger>>, Observer<List<TimeLogger>>> mTodayTimeByGroupObservers;
+    private LiveData<List<ConditionToGroup>> mConditionsLiveData;
+    private LiveData<List<GrupoExport>> mGrupoExportLiveData;
+    private List<LiveData<?>> observableGroups;
+    private List<LiveData<?>> observableLoggersByGroupId;
+    private List<LiveData<?>> observableByGroupCondition;
+    private List<LiveData<?>> observableByRandomCheckCondition;
+    private List<LiveData<?>> observableConditions;
 
     private Map<Integer, List<TimeLogger>> mTimeLoggersByConditionId;
     private Map<Integer, List<TimeBlockLogger>> mRandomCheckLoggersByConditionId;
@@ -85,7 +85,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private FileTimeGetter fileTimeGetter;
     private List<ConditionToGroup> mAllConditionsToGroup;
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
-    private List<GrupoPositivo> mAllGruposPositivos;
+    private List<Grupo> mAllGrupos;
     private Map<Integer, List<TimeLogger>> mTodayTimeByGroupMap;
 
     private List<GrupoExport> mGrupoExportList;
@@ -103,16 +103,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mApplication = application;
         mContext = context;
         mLifecycleOwner = lifecycleOwner;
+        observableGroups = new ArrayList<>();
+        observableLoggersByGroupId = new ArrayList<>();
+        observableByGroupCondition = new ArrayList<>();
+        observableByRandomCheckCondition = new ArrayList<>();
         mMainHandler = new Handler(mContext.getMainLooper());
         mNotificador = new Notificador(application, context);
         mMisPreferencias = new MisPreferencias(context);
         mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
         fileTimeGetter = new FileTimeGetterImpl(application);
 
-        mMapOfLoggerLiveDataObserversByConditionId = new HashMap<>();
-        mMapOfTimeBlockLoggerLiveDataObserversByConditionId = new HashMap<>();
         mTodayTimeByGroupMap = new HashMap<>();
-        mTodayTimeByGroupObservers = new HashMap<>();
 
         timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         timeBlockLoggerRepository = TimeBlockLoggerRepository.getRepo(application);
@@ -130,18 +131,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
             }
         });
 
-        mMapOfLoggerLiveDataObserversByGroupId = new HashMap<>();
         mTimeLoggersByGroupId = new HashMap<>();
         mGrupoExportRepository = GrupoExportRepository.getRepo(mApplication);
         mGrupoExportLiveData = mGrupoExportRepository.findAllGrupoExport();
         setExportObservers();
 
         mAllGruposPositivosIfConditionsMet = new HashMap<>();
-        mGrupoPositivoRepository = GrupoPositivoRepository.getRepo(mApplication);
-        mGrupoPositivoRepository.findAllGrupoPositivo().observe(mLifecycleOwner, new Observer<List<GrupoPositivo>>() {
+        mGrupoRepository = GrupoRepository.getRepo(mApplication);
+        mGrupoRepository.findGruposPositivos().observe(mLifecycleOwner, new Observer<List<Grupo>>() {
             @Override
-            public void onChanged(List<GrupoPositivo> grupoPositivos) {
-                mAllGruposPositivos = grupoPositivos;
+            public void onChanged(List<Grupo> grupoPositivos) {
+                mAllGrupos = grupoPositivos;
                 grupoPositivos.stream().forEach(grupo -> {
                     if (!mAllGruposPositivosIfConditionsMet.containsKey(grupo.getId())) {
                         mAllGruposPositivosIfConditionsMet.put(grupo.getId(), false);
@@ -166,10 +166,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mGrupoExportObserver != null && mGrupoExportLiveData != null) {
-                    mGrupoExportLiveData.removeObserver(mGrupoExportObserver);
+                if (mGrupoExportLiveData != null) {
+                    mGrupoExportLiveData.removeObservers(mLifecycleOwner);
                 }
-                mGrupoExportObserver = new Observer<List<GrupoExport>>() {
+                Observer<List<GrupoExport>> exportObserver = new Observer<List<GrupoExport>>() {
                     @Override
                     public void onChanged(List<GrupoExport> grupoExports) {
                         try { clearExportObservers(); } catch (Exception e) { e.printStackTrace(); }
@@ -182,12 +182,12 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                 }
                             };
                             LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(export.getDays().longValue()), export.getGroupId());
-                            mMapOfLoggerLiveDataObserversByGroupId.put(liveData, observer);
+                            observableLoggersByGroupId.add(liveData);
                             liveData.observe(mLifecycleOwner, observer);
                         });
                     }
                 };
-                mGrupoExportLiveData.observe(mLifecycleOwner, mGrupoExportObserver);
+                mGrupoExportLiveData.observe(mLifecycleOwner, exportObserver);
             }
         });
     }
@@ -421,7 +421,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     public GrupoPositivo getGrupoPositivoFromPackageName(String name) {
         Integer groupId = getGroupIdFromPackageName(name);
         GrupoPositivo grupo = new GrupoPositivo("");
-        mAllGruposPositivos.stream().forEach(g -> {
+        mAllGrupos.stream().forEach(g -> {
             if (g.getId() == groupId){
                 grupo.setId(g.getId());
                 grupo.setNombre(g.getNombre());
@@ -467,7 +467,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mConditionsLiveDataObserver = new Observer<List<ConditionToGroup>>() {
+                Observer<List<ConditionToGroup>> conditionsObserver = new Observer<List<ConditionToGroup>>() {
                     @Override
                     public void onChanged(List<ConditionToGroup> conditionToGroups) {
                         mAllConditionsToGroup = conditionToGroups;
@@ -500,7 +500,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                         });
                     }
                 };
-                mConditionsLiveData.observe(mLifecycleOwner, mConditionsLiveDataObserver);
+                mConditionsLiveData.observe(mLifecycleOwner, conditionsObserver);
             }
         });
     }
@@ -509,7 +509,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             clearLogObservers();
             if (mConditionsLiveData != null) {
-                mConditionsLiveData.removeObserver(mConditionsLiveDataObserver);
+                mConditionsLiveData.removeObservers(mLifecycleOwner);
             }
         } else {
             throw new Exception("clearConditionsObserver to be called in main thread");
@@ -518,18 +518,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private void clearLogObservers() throws Exception {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            if (mMapOfLoggerLiveDataObserversByConditionId != null) {
-                mMapOfLoggerLiveDataObserversByConditionId.keySet().stream().forEach(key -> {
-                    key.removeObserver(mMapOfLoggerLiveDataObserversByConditionId.get(key));
-                });
-                mMapOfLoggerLiveDataObserversByConditionId.clear();
-            }
-            if (mMapOfTimeBlockLoggerLiveDataObserversByConditionId != null) {
-                mMapOfTimeBlockLoggerLiveDataObserversByConditionId.keySet().stream().forEach(key -> {
-                    key.removeObserver(mMapOfTimeBlockLoggerLiveDataObserversByConditionId.get(key));
-                });
-                mMapOfTimeBlockLoggerLiveDataObserversByConditionId.clear();
-            }
+            observableByGroupCondition.stream().forEach(ld -> ld.removeObservers(mLifecycleOwner));
+            observableByRandomCheckCondition.stream().forEach(ld -> ld.removeObservers(mLifecycleOwner));
         } else {
             throw new Exception("clearLogObservers to be called in main thread");
         }
@@ -610,7 +600,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
             }
         };
-        mMapOfLoggerLiveDataObserversByConditionId.put(timeLoggerLD, observer);
+        observableByGroupCondition.add(timeLoggerLD);
         timeLoggerLD.observe(mLifecycleOwner, observer);
     }
 
@@ -628,7 +618,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 giveFeedback(FEEDBACK_LOGGERS_CHANGED, null);
             }
         };
-        mMapOfTimeBlockLoggerLiveDataObserversByConditionId.put(timeLoggedLD, observer);
+        observableByRandomCheckCondition.add(timeLoggedLD);
         timeLoggedLD.observe(mLifecycleOwner, observer);
     }
 
@@ -668,10 +658,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private void clearExportObservers() throws Exception {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            mMapOfLoggerLiveDataObserversByGroupId.keySet().stream().forEach(livedata -> {
-                livedata.removeObserver(mMapOfLoggerLiveDataObserversByGroupId.get(livedata));
-            });
-            mMapOfLoggerLiveDataObserversByGroupId.clear();
+            observableLoggersByGroupId.stream().forEach(ld -> ld.removeObservers(mLifecycleOwner));
+            observableLoggersByGroupId.clear();
         } else {
             throw new Exception("clearExportObservers shall be called from the main thread");
         }
@@ -727,7 +715,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 if (!mAllGruposPositivosIfConditionsMet.get(key) && ifAllGroupConditionsMet(key)) {
                     mAllGruposPositivosIfConditionsMet.put(key, true);
                     StringBuilder builder = new StringBuilder();
-                    mAllGruposPositivos.stream().forEach(grupo -> {
+                    mAllGrupos.stream().forEach(grupo -> {
                         if (grupo.getId() == key) {
                             builder.append(grupo.getNombre());
                         }
@@ -752,7 +740,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return elementsByPackageName.containsKey(packageName);
     }
 
-    private void observeTodayGroupTime(GrupoPositivo grupo) {
+    private void observeTodayGroupTime(Grupo grupo) {
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -764,7 +752,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     }
                 };
                 liveData.observe(mLifecycleOwner, observer);
-                mTodayTimeByGroupObservers.put(liveData, observer);
+                observableGroups.add(liveData);
             }
         });
     }
@@ -773,11 +761,9 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
-                mTodayTimeByGroupObservers.keySet().stream().forEach(key -> {
-                    key.removeObserver(mTodayTimeByGroupObservers.get(key));
-                });
-                mTodayTimeByGroupObservers.clear();
-                mAllGruposPositivos.stream().forEach(grupo -> observeTodayGroupTime(grupo));
+                observableGroups.stream().forEach(ld -> ld.removeObservers(mLifecycleOwner));
+                observableGroups.clear();
+                mAllGrupos.stream().forEach(grupo -> observeTodayGroupTime(grupo));
             }
         });
     }
