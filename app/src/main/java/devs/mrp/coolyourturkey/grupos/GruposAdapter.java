@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.grupos;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -28,13 +30,15 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
     protected List<Grupo> mDataset;
     protected Context mContext;
     protected TimeLogHandler mTimeLogHandler;
+    private LifecycleOwner owner;
 
     private ArrayList<FeedbackListener<Grupo>> listeners = new ArrayList<>();
 
-    public GruposAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
+    public GruposAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler, LifecycleOwner owner) {
         mDataset = dataset;
         mContext = context;
         mTimeLogHandler = timeLogHandler;
+        this.owner = owner;
     }
 
     @NonNull
@@ -51,7 +55,12 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
     @Override
     public void onBindViewHolder(@NonNull GruposViewHolder holder, int position) {
         holder.grupo = mDataset.get(position);
-        holder.textView.setText(mDataset.get(position).getNombre() + " (" + mTimeLogHandler.todayStringTimeOnNegativeGroup(mDataset.get(position)) + " " + mContext.getString(R.string.hoy) + ")");
+        String nombre = mDataset.get(position).getNombre();
+        mTimeLogHandler.onGroupTimeToday(owner, holder.grupo.getId(), formattedTime -> {
+            if (nombre.equals(mDataset.get(position).getNombre())){ // avoid racing condition
+                holder.textView.setText(mDataset.get(position).getNombre() + " (" + formattedTime + " " + mContext.getString(R.string.hoy) + ")");
+            }
+        });
         holder.id = mDataset.get(position).getId();
         doOtherStuffOnBind(holder, position);
     }

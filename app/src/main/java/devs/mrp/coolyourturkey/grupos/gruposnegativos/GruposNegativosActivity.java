@@ -3,6 +3,7 @@ package devs.mrp.coolyourturkey.grupos.gruposnegativos;
 import android.content.Intent;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.grupos.GruposActivity;

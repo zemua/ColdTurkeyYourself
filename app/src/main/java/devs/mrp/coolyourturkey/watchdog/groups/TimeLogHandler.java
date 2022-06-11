@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -18,7 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
@@ -44,6 +47,8 @@ import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
+import devs.mrp.coolyourturkey.grupos.packagemapper.PackageMapper;
+import devs.mrp.coolyourturkey.grupos.packagemapper.impl.PackageMapperFactory;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
@@ -51,8 +56,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private static final String TAG = "TIME_LOG_HANDLER";
 
-    private final Long TIME_BETWEEN_FILES_REFRESH = 60*1000*1L; // 1 minute between file refreshes
-    private final Long TIME_BETWEEN_NOTIFICATION_REFRESH = 60*1000*5L; // 5 minutes between checks for notifications
+    private final Long TIME_BETWEEN_FILES_REFRESH = 60 * 1000 * 1L; // 1 minute between file refreshes
+    private final Long TIME_BETWEEN_NOTIFICATION_REFRESH = 60 * 1000 * 5L; // 5 minutes between checks for notifications
     public static final int FEEDBACK_LOGGERS_CHANGED = 0;
 
     private List<FeedbackListener<Object>> feedbackListeners = new ArrayList<>();
@@ -65,7 +70,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private TimeLoggerRepository timeLoggerRepository;
     private TimeBlockLoggerRepository timeBlockLoggerRepository;
-    private Map<String,ElementToGroup> elementsByPackageName;
+    private Map<String, ElementToGroup> elementsByPackageName;
     private ElementToGroupRepository elementToGroupRepository;
     private ConditionToGroupRepository conditionToGroupRepository;
     private GrupoExportRepository mGrupoExportRepository;
@@ -99,7 +104,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Notificador mNotificador;
     private MisPreferencias mMisPreferencias;
 
-    public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner){
+    public TimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner) {
         mApplication = application;
         mContext = context;
         mLifecycleOwner = lifecycleOwner;
@@ -124,7 +129,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
             @Override
             public void run() {
                 elementToGroupRepository.findElementsOfType(ElementType.APP).observe(lifecycleOwner, elements -> {
-                    Map<String,ElementToGroup> elementsMap = new HashMap<>();
+                    Map<String, ElementToGroup> elementsMap = new HashMap<>();
                     elements.stream().forEach(e -> elementsMap.put(e.getName(), e));
                     elementsByPackageName = elementsMap;
                 });
@@ -160,7 +165,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     /**
-     *  Set the observers for the exported group files, to be called on day-change too
+     * Set the observers for the exported group files, to be called on day-change too
      */
     private void setExportObservers() {
         mMainHandler.post(new Runnable() {
@@ -172,7 +177,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 Observer<List<GrupoExport>> exportObserver = new Observer<List<GrupoExport>>() {
                     @Override
                     public void onChanged(List<GrupoExport> grupoExports) {
-                        try { clearExportObservers(); } catch (Exception e) { e.printStackTrace(); }
+                        try {
+                            clearExportObservers();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         mGrupoExportList = grupoExports;
                         grupoExports.stream().forEach(export -> {
                             Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
@@ -218,22 +227,39 @@ public class TimeLogHandler implements Feedbacker<Object> {
         private Integer conditionGroupId;
         private Integer days;
         private Long summedTime;
+
         TimeSummary(Integer groupId, Integer conditionGroupId, Integer days, Long summedTime) {
             this.groupId = groupId;
             this.conditionGroupId = conditionGroupId;
             this.summedTime = summedTime;
             this.days = days;
         }
+
         TimeSummary(Integer groupId, Integer conditionGroupId, Integer days) {
             this.groupId = groupId;
             this.conditionGroupId = conditionGroupId;
             this.days = days;
         }
-        String getKey() { return "A" + groupId + "B" + conditionGroupId + "C" + days; }
-        Integer getGroupId() { return groupId; }
-        Integer getConditionGroupId() { return conditionGroupId; }
-        Long getSummedTime() { return summedTime; }
-        Integer getDays() {return days;}
+
+        String getKey() {
+            return "A" + groupId + "B" + conditionGroupId + "C" + days;
+        }
+
+        Integer getGroupId() {
+            return groupId;
+        }
+
+        Integer getConditionGroupId() {
+            return conditionGroupId;
+        }
+
+        Long getSummedTime() {
+            return summedTime;
+        }
+
+        Integer getDays() {
+            return days;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -255,7 +281,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     public boolean ifAllAppConditionsMet(String packageName) {
         ElementToGroup app = appsToGroupContainsPackageName(packageName);
-        if (app != null){
+        if (app != null) {
             return ifAllGroupConditionsMet(app.getGroupId());
         } else {
             Log.d(TAG, "no packageName found in appsToGroupsVSpackageNameMap for ifAllAppConditionsMet");
@@ -272,25 +298,21 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return mLimitHandler.ifLimitsReachedForGroupIdAndShallBlock(getGroupIdFromPackageName(packageName));
     }
 
-
-    private ElementToGroup appsToGroupContainsPackageName(String packageName){
-        return elementsByPackageName.containsKey(packageName) ? elementsByPackageName.get(packageName) : null;
+    @Nullable
+    private ElementToGroup appsToGroupContainsPackageName(String packageName) {
+        return Optional.ofNullable(elementsByPackageName)
+                .filter(map -> map.containsKey(packageName))
+                .map(map -> map.get(packageName))
+                .orElse(null);
     }
 
 
-
-
     /**
-     *
      * From here are the inputs received that are
      * going to be saved into the db
-     *
-     *
-     *
-     *
      */
 
-    private void initTimeLogger(String packageName, Long millis){
+    private void initTimeLogger(String packageName, Long millis) {
         timeLogger = new TimeLogger();
         setPackageNameAndAutoAssignGroupId(packageName);
         setCurrent(millis);
@@ -326,7 +348,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     private void send() throws Exception {
-        if (!checkIfDataEnoughAndSubmit()){
+        if (!checkIfDataEnoughAndSubmit()) {
             throw new Exception("Data provided in the submitted TimeLogger is not enough");
         }
         clearTimeLoggerReference();
@@ -336,24 +358,19 @@ public class TimeLogHandler implements Feedbacker<Object> {
         if (timeLogger.getCountedtimemilis() == null) {
             Log.d(TAG, "CountedTime for summatory purposes not set for timeLogger");
             return false;
-        }
-        else if (timeLogger.getPackageName() == null){
+        } else if (timeLogger.getPackageName() == null) {
             Log.d(TAG, "Package Name is not set for timeLogger");
             return false;
-        }
-        else if (timeLogger.getMillistimestamp() == null) {
+        } else if (timeLogger.getMillistimestamp() == null) {
             Log.d(TAG, "TimeStamp is not set for timeLogger");
             return false;
-        }
-        else if (timeLogger.getPositivenegative() == null) {
+        } else if (timeLogger.getPositivenegative() == null) {
             Log.d(TAG, "Positive/Negative/Neutral Type is not set for timeLogger");
             return false;
-        }
-        else if (timeLogger.getUsedtimemilis() == null) {
+        } else if (timeLogger.getUsedtimemilis() == null) {
             Log.d(TAG, "UsedTime is not set for timeLogger");
             return false;
-        }
-        else {
+        } else {
             submitTimeLogger();
             return true;
         }
@@ -373,7 +390,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     private void increase(Long milis) {
-        if (milis >= 0){
+        if (milis >= 0) {
             timeLogger.setCountedtimemilis(milis);
         } else {
             timeLogger.setCountedtimemilis(-milis);
@@ -422,7 +439,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         Integer groupId = getGroupIdFromPackageName(name);
         GrupoPositivo grupo = new GrupoPositivo("");
         mAllGrupos.stream().forEach(g -> {
-            if (g.getId() == groupId){
+            if (g.getId() == groupId) {
                 grupo.setId(g.getId());
                 grupo.setNombre(g.getNombre());
             }
@@ -430,11 +447,25 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return grupo;
     }
 
-    private Long days(Long milliseconds) {return TimeUnit.MILLISECONDS.toDays(milliseconds);}
-    private Long millis(Long days) {return TimeUnit.DAYS.toMillis(days);}
-    private Long currentDay() {return days(System.currentTimeMillis());}
-    private Long offsetDay(Long nDays) {return currentDay()-nDays;}
-    public Long offsetDayInMillis(Long nDays) {return millis(offsetDay(nDays));}
+    private Long days(Long milliseconds) {
+        return TimeUnit.MILLISECONDS.toDays(milliseconds);
+    }
+
+    private Long millis(Long days) {
+        return TimeUnit.DAYS.toMillis(days);
+    }
+
+    private Long currentDay() {
+        return days(System.currentTimeMillis());
+    }
+
+    private Long offsetDay(Long nDays) {
+        return currentDay() - nDays;
+    }
+
+    public Long offsetDayInMillis(Long nDays) {
+        return millis(offsetDay(nDays));
+    }
 
 
     /**
@@ -444,7 +475,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private void refreshDayCounting() {
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
         Long currentDay = currentDay();
-        if (!dayRefreshed.equals(currentDay) && mAllConditionsToGroup != null){
+        if (!dayRefreshed.equals(currentDay) && mAllConditionsToGroup != null) {
             dayRefreshed = currentDay;
             refreshConditionsObserver();
             setExportObservers();
@@ -486,7 +517,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
-                                    } else if(c.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)) {
+                                    } else if (c.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK)) {
                                         try {
                                             observeTimeLoggedOnRandomCheck(c);
                                         } catch (Exception e) {
@@ -526,9 +557,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     /**
-     *
      * Condition checkers for all types
-     *
      */
 
     public Long getTimeCountedOnGroupCondition(ConditionToGroup cond) {
@@ -538,7 +567,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
             time = mTimeLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getCountedtimemilis()));
         } else if (cond.getType().equals(ConditionToGroup.ConditionType.RANDOMCHECK) && mRandomCheckLoggersByConditionId.containsKey(cond.getId())) {
             time = mRandomCheckLoggersByConditionId.get(cond.getId()).stream().collect(Collectors.summingLong(l -> l.getTimecounted()));
-        } else if(cond.getType().equals(ConditionToGroup.ConditionType.FILE)) {
+        } else if (cond.getType().equals(ConditionToGroup.ConditionType.FILE)) {
             time = fileTimeGetter.fromFileLastDays(cond.getFromlastndays(), Uri.parse(cond.getFiletarget()));
         } else {
             time = 0L;
@@ -548,9 +577,10 @@ public class TimeLogHandler implements Feedbacker<Object> {
     }
 
     public boolean ifConditionMet(ConditionToGroup cond) {
-        if (getTimeCountedOnGroupCondition(cond) >= MilisToTime.getMilisDeMinutos(cond.getConditionalminutes())){
+        if (getTimeCountedOnGroupCondition(cond) >= MilisToTime.getMilisDeMinutos(cond.getConditionalminutes())) {
             return true;
-        } return false;
+        }
+        return false;
     }
 
     private List<ConditionToGroup> getListOfConditionIdsOfGroup(Integer groupId) {
@@ -569,7 +599,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         BooleanWrap b = new BooleanWrap();
         b.set(true);
         getListOfConditionIdsOfGroup(groupId).stream().forEach(c -> {
-            if (!ifConditionMet(c)){
+            if (!ifConditionMet(c)) {
                 b.set(false);
             }
         });
@@ -579,13 +609,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
     /**
      * From here are the reading times for conditions
      * with time spent on other groups
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      */
 
     private void observeTimeLoggedOnGroup(ConditionToGroup c) throws Exception {
@@ -643,7 +666,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                 // filter only those values that are after the given offset day
                                 .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
                                 // filter only those values that are within the same day
-                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isBefore(LocalDate.now().atStartOfDay().minusDays(days-1)))
+                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isBefore(LocalDate.now().atStartOfDay().minusDays(days - 1)))
                                 .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());
@@ -679,15 +702,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
         int daynum = date.get(Calendar.DAY_OF_MONTH);
 
         String month;
-        if (monthnum<10) {
-            month = "0"+monthnum;
+        if (monthnum < 10) {
+            month = "0" + monthnum;
         } else {
             month = String.valueOf(monthnum);
         }
 
         String day;
-        if (daynum<10) {
-            day = "0"+daynum;
+        if (daynum < 10) {
+            day = "0" + daynum;
         } else {
             day = String.valueOf(daynum);
         }
@@ -770,11 +793,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     public Long todayTimeOnAppGroup(String packageName) {
         ElementToGroup group = appsToGroupContainsPackageName(packageName);
-        if (group.getId() != null) {
+        if (group != null && group.getId() != null) {
             return todayTimeOnPositiveGroup(group.getGroupId());
         } else {
             return 0L;
         }
+    }
+
+    public void onGroupTimeToday(LifecycleOwner owner, int groupId, Consumer<String> consumer) {
+        mMainHandler.post(() -> {
+                // TODO
+            });
     }
 
     public Long todayTimeOnPositiveGroup(Integer groupId) {

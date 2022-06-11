@@ -2,6 +2,8 @@ package devs.mrp.coolyourturkey.grupos.grupospositivosv2;
 
 import android.content.Intent;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.grupos.GruposActivity;
 

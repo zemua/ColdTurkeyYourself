@@ -1,9 +1,11 @@
 package devs.mrp.coolyourturkey.grupos.gruposnegativos;
 
+import android.app.Application;
 import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.List;
 
@@ -15,8 +17,8 @@ public class GruposNegativosAdapter extends GruposAdapter {
 
     private static final String TAG = "GruposNegativosAdapter";
 
-    public GruposNegativosAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
-        super(dataset, context, timeLogHandler);
+    public GruposNegativosAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler, LifecycleOwner owner) {
+        super(dataset, context, timeLogHandler, owner);
     }
 
     @Override

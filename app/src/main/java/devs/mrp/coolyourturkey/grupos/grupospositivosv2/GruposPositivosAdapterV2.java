@@ -1,9 +1,11 @@
 package devs.mrp.coolyourturkey.grupos.grupospositivosv2;
 
+import android.app.Application;
 import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.List;
 
@@ -15,8 +17,8 @@ public class GruposPositivosAdapterV2 extends GruposAdapter {
 
     private static final String TAG = "GruposPositivosAdapter-V2";
 
-    public GruposPositivosAdapterV2(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler) {
-        super(dataset, context, timeLogHandler);
+    public GruposPositivosAdapterV2(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler, LifecycleOwner owner) {
+        super(dataset, context, timeLogHandler, owner);
     }
 
     @Override
