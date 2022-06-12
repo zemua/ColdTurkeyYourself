@@ -28,7 +28,7 @@ public class GruposPositivosFragmentV2 extends GruposFragment<Grupo> {
 
     @Override
     protected GruposAdapter returnGruposAdapter(List<Grupo> groupList, Context context, TimeLogHandler timeLogHandler) {
-        return new GruposPositivosAdapterV2(groupList, context, timeLogHandler, getViewLifecycleOwner());
+        return new GruposPositivosAdapterV2(groupList, context, timeLogHandler, getViewLifecycleOwner(), getActivity().getApplication());
     }
 
     @Override

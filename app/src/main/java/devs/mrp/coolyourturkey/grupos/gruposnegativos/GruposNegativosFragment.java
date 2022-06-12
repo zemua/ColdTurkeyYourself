@@ -29,7 +29,7 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
 
     @Override
     protected GruposAdapter returnGruposAdapter(List groupList, Context context, TimeLogHandler timeLogHandler) {
-        return new GruposNegativosAdapter(groupList, context, timeLogHandler, getViewLifecycleOwner());
+        return new GruposNegativosAdapter(groupList, context, timeLogHandler, getViewLifecycleOwner(), getActivity().getApplication());
     }
 
     @Override

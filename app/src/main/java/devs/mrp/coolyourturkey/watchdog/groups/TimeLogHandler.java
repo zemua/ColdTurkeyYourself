@@ -49,6 +49,7 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageMapper;
 import devs.mrp.coolyourturkey.grupos.packagemapper.impl.PackageMapperFactory;
+import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 
@@ -800,9 +801,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
-    public void onGroupTimeToday(LifecycleOwner owner, int groupId, Consumer<String> consumer) {
+    public void onGroupTimeToday(GroupGeneralAssembler assembler, int groupId, Consumer<String> consumer) {
         mMainHandler.post(() -> {
-                // TODO
+                assembler.forGroupToday(groupId, longResult -> {
+                    consumer.accept(MilisToTime.getFormatedHM(longResult));
+                });
             });
     }
 

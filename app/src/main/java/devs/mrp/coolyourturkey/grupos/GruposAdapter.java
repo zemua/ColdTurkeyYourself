@@ -17,6 +17,8 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
+import devs.mrp.coolyourturkey.grupos.timing.impl.GeneralAssemblerImpl;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -31,14 +33,18 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
     protected Context mContext;
     protected TimeLogHandler mTimeLogHandler;
     private LifecycleOwner owner;
+    private Application app;
+    private GroupType type;
 
     private ArrayList<FeedbackListener<Grupo>> listeners = new ArrayList<>();
 
-    public GruposAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler, LifecycleOwner owner) {
+    public GruposAdapter(List<Grupo> dataset, Context context, TimeLogHandler timeLogHandler, LifecycleOwner owner, Application app, GroupType type) {
         mDataset = dataset;
         mContext = context;
         mTimeLogHandler = timeLogHandler;
         this.owner = owner;
+        this.app = app;
+        this.type = type;
     }
 
     @NonNull
@@ -56,7 +62,7 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
     public void onBindViewHolder(@NonNull GruposViewHolder holder, int position) {
         holder.grupo = mDataset.get(position);
         String nombre = mDataset.get(position).getNombre();
-        mTimeLogHandler.onGroupTimeToday(owner, holder.grupo.getId(), formattedTime -> {
+        mTimeLogHandler.onGroupTimeToday(new GeneralAssemblerImpl(type, owner, app), holder.grupo.getId(), formattedTime -> {
             if (nombre.equals(mDataset.get(position).getNombre())){ // avoid racing condition
                 holder.textView.setText(mDataset.get(position).getNombre() + " (" + formattedTime + " " + mContext.getString(R.string.hoy) + ")");
             }
