@@ -14,6 +14,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
 import devs.mrp.coolyourturkey.grupos.GruposAdapter;
 import devs.mrp.coolyourturkey.grupos.GruposFragment;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class GruposPositivosFragmentV2 extends GruposFragment<Grupo> {
@@ -28,7 +29,7 @@ public class GruposPositivosFragmentV2 extends GruposFragment<Grupo> {
 
     @Override
     protected GruposAdapter returnGruposAdapter(List<Grupo> groupList, Context context, TimeLogHandler timeLogHandler) {
-        return new GruposPositivosAdapterV2(groupList, context, timeLogHandler, getViewLifecycleOwner(), getActivity().getApplication());
+        return new GruposPositivosAdapterV2(groupList, context, timeLogHandler, getViewLifecycleOwner(), getActivity().getApplication(), ConditionCheckerFactory.getConditionChecker(getActivity().getApplication(), getViewLifecycleOwner()));
     }
 
     @Override
