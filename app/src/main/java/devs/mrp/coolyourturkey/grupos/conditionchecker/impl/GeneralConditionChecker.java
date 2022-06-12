@@ -79,6 +79,7 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
                 if (recorded.contains(condition.getId())) {
                     return;
                 }
+                recorded.add(condition.getId());
                 if (!bool) {
                     result.set(false);
                 }
