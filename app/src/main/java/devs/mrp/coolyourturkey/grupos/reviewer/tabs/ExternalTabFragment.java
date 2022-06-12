@@ -102,6 +102,12 @@ public class ExternalTabFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mExternalAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outstate) {
         outstate.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
         super.onSaveInstanceState(outstate);
