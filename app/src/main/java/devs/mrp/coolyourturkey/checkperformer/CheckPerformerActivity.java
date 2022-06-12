@@ -181,6 +181,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
             }
         });
 
+        setGroupId(); // after we have blockId and mElementRepo
+
     }
 
     private void addPositiveObserver() {
