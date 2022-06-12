@@ -29,7 +29,7 @@ import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.ConditionChecker;
-import devs.mrp.coolyourturkey.watchdog.groups.ConditionCheckerFactory;
+import devs.mrp.coolyourturkey.watchdog.groups.ConditionCheckerFactoryOld;
 
 public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNegativeToGroup>> {
 
@@ -237,7 +237,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
      */
 
     private void observeTimeLoggedOnFile(ConditionNegativeToGroup condition) {
-        ConditionChecker checker = ConditionCheckerFactory.getChecker();
+        ConditionChecker checker = ConditionCheckerFactoryOld.getChecker();
         checker.getConsumptionByDay(mApplication, condition.getFiletarget());
         checker.addConsumptionByDaysToMap(mTimeByConditionIdMap); // add all the times read from the file
     }

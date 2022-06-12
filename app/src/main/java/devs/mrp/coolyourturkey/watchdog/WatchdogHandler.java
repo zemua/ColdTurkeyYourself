@@ -25,6 +25,7 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class WatchdogHandler implements Feedbacker<Object> {
 
@@ -113,42 +114,40 @@ public class WatchdogHandler implements Feedbacker<Object> {
         return mNotificacion;
     }
 
-    public Notification getNotificacionPositiva(TimeLogHandler logger, String paquete, Long restante, Long proporcion) {
+    public void onNotificacionPositiva(TimeLogHandler logger, String paquete, Long restante, Long proporcion, Consumer<Notification> notification) {
         createNotificationChannel();
         if (mToqueDeQuedaHandler.isToqueDeQueda()){
             mNotificacion = getNotificationToqueDeQueda(paquete);
+            notification.accept(mNotificacion);
         }else {
-            String message = "";
-            if (logger.appIsGrouped(paquete)) {
-                String groupName = logger.getGrupoPositivoFromPackageName(paquete).getNombre();
-                Long timeLong = logger.todayTimeOnAppGroup(paquete);
-                String timeFormat = MilisToTime.getFormated(timeLong);
-                message = mContext.getText(R.string.grupo) + " " + groupName + " - " + timeFormat + " " + mContext.getText(R.string.hoy) ;
-            }
-            if (logger.ifAllAppConditionsMet(paquete) && !logger.ifLimitsReachedForAppName(paquete)) {
-                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
-                        .setContentTitle(packageToLabel(paquete))
-                        .setContentText(message + " " + mContext.getText(R.string.quedan) + " " + milisToTime(restante / proporcion))
-                        .setSmallIcon(R.drawable.notificacion_caliente)
-                        .setContentIntent(mPendingIntent)
-                        .build();
-            } else if (!logger.ifAllAppConditionsMet(paquete)) {
-                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
-                        .setContentTitle(packageToLabel(paquete))
-                        .setContentText(message + " " + mContext.getText(R.string.condiciones_no_cumplidas))
-                        .setSmallIcon(R.drawable.notificacion_neutral)
-                        .setContentIntent(mPendingIntent)
-                        .build();
-            } else if (logger.ifLimitsReachedForAppName(paquete)) {
-                mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
-                        .setContentTitle(packageToLabel(paquete))
-                        .setContentText(message + " " + mContext.getText(R.string.limite_alcanzado))
-                        .setSmallIcon(R.drawable.notificacion_neutral)
-                        .setContentIntent(mPendingIntent)
-                        .build();
-            }
+            logger.onGrupoFromPackageName(paquete, grupo -> {
+                logger.onAllConditionsMet(paquete, conditionsMet -> {
+                    String message = "";
+                    if (logger.appIsGrouped(paquete)) {
+                        String groupName = grupo.getNombre();
+                        Long timeLong = logger.todayTimeOnAppGroup(paquete);
+                        String timeFormat = MilisToTime.getFormated(timeLong);
+                        message = mContext.getText(R.string.grupo) + " " + groupName + " - " + timeFormat + " " + mContext.getText(R.string.hoy) ;
+                    }
+                    if (conditionsMet) {
+                        mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
+                                .setContentTitle(packageToLabel(paquete))
+                                .setContentText(message + " " + mContext.getText(R.string.quedan) + " " + milisToTime(restante / proporcion))
+                                .setSmallIcon(R.drawable.notificacion_caliente)
+                                .setContentIntent(mPendingIntent)
+                                .build();
+                    } else {
+                        mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
+                                .setContentTitle(packageToLabel(paquete))
+                                .setContentText(message + " " + mContext.getText(R.string.condiciones_no_cumplidas))
+                                .setSmallIcon(R.drawable.notificacion_neutral)
+                                .setContentIntent(mPendingIntent)
+                                .build();
+                    }
+                    notification.accept(mNotificacion);
+                });
+            });
         }
-        return mNotificacion;
     }
 
     public Notification getCustomNotification(String paquete, String texto, String ticker) {

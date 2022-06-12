@@ -94,9 +94,10 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
     }
 
     private Integer getLoggerMinutes(ConditionToGroup condition) {
-        Long millis = mTimeLogHandler.getTimeCountedOnGroupCondition(condition);
+        /*Long millis = mTimeLogHandler.getTimeCountedOnGroupCondition(condition);
         Long minutes = millis / 60 / 1000;
-        return minutes.intValue();
+        return minutes.intValue();*/
+        return null;
     }
 
     private String concatenateConditionText(ConditionToGroup condition) {
@@ -151,11 +152,11 @@ public class ReviewGroupsConditionsAdapter extends RecyclerView.Adapter<ReviewGr
     }
 
     private void setBackgroundOnConditionMet(ReviewGroupsConditionsViewHolder holder, ConditionToGroup condition) {
-        if (mTimeLogHandler.ifConditionMet(condition)) {
+        /*if (mTimeLogHandler.ifConditionMet(condition)) {
             holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
         } else {
             holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
-        }
+        }*/
     }
 
     public void setDataset(List<ConditionToGroup> dataSet) {

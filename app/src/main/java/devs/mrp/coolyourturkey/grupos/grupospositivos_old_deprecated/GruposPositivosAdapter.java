@@ -56,7 +56,7 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     @Override
     public void onBindViewHolder(@NonNull GruposPositivosViewHolder holder, int position) {
         holder.grupo = mDataset.get(position);
-        holder.textView.setText(mDataset.get(position).getNombre() + " (" + mTimeLogHandler.todayStringTimeOnPositiveGroup(mDataset.get(position)) + " " + mContext.getString(R.string.hoy) + ")");
+        //holder.textView.setText(mDataset.get(position).getNombre() + " (" + mTimeLogHandler.todayStringTimeOnPositiveGroup(mDataset.get(position)) + " " + mContext.getString(R.string.hoy) + ")");
         holder.id = mDataset.get(position).getId();
         setBackgroundOnConditionMet(holder, mDataset.get(position));
     }
@@ -95,10 +95,10 @@ public class GruposPositivosAdapter extends RecyclerView.Adapter<GruposPositivos
     }
 
     private void setBackgroundOnConditionMet(GruposPositivosAdapter.GruposPositivosViewHolder holder, GrupoPositivo grupo) {
-        if (mTimeLogHandler.ifAllGroupConditionsMet(grupo.getId())) {
+        /*if (mTimeLogHandler.ifAllGroupConditionsMet(grupo.getId())) {
             holder.textView.setBackgroundResource(R.drawable.green_rounded_corner_with_border);
         } else {
             holder.textView.setBackgroundResource(R.drawable.red_rounded_corner_with_border);
-        }
+        }*/
     }
 }
