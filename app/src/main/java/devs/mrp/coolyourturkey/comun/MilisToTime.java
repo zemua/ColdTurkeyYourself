@@ -4,8 +4,11 @@ import android.icu.util.Calendar;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +76,17 @@ public class MilisToTime {
         return nowToMilis;
     }
 
+    public static LocalDateTime millisToLocalDateTime(long millis) {
+        Instant instant = Instant.ofEpochMilli(millis);
+        LocalDateTime date = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return date;
+    }
+
+    public static long localDateTimeToMillis(LocalDateTime localDateTime) {
+        ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
+    }
+
     public static int milisToDayOfWeek(long milis) {
         ZonedDateTime zone = Instant.ofEpochMilli(milis)
                 .atZone(ZoneId.systemDefault());
@@ -86,7 +100,7 @@ public class MilisToTime {
     }
 
     public static long getHours(long millis) {
-        return millis/(1000*60/60);
+        return millis/(1000*60*60);
     }
 
     public static long getMinutes(long millis) {
@@ -139,5 +153,9 @@ public class MilisToTime {
     public static long millisToEndOfDay(long milliseconds) {
         long days = daysFromMillis(milliseconds);
         return millisFromDays(days) + millisFromDays(1);
+    }
+
+    public static int hoursForChangeOfDay() {
+        return 0;
     }
 }

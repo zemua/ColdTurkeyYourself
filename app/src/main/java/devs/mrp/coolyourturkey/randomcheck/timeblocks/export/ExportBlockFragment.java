@@ -17,9 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.w3c.dom.Text;
-
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +26,6 @@ import devs.mrp.coolyourturkey.comun.MyObservable;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExport;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.export.TimeBlockExportViewModel;
-import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
-import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportViewModel;
-import devs.mrp.coolyourturkey.grupospositivos.ExportGroupTimeFragment;
 
 public class ExportBlockFragment extends Fragment implements MyObservable<Object> {
 

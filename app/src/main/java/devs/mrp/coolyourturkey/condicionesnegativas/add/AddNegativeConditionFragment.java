@@ -29,10 +29,10 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditiontogroup_old_deprecated.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.facade.FTimeBlockFacade;
 import devs.mrp.coolyourturkey.dtos.timeblock.facade.ITimeBlockFacade;
@@ -183,7 +183,7 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
         groupSpinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTargetGroupSpinner.setAdapter(groupSpinerAdapter);
         GrupoPositivoRepository grupoRepo = GrupoPositivoRepository.getRepo(getActivity().getApplication());
-        grupoRepo.findAllGrupoPositivo().observe(AddNegativeConditionFragment.this, new Observer<List<GrupoPositivo>>() {
+        grupoRepo.findAllGrupoPositivo().observe(AddNegativeConditionFragment.this.getViewLifecycleOwner(), new Observer<List<GrupoPositivo>>() {
             @Override
             public void onChanged(List<GrupoPositivo> grupoPositivos) {
                 mGruposPositivos.clear();
@@ -233,13 +233,10 @@ public class AddNegativeConditionFragment extends Fragment implements Feedbacker
 
                     condition.setId(mConditionId);
                     condition.setType(mConditionType);
-                    if (mFileUri != null) {
-                        condition.setFiletarget(mFileUri.toString());
-                    } else {
-                        condition.setFiletarget("");
-                    }
-                    condition.setConditionalgroupid(groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId());
-                    condition.setConditionalblockid(blocksObjectList.get(mTimeBlockSpinner.getSelectedItemPosition()).getId());
+
+                    condition.setFiletarget(mFileUri != null ? mFileUri.toString() : "");
+                    condition.setConditionalgroupid(groupsObjectList.size() > 0 ? groupsObjectList.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
+                    condition.setConditionalblockid(blocksObjectList.size() > 0 ? blocksObjectList.get(mTimeBlockSpinner.getSelectedItemPosition()).getId() : -1);
 
                     Integer ltime = 0;
                     if(!mUsedHoursEditText.getText().toString().equals("")){

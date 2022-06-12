@@ -49,6 +49,9 @@ public class AplicacionListadaRepository {
     void insert(AplicacionListada aplicacion){
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(()->{
             mAplicacionListadaDao.insert(aplicacion);
+            if (AplicacionListada.getNEUTRAL().equals(aplicacion.getLista())) {
+                mAplicacionListadaDao.deleteRelationToGroup(aplicacion.getNombre());
+            }
         });
     }
 }

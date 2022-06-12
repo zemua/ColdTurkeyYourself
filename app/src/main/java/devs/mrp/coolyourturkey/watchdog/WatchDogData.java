@@ -7,6 +7,10 @@ import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
+import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
+import devs.mrp.coolyourturkey.grupos.packagemapper.PackageConditionsChecker;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
@@ -255,13 +259,31 @@ public class WatchDogData {
         return this.mGenericTimedToaster;
     }
 
-    private NegativeConditionTimeChecker negativeConditionTimeChecker;
-    public WatchDogData setNegativeConditionTimeChecker(NegativeConditionTimeChecker checker) {
-        this.negativeConditionTimeChecker = checker;
+    private ChangeChecker changeNotificationChecker;
+    public WatchDogData setChangeNotificationChecker(ChangeChecker checker) {
+        this.changeNotificationChecker = checker;
         return this;
     }
-    public NegativeConditionTimeChecker getNegativeConditionTimeChecker() {
-        return this.negativeConditionTimeChecker;
+    public ChangeChecker getChangeNotificationChecker() {
+        return this.changeNotificationChecker;
+    }
+
+    private ConditionCheckerCommander conditionCheckerCommander;
+    public WatchDogData setConditionChecker(ConditionCheckerCommander checker) {
+        this.conditionCheckerCommander = checker;
+        return this;
+    }
+    public ConditionCheckerCommander getConditionCheckerCommander() {
+        return this.conditionCheckerCommander;
+    }
+
+    private PackageConditionsChecker packageConditionsChecker;
+    public WatchDogData setPackageConditionsChecker(PackageConditionsChecker checker) {
+        this.packageConditionsChecker = checker;
+        return this;
+    }
+    public PackageConditionsChecker getPackageConditionsChecker() {
+        return this.packageConditionsChecker;
     }
 
     private TimeBlockExporter timeBlockExporter;

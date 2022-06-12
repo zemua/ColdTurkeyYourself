@@ -2,7 +2,6 @@ package devs.mrp.coolyourturkey.condicionesnegativas;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
@@ -10,32 +9,27 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
+import devs.mrp.coolyourturkey.watchdog.groups.ConditionChecker;
+import devs.mrp.coolyourturkey.watchdog.groups.ConditionCheckerFactoryOld;
 
 public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNegativeToGroup>> {
 
@@ -243,43 +237,9 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
      */
 
     private void observeTimeLoggedOnFile(ConditionNegativeToGroup condition) {
-        Uri uri = Uri.parse(condition.getFiletarget());
-        if (FileReader.ifHaveReadingRights(mContext, uri)) {
-            /**
-             * Important, the file content must be in the following format and have one single entry:
-             * YYYY-MM-DD-XXXXX
-             * YYYY = year
-             * MM = month
-             * DD = day
-             * XXXXX = time to be accounted in milliseconds
-             */
-            String value = FileReader.readTextFromUri(mApplication, uri);
-            if (value.matches("^\\d{4}-\\d{2}-\\d{2}-\\d+$")) {
-                String[] values = value.split("-");
-                Long year = Long.valueOf(values[0]);
-                Long month = Long.valueOf(values[1]);
-                Long day = Long.valueOf(values[2]);
-                Long consumption = Long.valueOf(values[3]);
-
-                Calendar.Builder builder = new Calendar.Builder();
-                builder.setDate(year.intValue(), month.intValue(), day.intValue());
-                builder.setTimeZone(TimeZone.getTimeZone("GMT"));
-                Calendar cal = builder.build();
-                Long dateMilis = cal.getTimeInMillis();
-                Long offset = offsetDayInMillis(condition.getFromlastndays().longValue());
-                if (dateMilis >= offset) {
-                    mTimeByConditionIdMap.put(condition.getId(), consumption);
-                } else {
-                    mTimeByConditionIdMap.put(condition.getId(), 0L);
-                    Log.d(TAG, "days offset of file doesn't match requirements for " + condition.getFiletarget());
-                }
-            } else {
-                mTimeByConditionIdMap.put(condition.getId(), 0L);
-                Log.d(TAG, "content of file doesn't match requirements for " + condition.getFiletarget());
-            }
-        } else {
-            Log.d(TAG, "no rights to read file " + condition.getFiletarget());
-        }
+        ConditionChecker checker = ConditionCheckerFactoryOld.getChecker();
+        checker.getConsumptionByDay(mApplication, condition.getFiletarget());
+        checker.addConsumptionByDaysToMap(mTimeByConditionIdMap); // add all the times read from the file
     }
 
     public void refreshTimeLoggedOnFiles() {
@@ -290,7 +250,7 @@ public class NegativeConditionTimeChecker implements Feedbacker<List<ConditionNe
         if (now-TIME_BETWEEN_FILES_REFRESH > mLastFilesChecked && mConditions != null) {
             mLastFilesChecked = now;
             mConditions.stream().forEach(c -> {
-                if (c.getType() == ConditionNegativeToGroup.ConditionType.FILE){
+                if (ConditionNegativeToGroup.ConditionType.FILE.equals(c.getType())){
                     observeTimeLoggedOnFile(c);
                 }
             });

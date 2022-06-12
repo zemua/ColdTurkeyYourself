@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -36,7 +34,6 @@ import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapViewModel;
-import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.watchdog.Exporter;
 
 import java.util.List;
@@ -59,7 +56,7 @@ public class ConfiguracionFragment extends Fragment {
     private static String TAG_DIALOGO_CON_DELAY = "Dialogo.con.delay.configuracion.fragment.java";
     private static String TAG_DIALOGO_POLITICA_PRIVACIDAD = "dualogo.politica.privacidad.configuracion.fragment.java";
 
-    public static String TEXT_MIME_TYME = "text/plain";
+    public static String TEXT_MIME_TYPE = "text/plain";
     private static String IMAGE_MIME_TYPE = "image/png";
     private static String TEXT_FILE_NAME = "_tfn_cyt.txt";
     public static String EXPORT_TXT_VALUE_MAP_KEY = "export txt uri key";
@@ -205,7 +202,7 @@ public class ConfiguracionFragment extends Fragment {
         mShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createFile(TEXT_MIME_TYME, String.valueOf(System.currentTimeMillis()).concat(TEXT_FILE_NAME));
+                createFile(TEXT_MIME_TYPE, String.valueOf(System.currentTimeMillis()).concat(TEXT_FILE_NAME));
             }
         });
 
@@ -578,7 +575,7 @@ public class ConfiguracionFragment extends Fragment {
     private void openFile() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(TEXT_MIME_TYME);
+        intent.setType(TEXT_MIME_TYPE);
         startActivityForResult(intent, REQUEST_CODE_READ);
     }
 

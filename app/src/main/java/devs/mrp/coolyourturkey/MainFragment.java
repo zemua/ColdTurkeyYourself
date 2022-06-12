@@ -44,6 +44,7 @@ public class MainFragment extends Fragment {
     public static final int FEEDBACK_GRUPOS_POSITIVOS = 10;
     public static final int FEEDBACK_CONDICIONES_NEGATIVAS = 11;
     public static final int FEEDBACK_RANDOM_CHECK = 12;
+    public static final int FEEDBACK_GRUPOS_NEGATIVOS = 13;
 
     private static final String EXTRA_SWITCH_POSITION = "extra switch position";
 
@@ -54,7 +55,8 @@ public class MainFragment extends Fragment {
     private Button mPositiveGroupsButton;
     private Button mRandomCheckButton;
     private Button mNegativeButton;
-    private Button mNegativeConditionsButton;
+    private Button mNegativeGroupsButton;
+    //private Button mNegativeConditionsButton;
     private Button mTiempoButton;
     private Button mPositiveTime;
     private Button mNegativeTime;
@@ -100,7 +102,8 @@ public class MainFragment extends Fragment {
         mPositiveButton = (Button) v.findViewById(R.id.positivas);
         mPositiveGroupsButton = (Button) v.findViewById(R.id.grupos_positivos);
         mNegativeButton = (Button) v.findViewById(R.id.negativas);
-        mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
+        mNegativeGroupsButton = (Button) v.findViewById(R.id.buttonNegativeGroups);
+        //mNegativeConditionsButton = (Button) v.findViewById(R.id.condiciones_negativas);
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
         mRandomCheckButton = (Button) v.findViewById(R.id.buttonRandomCheck);
@@ -108,54 +111,14 @@ public class MainFragment extends Fragment {
         mConfigButton = (Button) v.findViewById(R.id.to_config_button);
         mWatchDogStarter.startService(); // WatchDogService tiene un ejecutor mono-instancia, si ya hay uno ejecutándose lo salta y sale directamente
 
-        mPositiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_POSITIVAS, mPositiveButton);
-            }
-        });
-
-        mPositiveGroupsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_GRUPOS_POSITIVOS, mPositiveGroupsButton);
-            }
-        });
-
-        mRandomCheckButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_RANDOM_CHECK, mRandomCheckButton);
-            }
-        });
-
-        mNegativeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_NEGATIVAS, mNegativeButton);
-            }
-        });
-
-        mNegativeConditionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton);
-            }
-        });
-
-        mTiempoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_DOBLE, mTiempoButton);
-            }
-        });
-
-        mConfigButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TO_CONFIG, mConfigButton);
-            }
-        });
+        mPositiveButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_POSITIVAS, mPositiveButton));
+        mPositiveGroupsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_GRUPOS_POSITIVOS, mPositiveGroupsButton));
+        mRandomCheckButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_RANDOM_CHECK, mRandomCheckButton));
+        mNegativeButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_NEGATIVAS, mNegativeButton));
+        mNegativeGroupsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_GRUPOS_NEGATIVOS, mNegativeGroupsButton));
+        //mNegativeConditionsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton));
+        mTiempoButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_DOBLE, mTiempoButton));
+        mConfigButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TO_CONFIG, mConfigButton));
 
         mTimeAssembler = new TimeAssembler(this.getActivity().getApplication(), this);
         mTimeAssembler.addFeedbackListener((tipo, feedback, args) -> {

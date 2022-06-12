@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,7 +15,8 @@ import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
-import devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity;
+import devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity;
+import devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2;
 import devs.mrp.coolyourturkey.listados.ActivityListaOnOff;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity;
@@ -24,7 +24,6 @@ import devs.mrp.coolyourturkey.usagestats.StatsActivity;
 
 public class MainActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {
 
-    // TODO random check on questions for positive reinforcement
     // TODO points on steps/walking like a pedometer
     // TODO Set time fragments/days of the week where negatives can be used freely, and/or positive don't sum
     // TODO set time fragments/days when toque de queda is not active, or has a different schedule
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
     }
 
     @Override
-    public void receiveFeedback(Fragment mfragment, int tipo, Object feedback, Object ... args) {
+    public void receiveFeedback(Fragment mfragment, int tipo, Object feedback, Object... args) {
         if (mfragment == fragment) {
             switch (tipo) {
                 case MainFragment.FEEDBACK_POSITIVAS:
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     }
                     break;
                 case MainFragment.FEEDBACK_REQ_PERMISO_ALERTA:
-                    if (feedback instanceof Boolean && feedback.equals(true)){
+                    if (feedback instanceof Boolean && feedback.equals(true)) {
                         requestPermisoAlertas(MainActivity.this);
                     }
                     break;
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     nuevaStatsActivity(StatsActivity.TIPO_LISTA_AMBAS);
                     break;
                 case MainFragment.FEEDBACK_GRUPOS_POSITIVOS:
-                    Intent intento = new Intent(MainActivity.this, GruposPositivosActivity.class);
+                    Intent intento = new Intent(MainActivity.this, GruposPositivosActivityV2.class);
                     startActivity(intento);
                     break;
                 case MainFragment.FEEDBACK_CONDICIONES_NEGATIVAS:
@@ -107,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                 case MainFragment.FEEDBACK_RANDOM_CHECK:
                     Intent intentoc = new Intent(MainActivity.this, RandomChecksActivity.class);
                     startActivity(intentoc);
+                    break;
+                case MainFragment.FEEDBACK_GRUPOS_NEGATIVOS:
+                    Intent intentGruposNegativos = new Intent(MainActivity.this, GruposNegativosActivity.class);
+                    startActivity(intentGruposNegativos);
                     break;
             }
         }

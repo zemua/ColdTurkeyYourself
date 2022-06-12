@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.condicionesnegativas.add;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -11,8 +10,8 @@ import androidx.fragment.app.FragmentManager;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroupRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class AddNegativeConditionActivity extends AppCompatActivity {

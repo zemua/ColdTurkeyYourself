@@ -9,8 +9,6 @@ import androidx.room.TypeConverters;
 
 import java.util.List;
 
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
-
 @Dao
 public interface RandomCheckDao {
 

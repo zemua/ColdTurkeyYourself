@@ -14,8 +14,8 @@ public interface AplicacionListadaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(AplicacionListada applistada);
 
-    @Query("DELETE FROM apps_listadas")
-    void deleteAll();
+    @Query("DELETE FROM elementtogroup WHERE name = :packageName")
+    void deleteRelationToGroup(String packageName);
 
     @Query("SELECT * FROM apps_listadas ORDER BY lista ASC")
     LiveData<List<AplicacionListada>> getAppsList();

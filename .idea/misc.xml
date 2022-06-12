@@ -7,23 +7,31 @@
         <entry key="app/src/main/res/drawable/gray_border.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/drawable/ic_turkey_dices.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/layout/fragment_addcondition.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_addcondition_group.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_addgroup.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_button_and_recycler.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/fragment_checks_listing.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_condiciones_negativas.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_configuracion.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/fragment_grupos.xml" value="0.4125" />
         <entry key="app/src/main/res/layout/fragment_grupospositivos.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_lista_on_off.xml" value="0.2265625" />
-        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_positive_checks.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_positive_checks_listing.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_price_confirmation.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_random_checks.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_random_control.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_reviewer.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/fragment_reviewgroup.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/fragment_single_recycler.xml" value="0.3880208333333333" />
         <entry key="app/src/main/res/layout/fragment_stats_ambos.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_time_block.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/grupos.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/view_holder_apps_list_adapter_texto.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_imports.xml" value="0.2265625" />
+        <entry key="app/src/main/res/layout/view_holder_list_adapter_texto_button.xml" value="0.3890625" />
+        <entry key="app/src/main/res/layout/view_holder_list_adapter_texto_switch.xml" value="0.3890625" />
         <entry key="app/src/main/res/layout/view_holder_simple_image.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_simple_text.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/view_holder_stats_adapter.xml" value="0.2265625" />
@@ -31,10 +39,17 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.3890625" />
+      </ProjectState>
+    </option>
   </component>
 </project>

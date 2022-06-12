@@ -16,6 +16,13 @@ public class TimeBlockLogger {
         this.epoch = epoch;
     }
 
+    public TimeBlockLogger(Integer blockId, Long timeCounted, Long epoch, Integer group) {
+        this.blockid = blockId;
+        this.timecounted = timeCounted;
+        this.epoch = epoch;
+        this.groupId = group;
+    }
+
     @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "loggerid")
@@ -32,6 +39,9 @@ public class TimeBlockLogger {
     @NonNull
     @ColumnInfo(name = "timecounted")
     private Long timecounted;
+
+    @ColumnInfo(name = "groupid")
+    private Integer groupId;
 
     @NonNull
     public Long getLoggerid() {
@@ -67,5 +77,13 @@ public class TimeBlockLogger {
 
     public void setTimecounted(@NonNull Long timecounted) {
         this.timecounted = timecounted;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 }

@@ -164,6 +164,7 @@
     <string name="estos_son_tus_negative_checks">Estos son tus controles negativos</string>
     <string name="estos_son_tus_bloques_de_tiempo">Estos son tus bloques de tiempo</string>
     <string name="ahora_se_pueden_usar">Ahora se pueden usar</string>
+    <string name="ahora_cumple_las_condiciones">Ahora cumple las condiciones</string>
     <string name="seguro_que_deseas_borrar_este_control">¿Seguro que deseas borrar este control?</string>
     <string name="activo_entre_las">Activo entre las</string>
     <string name="y_las">y las</string>
@@ -192,4 +193,9 @@
     <string name="alerta">Alerta</string>
     <string name="escoge_audio">Escoge audio</string>
     <string name="recompensa_como_haber_trabajado">Recompensa como haber trabajado</string>
+    <string name="grupos_negativos">Grupos negativos</string>
+    <string name="condiciones">Condiciones</string>
+    <string name="apps">Apps</string>
+    <string name="externo">Externo</string>
+    <string name="no_anhadido_ya_existe">No añadido, ya existe</string>
 </resources>

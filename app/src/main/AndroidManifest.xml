@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="devs.mrp.coolyourturkey">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -32,48 +31,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="devs.mrp.coolyourturkey.listados.ActivityListaOnOff">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.usagestats.StatsActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.GruposPositivosActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.AddGroupActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ReviewGroupActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.AddGroupConditionActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.ExportGroupTimeActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.grupospositivos.conditions.GroupLimitsActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.lists.NegativeCheckListActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.review.NegativeChecksActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.lists.CheckTimeBlockListActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.review.TimeBlocksActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.checkperformer.CheckPerformerActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.export.ExportBlockActivity">
-        </activity>
-        <activity android:name="devs.mrp.coolyourturkey.checkperformer.PreventsBack">
-        </activity>
+        <activity android:name="devs.mrp.coolyourturkey.listados.ActivityListaOnOff"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.usagestats.StatsActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.configuracion.ConfiguracionActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.GruposPositivosActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.AddGroupActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.ReviewGroupActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.AddGroupConditionActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.ExportGroupTimeActivity"></activity>
+        <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.GroupLimitsActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.lists.NegativeCheckListActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.negativecheck.review.NegativeChecksActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.lists.CheckTimeBlockListActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.review.TimeBlocksActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.checkperformer.CheckPerformerActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.export.ExportBlockActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.checkperformer.PreventsBack"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.ReviewerActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity"></activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >

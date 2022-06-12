@@ -23,4 +23,7 @@ public interface TimeBlockLoggerDao {
     @Query("SELECT * FROM timeblocklogger WHERE epoch >= :from AND blockid = :blockid")
     LiveData<List<TimeBlockLogger>> findByTimeNewerAndBlockId(Long from, Integer blockid);
 
+    @Query("SELECT * FROM timeblocklogger WHERE epoch >= :from AND groupid = :groupid")
+    LiveData<List<TimeBlockLogger>> findByTimeNewerAndGroupId(Long from, Integer groupid);
+
 }
