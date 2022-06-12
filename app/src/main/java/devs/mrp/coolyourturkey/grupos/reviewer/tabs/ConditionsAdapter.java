@@ -146,6 +146,7 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
                 }
             });
         });
+        notifyDataSetChanged();
     }
 
     public void setGrupos(Map<Integer, Grupo> grupos) {
