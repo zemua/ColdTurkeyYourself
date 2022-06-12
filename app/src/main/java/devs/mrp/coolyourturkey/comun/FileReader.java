@@ -1,7 +1,6 @@
 package devs.mrp.coolyourturkey.comun;
 
 import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.UriPermission;
@@ -13,14 +12,12 @@ import android.provider.MediaStore;
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -37,7 +34,7 @@ public class FileReader {
     public static void openTextFile(Fragment fragment, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(ConfiguracionFragment.TEXT_MIME_TYME);
+        intent.setType(ConfiguracionFragment.TEXT_MIME_TYPE);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -145,7 +142,7 @@ public class FileReader {
     public static void createTextFile(Fragment fragment, int requestCode, String fileName) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(ConfiguracionFragment.TEXT_MIME_TYME);
+        intent.setType(ConfiguracionFragment.TEXT_MIME_TYPE);
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
         fragment.startActivityForResult(intent, requestCode);
     }

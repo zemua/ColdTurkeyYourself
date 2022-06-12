@@ -2,19 +2,22 @@ package devs.mrp.coolyourturkey.grupos.reviewer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.fragment.app.Fragment;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
+import devs.mrp.coolyourturkey.configuracion.ConfiguracionFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupoexport.GrupoExport;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupoexport.GrupoExportRepository;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
@@ -24,6 +27,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
     public static final String EXTRA_GROUP_TYPE = "extra_group_type";
 
+    private static final int EXPORT_LAST_DAYS = 30;
+
     private static final String TAG = "ReviewerActivity";
 
     private int mGroupId;
@@ -31,6 +36,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private GrupoType mGroupType;
 
     private GrupoRepository grupoRepository;
+    private GrupoExportRepository grupoExportRepository;
+    private ActivityResultLauncher<Intent> syncFileLauncher;
 
     @Override
     protected void initListeners(FeedbackerFragment frgmnt) {
@@ -48,6 +55,14 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
                                 }
                             });
                             dialog.show(getSupportFragmentManager(), "");
+                            break;
+                        case (ReviewerFeedbackCodes.SYNC):
+                            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.setType(ConfiguracionFragment.TEXT_MIME_TYPE);
+                            intent.putExtra(Intent.EXTRA_TITLE, mGroupName);
+                            syncFileLauncher.launch(intent);
+                            break;
                     }
                 }
             });
@@ -56,8 +71,9 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
 
     @Override
     protected void initCallbackRegisters() {
-        // TODO register callbacks for activity results
         grupoRepository = GrupoRepository.getRepo(getApplication());
+        grupoExportRepository = GrupoExportRepository.getRepo(getApplication());
+        syncFileLauncher = syncFileLauncher();
     }
 
     @Override
@@ -76,6 +92,25 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
         fragment.setGroupType(mGroupType);
         fragment.setGroupName(mGroupName);
         return fragment;
+    }
+
+    private ActivityResultLauncher<Intent> syncFileLauncher() {
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    if (result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        if (uri == null) {
+                            return;
+                        }
+                        getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        GrupoExport grupoExport = new GrupoExport(mGroupId, uri.toString(), EXPORT_LAST_DAYS);
+                        grupoExportRepository.insert(grupoExport);
+                    }
+                }
+            }
+        });
     }
 
 }
