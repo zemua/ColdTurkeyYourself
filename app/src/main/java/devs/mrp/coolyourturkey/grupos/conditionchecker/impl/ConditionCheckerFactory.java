@@ -4,7 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LifecycleOwner;
 
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 
 public class ConditionCheckerFactory {

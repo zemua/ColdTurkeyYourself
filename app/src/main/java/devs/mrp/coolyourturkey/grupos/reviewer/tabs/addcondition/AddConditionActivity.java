@@ -6,8 +6,8 @@ import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.IntentAttacher;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.comun.impl.IntentAttacherImpl;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class AddConditionActivity extends SingleFragmentActivity {

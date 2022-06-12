@@ -2,7 +2,6 @@ package devs.mrp.coolyourturkey.watchdog.groups;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -14,10 +13,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
-import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
-import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimitRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grouplimit.GroupLimit;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grouplimit.GroupLimitRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivoRepository;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 

@@ -2,7 +2,6 @@ package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 
 import android.app.Application;
 import android.os.Handler;
-import android.os.Looper;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -15,13 +14,12 @@ import java.util.Optional;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.comun.TimeBounded;
-import devs.mrp.coolyourturkey.comun.impl.TimeBoundedImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 

@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditiontogroup_old_deprecated.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;

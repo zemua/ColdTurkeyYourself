@@ -16,16 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
-import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
 import devs.mrp.coolyourturkey.grupos.timing.impl.GeneralAssemblerImpl;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;

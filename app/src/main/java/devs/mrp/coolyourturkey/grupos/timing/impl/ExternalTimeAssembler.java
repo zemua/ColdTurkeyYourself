@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.FileTimeGetter;
 import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.grupos.timing.GroupTimeAssembler;
 
 public class ExternalTimeAssembler implements GroupTimeAssembler {

@@ -22,8 +22,8 @@ import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FileReader;
-import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExport;
-import devs.mrp.coolyourturkey.databaseroom.grupoexport.GrupoExportViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupoexport.GrupoExport;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupoexport.GrupoExportViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 

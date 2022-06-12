@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 
 public class ExternalAdapter extends AbstractAdapter<ExternalAdapter.ExternalViewHolder, String, String> {
 

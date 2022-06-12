@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.checkperformer;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -21,8 +20,8 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogger;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;

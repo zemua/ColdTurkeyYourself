@@ -17,6 +17,18 @@ public interface GrupoDao {
     @Query("DELETE FROM grupo WHERE id = :id")
     void deleteById(Integer id);
 
+    @Query("DELETE FROM grupoexport WHERE groupid = :groupid")
+    void deleteRelatedExports(int groupid);
+
+    @Query("DELETE FROM elementtogroup WHERE groupid = :groupid")
+    void deleteRelatedAssignations(int groupid);
+
+    @Query("DELETE FROM grupocondition WHERE groupid = :groupid")
+    void deleteConditionsByThisGroup(int groupid);
+
+    @Query("DELETE FROM grupocondition WHERE conditionalgroupid = :conditionalgroupid")
+    void deleteConditionsByThisTarget(int conditionalgroupid);
+
     @Query("SELECT * FROM grupo ORDER BY id ASC")
     LiveData<List<Grupo>> findAllGrupos();
 

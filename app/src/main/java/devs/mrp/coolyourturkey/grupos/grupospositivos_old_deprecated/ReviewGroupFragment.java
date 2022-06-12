@@ -28,12 +28,12 @@ import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupViewModel;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroup;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroupViewModel;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.apptogroup.AppToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.apptogroup.AppToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditiontogroup_old_deprecated.ConditionToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditiontogroup_old_deprecated.ConditionToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;

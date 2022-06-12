@@ -16,8 +16,8 @@ import java.util.Map;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 
 public class ChecksAdapter extends AbstractSwitchesAdapter<ChecksAdapter.CheckViewHolder, Long, CheckTimeBlock> {
 

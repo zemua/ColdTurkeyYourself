@@ -1,6 +1,6 @@
 package devs.mrp.coolyourturkey.comun;
 
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroup;
 import devs.mrp.coolyourturkey.watchdog.TimePusherFactory;
 import devs.mrp.coolyourturkey.watchdog.TimePusherFactoryInterface;
 import devs.mrp.coolyourturkey.watchdog.WatchDogDataFactory;

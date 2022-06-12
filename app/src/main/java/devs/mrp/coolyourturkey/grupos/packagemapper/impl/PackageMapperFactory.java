@@ -6,7 +6,7 @@ import android.os.Looper;
 
 import androidx.lifecycle.LifecycleOwner;
 
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageMapper;
 
 public class PackageMapperFactory {

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.grouplimit.GroupLimit;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 

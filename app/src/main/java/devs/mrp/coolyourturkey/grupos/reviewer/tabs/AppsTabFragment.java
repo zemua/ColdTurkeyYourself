@@ -24,9 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaViewModel;
 import devs.mrp.coolyourturkey.grupos.GroupType;

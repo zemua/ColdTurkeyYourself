@@ -21,8 +21,8 @@ import java.util.List;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlock;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.CheckTimeBlockViewModel;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 
 public class ChecksTabFragment extends Fragment {

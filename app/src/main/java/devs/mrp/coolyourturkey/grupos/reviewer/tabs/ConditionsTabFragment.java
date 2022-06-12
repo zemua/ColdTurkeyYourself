@@ -1,18 +1,14 @@
 package devs.mrp.coolyourturkey.grupos.reviewer.tabs;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -20,21 +16,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.IntentAttacher;
-import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.comun.impl.IntentAttacherImpl;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupViewModel;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoViewModel;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionViewModel;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionViewModel;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.ConditionActionConstants;

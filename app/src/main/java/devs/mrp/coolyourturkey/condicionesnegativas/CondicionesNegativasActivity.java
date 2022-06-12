@@ -11,7 +11,7 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity;
-import devs.mrp.coolyourturkey.databaseroom.conditionnegativetogroup.ConditionNegativeToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditionnegativetogroup.ConditionNegativeToGroup;
 
 public class CondicionesNegativasActivity extends AppCompatActivity {
 

@@ -8,9 +8,9 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 import java.util.function.Consumer;
 
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageMapper;
 
 public class PackageMapperImpl implements PackageMapper {

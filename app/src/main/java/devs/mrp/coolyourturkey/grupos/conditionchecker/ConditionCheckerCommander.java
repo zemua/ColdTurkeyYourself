@@ -2,7 +2,7 @@ package devs.mrp.coolyourturkey.grupos.conditionchecker;
 
 import java.util.function.Consumer;
 
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 
 public interface ConditionCheckerCommander {
     public void onTimeCounted(GrupoCondition condition, Consumer<Long> action);

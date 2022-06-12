@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 
 public class GruposPositivosActivity extends AppCompatActivity implements FeedbackReceiver<Fragment, Object> {

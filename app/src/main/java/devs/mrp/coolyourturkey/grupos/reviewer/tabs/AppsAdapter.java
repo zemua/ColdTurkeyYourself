@@ -13,21 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
-import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
-import devs.mrp.coolyourturkey.listados.AppLister;
-import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
 
 public class AppsAdapter extends AbstractSwitchesAdapter<AppsAdapter.AppsViewHolder, String, ApplicationInfo> {
 

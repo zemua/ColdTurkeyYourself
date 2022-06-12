@@ -14,9 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.MilisToTime;
-import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 

@@ -64,6 +64,7 @@ public class CheckTimeBlockRepository {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
             mDao.deleteById(id);
             mDao.deleteAllCheckReferencesOfBlock(id);
+            mDao.deleteElementsToGroupOfBlock(id);
         });
     }
 

@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.conditiontogroup_old_deprecated.ConditionToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivo;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupopositivo.GrupoPositivoViewModel;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.apptogroup.AppToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.conditiontogroup_old_deprecated.ConditionToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivoRepository;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivoViewModel;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.FeedbackReceiver;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;

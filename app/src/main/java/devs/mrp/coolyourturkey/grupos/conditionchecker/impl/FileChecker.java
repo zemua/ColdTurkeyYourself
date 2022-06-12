@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.FileTimeGetter;
 import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroup;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementToGroupRepository;
-import devs.mrp.coolyourturkey.databaseroom.elementtogroup.ElementType;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
 
 public class FileChecker implements ConditionChecker {

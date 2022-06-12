@@ -56,8 +56,13 @@ public class GrupoRepository {
     }
 
     public void deleteById(Integer id) {
-        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.deleteById(id));
-        // TODO delete references from other tables, like group conditions
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteById(id);
+            mDao.deleteRelatedExports(id);
+            mDao.deleteRelatedAssignations(id);
+            mDao.deleteConditionsByThisGroup(id);
+            mDao.deleteConditionsByThisTarget(id);
+        });
     }
 
 }

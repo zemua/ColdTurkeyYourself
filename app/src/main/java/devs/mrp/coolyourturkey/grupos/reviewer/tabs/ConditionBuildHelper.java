@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 
 public class ConditionBuildHelper {
 

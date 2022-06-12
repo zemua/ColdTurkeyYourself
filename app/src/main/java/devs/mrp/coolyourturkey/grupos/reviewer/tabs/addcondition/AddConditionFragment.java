@@ -22,7 +22,7 @@ import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionBuildHelper;
 
 public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {

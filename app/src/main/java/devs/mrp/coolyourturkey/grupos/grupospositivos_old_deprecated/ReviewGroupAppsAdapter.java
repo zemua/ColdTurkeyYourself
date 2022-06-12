@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.databaseroom.apptogroup.AppToGroup;
+import devs.mrp.coolyourturkey.databaseroom.deprecated.apptogroup.AppToGroup;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoCondition;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 

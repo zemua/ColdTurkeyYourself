@@ -11,7 +11,7 @@ import devs.mrp.coolyourturkey.comun.TimeBounded;
 import devs.mrp.coolyourturkey.comun.impl.TimeBoundedImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
-import devs.mrp.coolyourturkey.databaseroom.grupocondition.GrupoConditionRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 
