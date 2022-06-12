@@ -18,15 +18,15 @@ public class FileTimeGetterImpl implements FileTimeGetter {
     }
 
     @Override
-    public long fromFileDaysAgo(int daysAgo, Uri uri) {
+    public long fromFileDaysAgo(long daysAgo, Uri uri) {
         Map<Long, FileReader.DayConsumption> map = cache.read(uri);
         return map.containsKey(daysAgo) ? map.get(daysAgo).getConsumption() : 0;
     }
 
     @Override
-    public long fromFileLastDays(int lastDays, Uri uri) {
+    public long fromFileLastDays(long lastDays, Uri uri) {
         long result = 0;
-        for (int i = 0; i<lastDays; i++) {
+        for (int i = 0; i<lastDays+1; i++) {
             result += fromFileDaysAgo(i, uri);
         }
         return result;
