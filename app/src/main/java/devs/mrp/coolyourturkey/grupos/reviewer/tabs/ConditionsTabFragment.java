@@ -108,6 +108,12 @@ public class ConditionsTabFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mConditionsAdapterHandler.refresh();
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
         super.onSaveInstanceState(outState);

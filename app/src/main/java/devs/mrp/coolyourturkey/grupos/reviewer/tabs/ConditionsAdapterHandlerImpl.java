@@ -41,4 +41,9 @@ public class ConditionsAdapterHandlerImpl implements AdapterHandler<GrupoConditi
     public void addFeedbackListener(FeedbackListener<GrupoCondition> listener) {
         conditionsAdapter.addFeedbackListener(listener);
     }
+
+    @Override
+    public void refresh() {
+        conditionsAdapter.notifyDataSetChanged();
+    }
 }

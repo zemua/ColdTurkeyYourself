@@ -15,4 +15,5 @@ public interface AdapterHandler<T> {
     public void setDataset(List<T> dataSet);
     public void setGrupos(Map<Integer, Grupo> grupos);
     public void addFeedbackListener(FeedbackListener<T> listener);
+    public void refresh();
 }
