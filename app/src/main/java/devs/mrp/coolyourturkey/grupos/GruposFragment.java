@@ -33,7 +33,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
 
     private ViewModelProvider.Factory viewModelFactory;
     private TimeLogHandler mTimeLogHandler;
-    private GruposAdapter mAdapter;
+    protected GruposAdapter mAdapter;
     private GrupoViewModel mGrupoViewModel;
 
     private Button mAddGrupoButton;

@@ -24,6 +24,12 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
     private GrupoRepository grupoRepository;
 
     @Override
+    public void onResume() {
+        super.onResume();
+        this.mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected TimeLogHandler returnTimeLogHandler(Context context, Application application, LifecycleOwner lifecycleOwner) {
         return new TimeLogHandler(context, application, lifecycleOwner);
     }
