@@ -20,6 +20,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 
 public class ReviewerFragment extends FeedbackerFragment<Intent> {
 
@@ -66,6 +67,8 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();
+        buttonDelete.setOnClickListener(view -> giveFeedback(ReviewerFeedbackCodes.DELETE, null));
+        buttonExpTxt.setOnClickListener(view -> giveFeedback(ReviewerFeedbackCodes.SYNC, null));
 
         return v;
     }

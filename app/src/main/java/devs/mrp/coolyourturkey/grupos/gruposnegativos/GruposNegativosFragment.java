@@ -47,10 +47,6 @@ public class GruposNegativosFragment extends GruposFragment<Grupo> {
 
     @Override
     public void removeGrupoFromDb(Integer id) {
-        // TODO remove association from new GroupingRepository
-        // TODO remove conditions from new GroupConditioningRepository
-        // no need to delete condition refering to this group, because this is negative
-        // Delete this group
         if (grupoRepository == null) {
             grupoRepository = GrupoRepository.getRepo(getActivity().getApplication());
         }

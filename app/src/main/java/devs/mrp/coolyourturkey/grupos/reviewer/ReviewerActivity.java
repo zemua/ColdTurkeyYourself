@@ -9,9 +9,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
+import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
 public class ReviewerActivity extends SingleFragmentActivity<Intent> {
@@ -26,6 +30,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private String mGroupName;
     private GrupoType mGroupType;
 
+    private GrupoRepository grupoRepository;
+
     @Override
     protected void initListeners(FeedbackerFragment frgmnt) {
         if (frgmnt instanceof ReviewerFragment) {
@@ -33,9 +39,16 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
             fragment.addFeedbackListener(new FeedbackListener<Intent>() {
                 @Override
                 public void giveFeedback(int tipo, Intent feedback, Object... args) {
-                    //switch (tipo) {
-                        // TODO init listeners on fragment
-                    //}
+                    switch (tipo) {
+                        case (ReviewerFeedbackCodes.DELETE):
+                            final DialogWithDelay dialog = new DialogWithDelay(R.drawable.trash_can_outline, getString(R.string.borrar), getString(R.string.estas_seguro), 0, 0, (tipo2, feedback2, args2) -> {
+                                if (tipo == DialogWithDelay.FEEDBACK_ALERT_DIALOG_ACEPTAR) {
+                                    grupoRepository.deleteById(mGroupId);
+                                    finish();
+                                }
+                            });
+                            dialog.show(getSupportFragmentManager(), "");
+                    }
                 }
             });
         }
@@ -44,6 +57,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     @Override
     protected void initCallbackRegisters() {
         // TODO register callbacks for activity results
+        grupoRepository = GrupoRepository.getRepo(getApplication());
     }
 
     @Override

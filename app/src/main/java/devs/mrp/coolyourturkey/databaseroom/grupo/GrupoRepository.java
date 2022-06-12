@@ -16,14 +16,11 @@ public class GrupoRepository {
     private LiveData<List<Grupo>> mGruposNegativos;
     private LiveData<List<Grupo>> mGruposPositivos;
     private static GrupoRepository mRepo;
-    // TODO ConditionNegativeToGroupRepository
-    private TimeLoggerRepository timeLoggerRepository;
 
     private GrupoRepository(Application application) {
         TurkeyDatabaseRoom db = TurkeyDatabaseRoom.getDatabase(application);
         mDao = db.grupoDao();
         mAllGrupos = mDao.findAllGrupos();
-        timeLoggerRepository = TimeLoggerRepository.getRepo(application);
         mGruposNegativos = mDao.findGruposByType(GrupoType.NEGATIVE);
         mGruposPositivos = mDao.findGruposByType(GrupoType.POSITIVE);
     }
