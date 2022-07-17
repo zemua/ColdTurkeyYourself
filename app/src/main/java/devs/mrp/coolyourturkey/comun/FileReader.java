@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionFragment;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 
 public class FileReader {
 
@@ -87,6 +89,17 @@ public class FileReader {
     }*/
 
     public static Map<Long,DayConsumption> readPastDaysConsumption(Application app, Uri uri) {
+        return readPastDaysConsumptionUntilEpoch(app, uri, LocalDate.now());
+    }
+
+    public static Map<Long,DayConsumption> readPastDaysConsumptionConsideringChangeOfDay(Application app, Uri uri) {
+        MisPreferencias prefs = new MisPreferencias(app);
+        int hours = prefs.getHourForChangeOfDay();
+        LocalDate date = LocalDateTime.now().minusHours(hours).toLocalDate();
+        return readPastDaysConsumptionUntilEpoch(app, uri, date);
+    }
+
+    private static Map<Long,DayConsumption> readPastDaysConsumptionUntilEpoch(Application app, Uri uri, LocalDate date) {
         Map<Long,DayConsumption> map = new HashMap<>();
         try {
             if (ifHaveReadingRights(app, uri)) {
@@ -96,7 +109,7 @@ public class FileReader {
                     while ((line = reader.readLine()) != null) {
                         if (isCorrectImportFormat(line)) {
                             DayConsumption dayConsumption = new DayConsumption(line);
-                            long lastDays = dayConsumption.getLocalDate().until(LocalDate.now(), ChronoUnit.DAYS);
+                            long lastDays = dayConsumption.getLocalDate().until(date, ChronoUnit.DAYS);
                             map.put(lastDays, dayConsumption);
                         }
                     }

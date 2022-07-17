@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -18,15 +19,17 @@ public class LocalRecordsChecker implements ConditionChecker {
 
     private TimeLoggerRepository loggerRepository;
     private LifecycleOwner owner;
+    private Context context;
 
     public LocalRecordsChecker(Application app, LifecycleOwner owner) {
         loggerRepository = TimeLoggerRepository.getRepo(app);
         this.owner = owner;
+        this.context = app;
     }
 
     @Override
     public void onTimeCounted(GrupoCondition condition, Consumer<Long> action) {
-        long from = MilisToTime.offsetDayInMillis(condition.getFromlastndays());
+        long from = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDay(condition.getFromlastndays(), context);
         LiveData<List<TimeLogger>> loggers = loggerRepository.findByNewerThanAndGroupId(from, condition.getConditionalgroupid());
         loggers.observe(owner, timeLoggers -> {
             loggers.removeObservers(owner);

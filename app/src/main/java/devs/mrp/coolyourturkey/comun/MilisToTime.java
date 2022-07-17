@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.comun;
 
+import android.content.Context;
 import android.icu.util.Calendar;
 
 import java.time.Clock;
@@ -11,6 +12,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
+
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 
 public class MilisToTime {
 
@@ -155,7 +158,19 @@ public class MilisToTime {
         return millisFromDays(days) + millisFromDays(1);
     }
 
-    public static int hoursForChangeOfDay() {
-        return 0;
+    public static long beginningOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        int changeOfDay = prefs.getHourForChangeOfDay();
+        LocalDateTime start = LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().minusDays(offsetDays).plusHours(changeOfDay);
+        ZonedDateTime zdt = start.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
+    }
+
+    public static long endOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        int changeOfDay = prefs.getHourForChangeOfDay();
+        LocalDateTime end = LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().plusHours(24).minusDays(offsetDays).plusHours(changeOfDay);
+        ZonedDateTime zdt = end.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
     }
 }
