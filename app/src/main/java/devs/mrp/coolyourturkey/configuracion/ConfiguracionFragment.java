@@ -98,6 +98,10 @@ public class ConfiguracionFragment extends Fragment {
     private Switch mSwitchNotifyConditionsRecentlyMet;
     private Switch mSwitchNotifyLimitesReached;
 
+    private Button mButtonChangeOfDayMinus;
+    private Button mButtonChangeOfDayPlus;
+    private TextView mTextChangeOfDay;
+
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
     private DialogDelayer mDialogDelayer;
@@ -162,6 +166,9 @@ public class ConfiguracionFragment extends Fragment {
         mSwitchNotifyConditionsNotMet = (Switch) v.findViewById(R.id.switchNotifyConditions);
         mSwitchNotifyConditionsRecentlyMet = (Switch) v.findViewById(R.id.switchNotifyConditionsMet);
         mSwitchNotifyLimitesReached = (Switch) v.findViewById(R.id.switchNotifyLimites);
+        mButtonChangeOfDayMinus = (Button) v.findViewById(R.id.minusChangeOfDay);
+        mButtonChangeOfDayPlus = (Button) v.findViewById(R.id.plusChangeOfDay);
+        mTextChangeOfDay = (TextView) v.findViewById(R.id.textHourChangeOfDay);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -554,6 +561,25 @@ public class ConfiguracionFragment extends Fragment {
             }
         });
 
+        mTextChangeOfDay.setText(String.valueOf(mMisPreferencias.getHourForChangeOfDay()));
+
+        mButtonChangeOfDayMinus.setOnClickListener(view -> {
+            int hour = mMisPreferencias.getHourForChangeOfDay();
+            if (hour > 0) {
+                hour --;
+                mMisPreferencias.setHourForChangeOfDay(hour);
+                mTextChangeOfDay.setText(String.valueOf(hour));
+            }
+        });
+
+        mButtonChangeOfDayPlus.setOnClickListener(view -> {
+            int hour = mMisPreferencias.getHourForChangeOfDay();
+            if (hour < 6) {
+                hour ++;
+                mMisPreferencias.setHourForChangeOfDay(hour);
+                mTextChangeOfDay.setText(String.valueOf(hour));
+            }
+        });
 
         return v;
     }

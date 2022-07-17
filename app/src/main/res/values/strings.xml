@@ -198,4 +198,5 @@
     <string name="apps">Apps</string>
     <string name="externo">Externo</string>
     <string name="no_anhadido_ya_existe">No añadido, ya existe</string>
+    <string name="hours_after_midnight_for_change_of_day">Horas tras la media noche para el cambio de día</string>
 </resources>

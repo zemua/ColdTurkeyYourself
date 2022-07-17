@@ -31,6 +31,7 @@ public class MisPreferencias {
     private static final String NOTIFY_CONDITIONS_NOT_MET = "notify.conditions.not.met";
     private static final String NOTIFY_CONDITIONS_JUST_MET = "notify.conditions.just.met";
     private static final String NOTIFY_LIMITES_REACHED = "notify.limites.reached";
+    private static final String HOUR_FOR_CHANGE_OF_DAY = "hour.for.change.of.day";
 
     private static final String RANDOM_CHECK_CUSTOM_SOUND = "random.check.custom.sound";
     private static final String RANDOM_CHECK_TIMESTAMP = "random.check.time.stamp";
@@ -311,6 +312,17 @@ public class MisPreferencias {
     public long getLastRandomCheckTimeStamp() {
         long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP, 0L);
         return l;
+    }
+
+    public void setHourForChangeOfDay(int hour) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putInt(HOUR_FOR_CHANGE_OF_DAY, hour);
+        e.apply();
+    }
+
+    public int getHourForChangeOfDay() {
+        int i = getSharedPreferences().getInt(HOUR_FOR_CHANGE_OF_DAY, 3);
+        return i;
     }
 
 }
