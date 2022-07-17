@@ -102,6 +102,12 @@ public class ConfiguracionFragment extends Fragment {
     private Button mButtonChangeOfDayPlus;
     private TextView mTextChangeOfDay;
 
+    private Switch mSwitchNotifyChangeOfDay;
+
+    private Button mButtonNotifyChangeOfDayMinus;
+    private Button mButtonNotifyChangeOfDayPlus;
+    private TextView mTextNotifyChangeOfDayMinutes;
+
     private ImportablesViewModel mImportablesViewModel;
     private DialogWithDelay mDialogo;
     private DialogDelayer mDialogDelayer;
@@ -166,9 +172,16 @@ public class ConfiguracionFragment extends Fragment {
         mSwitchNotifyConditionsNotMet = (Switch) v.findViewById(R.id.switchNotifyConditions);
         mSwitchNotifyConditionsRecentlyMet = (Switch) v.findViewById(R.id.switchNotifyConditionsMet);
         mSwitchNotifyLimitesReached = (Switch) v.findViewById(R.id.switchNotifyLimites);
+
         mButtonChangeOfDayMinus = (Button) v.findViewById(R.id.minusChangeOfDay);
         mButtonChangeOfDayPlus = (Button) v.findViewById(R.id.plusChangeOfDay);
         mTextChangeOfDay = (TextView) v.findViewById(R.id.textHourChangeOfDay);
+
+        mSwitchNotifyChangeOfDay = (Switch) v.findViewById(R.id.switchNotifyChangeOfDay);
+
+        mButtonNotifyChangeOfDayMinus = (Button) v.findViewById(R.id.minusWarnChangeOfDay);
+        mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
+        mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -562,7 +575,6 @@ public class ConfiguracionFragment extends Fragment {
         });
 
         mTextChangeOfDay.setText(String.valueOf(mMisPreferencias.getHourForChangeOfDay()));
-
         mButtonChangeOfDayMinus.setOnClickListener(view -> {
             int hour = mMisPreferencias.getHourForChangeOfDay();
             if (hour > 0) {
@@ -571,13 +583,47 @@ public class ConfiguracionFragment extends Fragment {
                 mTextChangeOfDay.setText(String.valueOf(hour));
             }
         });
-
         mButtonChangeOfDayPlus.setOnClickListener(view -> {
             int hour = mMisPreferencias.getHourForChangeOfDay();
             if (hour < 6) {
                 hour ++;
                 mMisPreferencias.setHourForChangeOfDay(hour);
                 mTextChangeOfDay.setText(String.valueOf(hour));
+            }
+        });
+
+        if (mMisPreferencias.getNotifyChangeOfDay()) {
+            mSwitchNotifyChangeOfDay.setChecked(true);
+            mSwitchNotifyChangeOfDay.setText(R.string.si_avisar);
+        } else {
+            mSwitchNotifyChangeOfDay.setChecked(false);
+            mSwitchNotifyChangeOfDay.setText(R.string.no_avisar);
+        }
+        mSwitchNotifyChangeOfDay.setOnClickListener(view -> {
+            if (mSwitchNotifyChangeOfDay.isChecked()) {
+                mSwitchNotifyChangeOfDay.setText(R.string.si_avisar);
+                mMisPreferencias.setNotifyChangeOfDay(true);
+            } else {
+                mSwitchNotifyChangeOfDay.setText(R.string.no_avisar);
+                mMisPreferencias.setNotifyChangeOfDay(false);
+            }
+        });
+
+        mTextNotifyChangeOfDayMinutes.setText(String.valueOf(mMisPreferencias.getMinutesNotifyChangeOfDay()));
+        mButtonNotifyChangeOfDayMinus.setOnClickListener(view -> {
+            int minutes = mMisPreferencias.getMinutesNotifyChangeOfDay();
+            if (minutes > 0) {
+                minutes --;
+                mMisPreferencias.setMinutesNotifyChangeOfDay(minutes);
+                mTextNotifyChangeOfDayMinutes.setText(String.valueOf(minutes));
+            }
+        });
+        mButtonNotifyChangeOfDayPlus.setOnClickListener(view -> {
+            int minutes = mMisPreferencias.getMinutesNotifyChangeOfDay();
+            if (minutes < 60) {
+                minutes ++;
+                mMisPreferencias.setMinutesNotifyChangeOfDay(minutes);
+                mTextNotifyChangeOfDayMinutes.setText(String.valueOf(minutes));
             }
         });
 

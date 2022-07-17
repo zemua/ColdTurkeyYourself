@@ -32,6 +32,8 @@ public class MisPreferencias {
     private static final String NOTIFY_CONDITIONS_JUST_MET = "notify.conditions.just.met";
     private static final String NOTIFY_LIMITES_REACHED = "notify.limites.reached";
     private static final String HOUR_FOR_CHANGE_OF_DAY = "hour.for.change.of.day";
+    private static final String NOTIFY_CHANGE_OF_DAY = "notify.change.of.day.switch";
+    private static final String NOTIFY_CHANGE_OF_DAY_MINUTES = "notify.change.of.day.minutes";
 
     private static final String RANDOM_CHECK_CUSTOM_SOUND = "random.check.custom.sound";
     private static final String RANDOM_CHECK_TIMESTAMP = "random.check.time.stamp";
@@ -322,6 +324,28 @@ public class MisPreferencias {
 
     public int getHourForChangeOfDay() {
         int i = getSharedPreferences().getInt(HOUR_FOR_CHANGE_OF_DAY, 3);
+        return i;
+    }
+
+    public void setNotifyChangeOfDay(boolean notify) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putBoolean(NOTIFY_CHANGE_OF_DAY, notify);
+        e.apply();
+    }
+
+    public boolean getNotifyChangeOfDay() {
+        boolean i = getSharedPreferences().getBoolean(NOTIFY_CHANGE_OF_DAY, true);
+        return i;
+    }
+
+    public void setMinutesNotifyChangeOfDay(int minutes) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putInt(NOTIFY_CHANGE_OF_DAY_MINUTES, minutes);
+        e.apply();
+    }
+
+    public int getMinutesNotifyChangeOfDay() {
+        int i = getSharedPreferences().getInt(NOTIFY_CHANGE_OF_DAY_MINUTES, 10);
         return i;
     }
 
