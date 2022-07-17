@@ -35,6 +35,8 @@ import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.AbstractHandler;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
+import devs.mrp.coolyourturkey.watchdog.utils.Notifier;
+import devs.mrp.coolyourturkey.watchdog.utils.impl.ChangeOfDayNotifier;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,7 @@ public class WatchdogService extends LifecycleService {
     private AbstractHandler actionRequestor;
     private CheckManager mCheckManager;
     private EntryCleaner mEntryCleaner;
+    private Notifier changeOfDayNotifier;
 
     private WatchDogData mData;
 
@@ -70,6 +73,7 @@ public class WatchdogService extends LifecycleService {
         actionRequestor = MyBeanFactory.getActionRequestorFactory().getChainRequestor().getHandlerChain();
         mCheckManager = CheckManager.getInstance(this.getApplication(), this);
         mEntryCleaner = new EntryCleanerImpl(this.getApplication(), this, this);
+        changeOfDayNotifier = new ChangeOfDayNotifier(this);
 
         mData = MyBeanFactory.getWatchDogDataFactory().create(this)
                 .setSleepTime(1000 * 3) // 3 seconds between checks
@@ -212,6 +216,7 @@ public class WatchdogService extends LifecycleService {
             data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
+            changeOfDayNotifier.notify(null);
 
             if (PermisosChecker.checkPermisoEstadisticas(this)) {
 
