@@ -143,7 +143,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     /**
      * Set the observers for the exported group files, to be called on day-change too
      */
-    private void setExportObservers() {
+    private void setExportObservers() { // TODO consider hour for change of day
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -443,19 +443,20 @@ public class TimeLogHandler implements Feedbacker<Object> {
      * Refresh for all kinds of conditions
      */
 
-    private void refreshDayCounting() {
+    private void refreshDayCounting() { // TODO consider hour for change of day
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
         Long currentDay = currentDay();
         if (!dayRefreshed.equals(currentDay)) {
             dayRefreshed = currentDay;
             setExportObservers();
             refreshTodayGroupObservers();
-            mMainHandler.post(new Runnable() {
+            // positive groups have a limit no more, no need for mLimitHandler
+            /*mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     mLimitHandler.resetObserversOnDayChange();
                 }
-            });
+            });*/
         }
     }
 
@@ -472,7 +473,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
      * Of exporter for sync
      */
 
-    private void refreshTimeExportedToFiles() {
+    private void refreshTimeExportedToFiles() { // TODO consider hour for change of day
         if (mLastFilesExported == null) {
             mLastFilesExported = 0L;
         }
@@ -554,7 +555,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         return elementsByPackageName.containsKey(packageName);
     }
 
-    private void observeTodayGroupTime(Grupo grupo) {
+    private void observeTodayGroupTime(Grupo grupo) { // TODO consider hour for change of day
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {

@@ -20,6 +20,7 @@ import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositi
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
+// positive groups have a limit no more, DEPRECATED
 public class LimitHandler {
 
     private static final String TAG = "LIMIT_HANDLER";
