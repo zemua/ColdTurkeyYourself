@@ -79,12 +79,22 @@ public class MilisToTime {
         return nowToMilis;
     }
 
+    /**
+     * Time Conversion from millis
+     * @param millis
+     * @return
+     */
     public static LocalDateTime millisToLocalDateTime(long millis) {
         Instant instant = Instant.ofEpochMilli(millis);
         LocalDateTime date = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
         return date;
     }
 
+    /**
+     * Time conversion from millis
+     * @param localDateTime
+     * @return
+     */
     public static long localDateTimeToMillis(LocalDateTime localDateTime) {
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
@@ -158,19 +168,36 @@ public class MilisToTime {
         return millisFromDays(days) + millisFromDays(1);
     }
 
+    public static long beginningOfTodayConsideringChangeOfDay(Context context) {
+        return beginningOfOffsetDaysConsideringChangeOfDay(0, context);
+    }
+
     public static long beginningOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
-        MisPreferencias prefs = new MisPreferencias(context);
-        int changeOfDay = prefs.getHourForChangeOfDay();
-        LocalDateTime start = LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().minusDays(offsetDays).plusHours(changeOfDay);
+        LocalDateTime start = beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays, context);
         ZonedDateTime zdt = start.atZone(ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
     }
 
-    public static long endOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+    public static LocalDateTime beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(long offsetDays, Context context) {
         MisPreferencias prefs = new MisPreferencias(context);
         int changeOfDay = prefs.getHourForChangeOfDay();
-        LocalDateTime end = LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().plusHours(24).minusDays(offsetDays).plusHours(changeOfDay);
+        return LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().minusDays(offsetDays).plusHours(changeOfDay);
+    }
+
+    public static long endOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+        LocalDateTime end = endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays, context);
         ZonedDateTime zdt = end.atZone(ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
+    }
+
+    public static LocalDateTime endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(long offsetDays, Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        int changeOfDay = prefs.getHourForChangeOfDay();
+        return LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().plusHours(24).minusDays(offsetDays).plusHours(changeOfDay);
+    }
+
+    public static int hoursForChangeOfDay(Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        return prefs.getHourForChangeOfDay();
     }
 }
