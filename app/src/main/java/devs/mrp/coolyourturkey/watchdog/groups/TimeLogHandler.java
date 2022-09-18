@@ -397,9 +397,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
                         Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId())
                                 .stream()
                                 // filter only those values that are after the given offset day
-                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isAfter(MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext)))
+                                .filter(tl -> {
+                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
+                                    LocalDateTime ldt2 = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
+                                    return ldt.isAfter(ldt2);
+                                })
                                 // filter only those values that are within the same day
-                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isBefore(MilisToTime.endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days-1, mContext)))
+                                .filter(tl -> {
+                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
+                                    LocalDateTime ldt2 = MilisToTime.endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
+                                    return ldt.isBefore(ldt2);
+                                })
                                 .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());
