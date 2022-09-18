@@ -416,22 +416,27 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
+    // TODO review usage of these functions and consider change of day
     private Long days(Long milliseconds) {
         return TimeUnit.MILLISECONDS.toDays(milliseconds);
     }
 
+    // TODO review usage of these functions and consider change of day
     private Long millis(Long days) {
         return TimeUnit.DAYS.toMillis(days);
     }
 
+    // TODO review usage of these functions and consider change of day
     private Long currentDay() {
         return days(System.currentTimeMillis());
     }
 
+    // TODO review usage of these functions and consider change of day
     private Long offsetDay(Long nDays) {
         return currentDay() - nDays;
     }
 
+    // TODO review usage of these functions and consider change of day
     public Long offsetDayInMillis(Long nDays) {
         return millis(offsetDay(nDays));
     }
