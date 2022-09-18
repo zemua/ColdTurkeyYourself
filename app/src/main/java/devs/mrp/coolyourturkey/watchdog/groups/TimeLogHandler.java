@@ -58,7 +58,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
     private Handler mMainHandler;
-    private LimitHandler mLimitHandler;
+    //private LimitHandler mLimitHandler; // Positive groups are limited no more, no need for limitHandler for now
 
     private TimeLoggerRepository timeLoggerRepository;
     private Map<String, ElementToGroup> elementsByPackageName;
@@ -95,7 +95,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         observableByRandomCheckCondition = new ArrayList<>();
         mMainHandler = new Handler(mContext.getMainLooper());
         mNotificador = new Notificador(application, context);
-        mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
+        //mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
         conditionChecker = ConditionCheckerFactory.getConditionChecker(application, lifecycleOwner);
 
         mTodayTimeByGroupMap = new HashMap<>();
@@ -216,63 +216,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         feedbackListeners.add(listener);
     }
 
-    private class TimeSummary {
-        private Integer groupId;
-        private Integer conditionGroupId;
-        private Integer days;
-        private Long summedTime;
-
-        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days, Long summedTime) {
-            this.groupId = groupId;
-            this.conditionGroupId = conditionGroupId;
-            this.summedTime = summedTime;
-            this.days = days;
-        }
-
-        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days) {
-            this.groupId = groupId;
-            this.conditionGroupId = conditionGroupId;
-            this.days = days;
-        }
-
-        String getKey() {
-            return "A" + groupId + "B" + conditionGroupId + "C" + days;
-        }
-
-        Integer getGroupId() {
-            return groupId;
-        }
-
-        Integer getConditionGroupId() {
-            return conditionGroupId;
-        }
-
-        Long getSummedTime() {
-            return summedTime;
-        }
-
-        Integer getDays() {
-            return days;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TimeSummary that = (TimeSummary) o;
-            return groupId.equals(that.groupId) && conditionGroupId.equals(that.conditionGroupId) && days.equals(that.days) && summedTime.equals(that.summedTime);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(groupId, conditionGroupId, days, summedTime);
-        }
-    }
-
-    private class NegativeTimeSummary {
-
-    }
-
     @Nullable
     private ElementToGroup appsToGroupContainsPackageName(String packageName) {
         return Optional.ofNullable(elementsByPackageName)
@@ -386,18 +329,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
-    private void maintain() {
-        timeLogger.setCountedtimemilis(0L);
-    }
-
-    private void setGroupId(Integer groupId) {
-        timeLogger.setGroupId(groupId);
-    }
-
-    private void setPackageName(String packageName) {
-        timeLogger.setPackageName(packageName);
-    }
-
     private void setPackageNameAndAutoAssignGroupId(String packageName) {
         timeLogger.setPackageName(packageName);
         assignGroupIdFromPackageName(packageName);
@@ -414,31 +345,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         } else {
             return -1;
         }
-    }
-
-    // TODO review usage of these functions and consider change of day
-    private Long days(Long milliseconds) {
-        return TimeUnit.MILLISECONDS.toDays(milliseconds);
-    }
-
-    // TODO review usage of these functions and consider change of day
-    private Long millis(Long days) {
-        return TimeUnit.DAYS.toMillis(days);
-    }
-
-    // TODO review usage of these functions and consider change of day
-    private Long currentDay() {
-        return days(System.currentTimeMillis());
-    }
-
-    // TODO review usage of these functions and consider change of day
-    private Long offsetDay(Long nDays) {
-        return currentDay() - nDays;
-    }
-
-    // TODO review usage of these functions and consider change of day
-    public Long offsetDayInMillis(Long nDays) {
-        return millis(offsetDay(nDays));
     }
 
 
@@ -519,14 +425,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         // Format is:
         // YYYY-MM-DD-XXXXX
 
-        Long millis = offsetDayInMillis(offsetDays.longValue());
+        LocalDate localDate = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays.longValue(), mContext).toLocalDate();
 
-        Calendar date = Calendar.getInstance();
-        date.setTimeInMillis(millis);
-
-        int year = date.get(Calendar.YEAR);
-        int monthnum = date.get(Calendar.MONTH);
-        int daynum = date.get(Calendar.DAY_OF_MONTH);
+        int year = localDate.getYear();
+        int monthnum = localDate.getMonthValue()-1; // The month value used in the exported .txt files starts in 0
+        int daynum = localDate.getDayOfMonth();
 
         String month;
         if (monthnum < 10) {
