@@ -13,7 +13,7 @@ import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
 
 public class EntryCleanerImpl implements EntryCleaner {
 
-    private static long mDay = 0L;
+    private static long mDayEpoch = 0L;
     private static int mOffset = 30; // delete entries older than these days
 
     private TimeLoggerRepository loggerRepo;
@@ -31,10 +31,10 @@ public class EntryCleanerImpl implements EntryCleaner {
     @Override
     public void cleanOlEntries() {
         // perform the clean only once per day
-        long today = MilisToTime.currentDay();
-        if (!(mDay == today)) {
-            mDay = today;
-            long target = MilisToTime.offsetDayInMillis(mOffset);
+        long todayEpoch = MilisToTime.beginningOfTodayConsideringChangeOfDay(mContext);
+        if (!(mDayEpoch == todayEpoch)) {
+            mDayEpoch = todayEpoch;
+            long target = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDay(mOffset, mContext);
             cleanLogger(target);
             cleanContador(target);
         }

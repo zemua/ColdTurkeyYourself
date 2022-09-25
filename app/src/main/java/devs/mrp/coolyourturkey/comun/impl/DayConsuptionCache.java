@@ -32,7 +32,7 @@ public class DayConsuptionCache implements FileCache<Map<Long, FileReader.DayCon
     public Map<Long, FileReader.DayConsumption> read(Uri uri) {
         long now = System.currentTimeMillis();
         if (!cache.containsKey(uri) || cache.get(uri).lastUpdated+cacheTime<now) {
-            cache.put(uri, new CacheObject(now, FileReader.readPastDaysConsumption(application, uri)));
+            cache.put(uri, new CacheObject(now, FileReader.readPastDaysConsumptionConsideringChangeOfDay(application, uri)));
         }
         return cache.get(uri).data;
     }

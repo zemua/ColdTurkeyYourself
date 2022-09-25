@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.comun;
 
+import android.content.Context;
 import android.icu.util.Calendar;
 
 import java.time.Clock;
@@ -11,6 +12,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
+
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 
 public class MilisToTime {
 
@@ -76,12 +79,22 @@ public class MilisToTime {
         return nowToMilis;
     }
 
+    /**
+     * Time Conversion from millis
+     * @param millis
+     * @return
+     */
     public static LocalDateTime millisToLocalDateTime(long millis) {
         Instant instant = Instant.ofEpochMilli(millis);
         LocalDateTime date = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
         return date;
     }
 
+    /**
+     * Time conversion from millis
+     * @param localDateTime
+     * @return
+     */
     public static long localDateTimeToMillis(LocalDateTime localDateTime) {
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
@@ -93,12 +106,6 @@ public class MilisToTime {
         return zone.getDayOfWeek().getValue();
     }
 
-    public static String millisToHMS(long millis) {
-        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
-    }
-
     public static long getHours(long millis) {
         return millis/(1000*60*60);
     }
@@ -107,55 +114,36 @@ public class MilisToTime {
         return (millis%(1000*60*60))/(1000*60);
     }
 
-    public static long getSeconds(long millis) {
-        return (millis%(1000*60))/(1000);
+    public static long beginningOfTodayConsideringChangeOfDay(Context context) {
+        return beginningOfOffsetDaysConsideringChangeOfDay(0, context);
     }
 
-    public static String getFormatedHMS(Long milis){
-        Formatter formatter = new Formatter();
-        if (milis < 0){
-            formatter.format("[ - %02d:%02d:%02d ]", getHours(-milis), getMinutes(-milis), getSeconds(-milis));
-        } else {
-            formatter.format("%02d:%02d:%02d", getHours(milis), getMinutes(milis), getSeconds(milis));
-        }
-        return formatter.toString();
+    public static long beginningOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+        LocalDateTime start = beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays, context);
+        ZonedDateTime zdt = start.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
     }
 
-    public static long daysFromMillis(long milliseconds) {
-        return TimeUnit.MILLISECONDS.toDays(milliseconds);
+    public static LocalDateTime beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(long offsetDays, Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        int changeOfDay = prefs.getHourForChangeOfDay();
+        return LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().minusDays(offsetDays).plusHours(changeOfDay);
     }
 
-    public static long millisFromDays(long days) {
-        return TimeUnit.DAYS.toMillis(days);
+    public static long endOfOffsetDaysConsideringChangeOfDay(long offsetDays, Context context) {
+        LocalDateTime end = endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays, context);
+        ZonedDateTime zdt = end.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
     }
 
-    public static long currentDay() {
-        return daysFromMillis(System.currentTimeMillis());
+    public static LocalDateTime endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(long offsetDays, Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        int changeOfDay = prefs.getHourForChangeOfDay();
+        return LocalDateTime.now().minusHours(changeOfDay).toLocalDate().atStartOfDay().plusHours(24).minusDays(offsetDays).plusHours(changeOfDay);
     }
 
-    public static long currentDayInMilis() {
-        return millisFromDays(currentDay());
-    }
-
-    public static long offsetDay(long nDays) {
-        return currentDay()-nDays;
-    }
-
-    public static long offsetDayInMillis(long nDays) {
-        return millisFromDays(offsetDay(nDays));
-    }
-
-    public static long millisToBeginningOfDay(long milliseconds) {
-        long days = daysFromMillis(milliseconds);
-        return millisFromDays(days);
-    }
-
-    public static long millisToEndOfDay(long milliseconds) {
-        long days = daysFromMillis(milliseconds);
-        return millisFromDays(days) + millisFromDays(1);
-    }
-
-    public static int hoursForChangeOfDay() {
-        return 0;
+    public static int hoursForChangeOfDay(Context context) {
+        MisPreferencias prefs = new MisPreferencias(context);
+        return prefs.getHourForChangeOfDay();
     }
 }

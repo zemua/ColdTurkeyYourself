@@ -34,6 +34,7 @@ public class FileChecker implements ConditionChecker {
         LiveData<List<ElementToGroup>> els = elementToGroupRepository.findElementsOfGroupAndType(condition.getConditionalgroupid(), ElementType.FILE);
         els.observe(owner, elements -> {
             els.removeObservers(owner);
+            // the files are expected to have the time per day considering hour for change of day in the device that creates them
             long result = elements.stream().mapToLong(e -> fileTimeGetter.fromFileLastDays(condition.getFromlastndays(), Uri.parse(e.getName()))).sum();
             action.accept(result);
         });

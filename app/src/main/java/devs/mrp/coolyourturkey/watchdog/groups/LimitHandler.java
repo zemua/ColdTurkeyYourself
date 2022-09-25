@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import devs.mrp.coolyourturkey.comun.BooleanWrap;
+import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.databaseroom.deprecated.grouplimit.GroupLimit;
 import devs.mrp.coolyourturkey.databaseroom.deprecated.grouplimit.GroupLimitRepository;
 import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositivo;
@@ -20,6 +21,7 @@ import devs.mrp.coolyourturkey.databaseroom.deprecated.grupopositivo.GrupoPositi
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLogger;
 import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
+// positive groups have a limit no more, DEPRECATED
 public class LimitHandler {
 
     private static final String TAG = "LIMIT_HANDLER";
@@ -47,6 +49,7 @@ public class LimitHandler {
     private Map<Integer, List<GroupLimit>> mGroupLimitsByGroupId;
     private Map<Integer, List<TimeLogger>> mTimeLoggersByLimitId;
 
+    @Deprecated
     public LimitHandler(TimeLogHandler timeLogHandler, Context context, Application application, LifecycleOwner lifecycleOwner) {
         mTimeLogHandler = timeLogHandler;
         mContext = context;
@@ -122,7 +125,7 @@ public class LimitHandler {
     }
 
     private void observeLoggersOnLimit(GroupLimit limit) {
-        Long newerthan = mTimeLogHandler.offsetDayInMillis(limit.getOffsetDays().longValue());
+        Long newerthan = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDay(limit.getOffsetDays().longValue(), mContext);
         LiveData<List<TimeLogger>> liveData = mTimeLoggerRepository.findByNewerThanAndGroupId(newerthan, limit.getGroupId());
         Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
             @Override
@@ -137,6 +140,7 @@ public class LimitHandler {
         liveData.observe(mLifecycleOwner, observer);
     }
 
+    @Deprecated
     public boolean ifLimitsReachedForGroupId(Integer groupId) {
         BooleanWrap resultado = new BooleanWrap();
         resultado.set(false);
@@ -152,6 +156,7 @@ public class LimitHandler {
         return resultado.get();
     }
 
+    @Deprecated
     public boolean ifLimitsReachedForGroupIdAndShallBlock(Integer groupId) {
         BooleanWrap resultado = new BooleanWrap();
         resultado.set(false);
@@ -185,6 +190,7 @@ public class LimitHandler {
         return 0L;
     }
 
+    @Deprecated
     public void resetObserversOnDayChange() {
         setupGrupoPositivoObservers();
     }

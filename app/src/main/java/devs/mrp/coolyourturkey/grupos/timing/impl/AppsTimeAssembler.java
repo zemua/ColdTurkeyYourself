@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.grupos.timing.impl;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -17,10 +18,12 @@ public class AppsTimeAssembler implements GroupTimeAssembler {
 
     private LifecycleOwner owner;
     private TimeLoggerRepository timeLoggerRepository;
+    private Context mContext;
 
     public AppsTimeAssembler(LifecycleOwner owner, Application app) {
         this.owner = owner;
         timeLoggerRepository = TimeLoggerRepository.getRepo(app);
+        this.mContext = app;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class AppsTimeAssembler implements GroupTimeAssembler {
     }
 
     private LiveData<List<TimeLogger>> getEntries(int days, int group) {
-        long epoch = MilisToTime.offsetDayInMillis(days);
+        long epoch = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDay(days, mContext);
         return timeLoggerRepository.findByNewerThanAndGroupId(epoch, group);
     }
 }

@@ -13,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -28,9 +29,6 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FileReader;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.Notificador;
-import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
-import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLoggerRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
@@ -60,7 +58,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Context mContext;
     private LifecycleOwner mLifecycleOwner;
     private Handler mMainHandler;
-    private LimitHandler mLimitHandler;
+    //private LimitHandler mLimitHandler; // Positive groups are limited no more, no need for limitHandler for now
 
     private TimeLoggerRepository timeLoggerRepository;
     private Map<String, ElementToGroup> elementsByPackageName;
@@ -82,7 +80,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
 
     private TimeLogger timeLogger;
-    private Long dayRefreshed = 0L;
+    private Long beginningOfDayRefreshed = 0L;
     private Long mLastFilesExported;
     private Notificador mNotificador;
     private ConditionCheckerCommander conditionChecker;
@@ -97,7 +95,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         observableByRandomCheckCondition = new ArrayList<>();
         mMainHandler = new Handler(mContext.getMainLooper());
         mNotificador = new Notificador(application, context);
-        mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
+        //mLimitHandler = new LimitHandler(this, context, application, lifecycleOwner);
         conditionChecker = ConditionCheckerFactory.getConditionChecker(application, lifecycleOwner);
 
         mTodayTimeByGroupMap = new HashMap<>();
@@ -166,7 +164,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                     mTimeLoggersByGroupId.put(export.getGroupId(), timeLoggers);
                                 }
                             };
-                            LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(offsetDayInMillis(export.getDays().longValue()), export.getGroupId());
+                            LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(MilisToTime.beginningOfOffsetDaysConsideringChangeOfDay(export.getDays().longValue(), mContext), export.getGroupId());
                             observableLoggersByGroupId.add(liveData);
                             liveData.observe(mLifecycleOwner, observer);
                         });
@@ -216,63 +214,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
     @Override
     public void addFeedbackListener(FeedbackListener<Object> listener) {
         feedbackListeners.add(listener);
-    }
-
-    private class TimeSummary {
-        private Integer groupId;
-        private Integer conditionGroupId;
-        private Integer days;
-        private Long summedTime;
-
-        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days, Long summedTime) {
-            this.groupId = groupId;
-            this.conditionGroupId = conditionGroupId;
-            this.summedTime = summedTime;
-            this.days = days;
-        }
-
-        TimeSummary(Integer groupId, Integer conditionGroupId, Integer days) {
-            this.groupId = groupId;
-            this.conditionGroupId = conditionGroupId;
-            this.days = days;
-        }
-
-        String getKey() {
-            return "A" + groupId + "B" + conditionGroupId + "C" + days;
-        }
-
-        Integer getGroupId() {
-            return groupId;
-        }
-
-        Integer getConditionGroupId() {
-            return conditionGroupId;
-        }
-
-        Long getSummedTime() {
-            return summedTime;
-        }
-
-        Integer getDays() {
-            return days;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TimeSummary that = (TimeSummary) o;
-            return groupId.equals(that.groupId) && conditionGroupId.equals(that.conditionGroupId) && days.equals(that.days) && summedTime.equals(that.summedTime);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(groupId, conditionGroupId, days, summedTime);
-        }
-    }
-
-    private class NegativeTimeSummary {
-
     }
 
     @Nullable
@@ -388,18 +329,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
-    private void maintain() {
-        timeLogger.setCountedtimemilis(0L);
-    }
-
-    private void setGroupId(Integer groupId) {
-        timeLogger.setGroupId(groupId);
-    }
-
-    private void setPackageName(String packageName) {
-        timeLogger.setPackageName(packageName);
-    }
-
     private void setPackageNameAndAutoAssignGroupId(String packageName) {
         timeLogger.setPackageName(packageName);
         assignGroupIdFromPackageName(packageName);
@@ -418,26 +347,6 @@ public class TimeLogHandler implements Feedbacker<Object> {
         }
     }
 
-    private Long days(Long milliseconds) {
-        return TimeUnit.MILLISECONDS.toDays(milliseconds);
-    }
-
-    private Long millis(Long days) {
-        return TimeUnit.DAYS.toMillis(days);
-    }
-
-    private Long currentDay() {
-        return days(System.currentTimeMillis());
-    }
-
-    private Long offsetDay(Long nDays) {
-        return currentDay() - nDays;
-    }
-
-    public Long offsetDayInMillis(Long nDays) {
-        return millis(offsetDay(nDays));
-    }
-
 
     /**
      * Refresh for all kinds of conditions
@@ -445,17 +354,18 @@ public class TimeLogHandler implements Feedbacker<Object> {
 
     private void refreshDayCounting() {
         // to refresh the observers when the day changes, so they look for time spent from a new "start day"
-        Long currentDay = currentDay();
-        if (!dayRefreshed.equals(currentDay)) {
-            dayRefreshed = currentDay;
+        Long beginningOfCurrentDay = MilisToTime.beginningOfTodayConsideringChangeOfDay(mContext);
+        if (!beginningOfDayRefreshed.equals(beginningOfCurrentDay)) {
+            beginningOfDayRefreshed = beginningOfCurrentDay;
             setExportObservers();
             refreshTodayGroupObservers();
-            mMainHandler.post(new Runnable() {
+            // positive groups have a limit no more, no need for mLimitHandler
+            /*mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     mLimitHandler.resetObserversOnDayChange();
                 }
-            });
+            });*/
         }
     }
 
@@ -487,9 +397,17 @@ public class TimeLogHandler implements Feedbacker<Object> {
                         Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId())
                                 .stream()
                                 // filter only those values that are after the given offset day
-                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isAfter(LocalDate.now().atStartOfDay().minusDays(days)))
+                                .filter(tl -> {
+                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
+                                    LocalDateTime ldt2 = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
+                                    return ldt.isAfter(ldt2);
+                                })
                                 // filter only those values that are within the same day
-                                .filter(tl -> MilisToTime.millisToLocalDateTime(tl.getMillistimestamp()).isBefore(LocalDate.now().atStartOfDay().minusDays(days - 1)))
+                                .filter(tl -> {
+                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
+                                    LocalDateTime ldt2 = MilisToTime.endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
+                                    return ldt.isBefore(ldt2);
+                                })
                                 .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
                         if (i > 0) {
                             builder.append(System.lineSeparator());
@@ -515,14 +433,11 @@ public class TimeLogHandler implements Feedbacker<Object> {
         // Format is:
         // YYYY-MM-DD-XXXXX
 
-        Long millis = offsetDayInMillis(offsetDays.longValue());
+        LocalDate localDate = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(offsetDays.longValue(), mContext).toLocalDate();
 
-        Calendar date = Calendar.getInstance();
-        date.setTimeInMillis(millis);
-
-        int year = date.get(Calendar.YEAR);
-        int monthnum = date.get(Calendar.MONTH);
-        int daynum = date.get(Calendar.DAY_OF_MONTH);
+        int year = localDate.getYear();
+        int monthnum = localDate.getMonthValue()-1; // The month value used in the exported .txt files starts in 0
+        int daynum = localDate.getDayOfMonth();
 
         String month;
         if (monthnum < 10) {
@@ -558,7 +473,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         mMainHandler.post(new Runnable() {
             @Override
             public void run() {
-                LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(millis(currentDay()), grupo.getId());
+                LiveData<List<TimeLogger>> liveData = timeLoggerRepository.findByNewerThanAndGroupId(MilisToTime.beginningOfTodayConsideringChangeOfDay(mContext) ,grupo.getId());
                 Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
                     @Override
                     public void onChanged(List<TimeLogger> timeLoggers) {
