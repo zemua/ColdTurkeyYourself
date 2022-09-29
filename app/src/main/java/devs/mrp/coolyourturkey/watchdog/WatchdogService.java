@@ -280,8 +280,6 @@ public class WatchdogService extends LifecycleService {
                 if (PermisosChecker.checkPermisoAlertas(this)) {
                     data.getScreenBlock().go();
                 }
-            } else { // or else unblock if it is blocked
-                data.getScreenBlock().desbloquear();
             }
         });
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
@@ -310,7 +308,6 @@ public class WatchdogService extends LifecycleService {
         super.onDestroy();
         flagsOff();
         mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
-        mData.getScreenBlock().desbloquear();
     }
 
     private void setEjecuta(boolean e) {
