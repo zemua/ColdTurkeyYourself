@@ -29,7 +29,7 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
     public GeneralConditionChecker(Application app, LifecycleOwner owner, GrupoConditionRepository conditionRepository) {
         this.app = app;
         this.owner = owner;
-        checkers = Arrays.asList(new LocalRecordsChecker(app, owner), new FileChecker(app, owner));
+        checkers = Arrays.asList(new LocalRecordsChecker(app, owner), new FileChecker(app, owner), new LocalRandomChecksChecker(app, owner));
         this.conditionRepository = conditionRepository;
     }
 
