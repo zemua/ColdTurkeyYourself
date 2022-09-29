@@ -190,8 +190,9 @@ public class CheckPerformerActivity extends AppCompatActivity {
             if (bool && !summed) {
                 summed = true; // prevent double tap and so double sum
                 Log.d(TAG, "to add premio " + mPremio + " en h:m:s " + mPremio/(60*60*1000) + ":" + (mPremio%(60*60*1000))/(60*1000) + ":" + (mPremio%(60*1000)/1000) );
-                timePusher.add(System.currentTimeMillis(), mPremio, this);
-                mLogger.insert(new TimeBlockLogger(blockId, mPremio, System.currentTimeMillis(), mGroupId));
+                long epoch = System.currentTimeMillis();
+                timePusher.add(epoch, mPremio, this);
+                mLogger.insert(new TimeBlockLogger(blockId, mPremio, epoch, mGroupId));
                 PrizeConfirmationFragment fr = new PrizeConfirmationFragment();
                 fr.addObserver((tp, fdbck) -> {
                     CheckPerformerActivity.this.finalizar();

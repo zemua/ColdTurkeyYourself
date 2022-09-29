@@ -35,7 +35,7 @@ public class GeneralAssemblerImpl implements GroupGeneralAssembler {
             case POSITIVE:
                 return Arrays.asList(new AppsTimeAssembler(owner, app), new RandomChecksTimeAssembler(owner, app), new ExternalTimeAssembler(app, owner));
             case NEGATIVE:
-                return Arrays.asList(new AppsTimeAssembler(owner, app));
+                return Arrays.asList(new AppsTimeAssembler(owner, app), new RandomChecksTimeAssembler(owner, app), new ExternalTimeAssembler(app, owner));
             default:
                 return Collections.emptyList();
         }

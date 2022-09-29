@@ -82,7 +82,7 @@ public class WatchdogService extends LifecycleService {
                 .setTimeDifferenceToUpdate(1000 * 60 * 1) // 1 minuto para actualizar el tiempo en la notificación
                 .setWasPausado(true)
                 .setTiempoImportado(0L)
-                .setScreenBlock(new ScreenBlock(this))
+                .setScreenBlock(new ScreenBlock(this, this.getApplication()))
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))

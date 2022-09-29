@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.watchdog;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -10,7 +11,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import devs.mrp.coolyourturkey.MainActivity;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -20,14 +23,24 @@ public class ScreenBlock {
     private static View mV;
     private static WindowManager mWindowManager;
     private Handler mHandler;
+    private Application mApp;
 
-    public ScreenBlock(Context context) {
+    public ScreenBlock(Context context, Application app) {
         mContext = context;
         mHandler = getMainHandler();
+        mApp = app;
     }
 
     public void go() {
-        if (!estamosBloqueando()) {
+        Intent intent = new Intent(mContext, MainActivity.class);
+        /*intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        new GenericTimedToaster(mApp).noticeMessage(mContext.getString(R.string.app_bloqued));
+        mContext.startActivity(intent);
+        /*if (!estamosBloqueando()) {
             LayoutInflater inflater = mContext.getSystemService(LayoutInflater.class);
             mV = inflater.inflate(R.layout.screen_block, null, false);
             mWindowManager = (WindowManager) mContext.getSystemService(WINDOW_SERVICE);
@@ -59,7 +72,7 @@ public class ScreenBlock {
             }
             Runnable r = getBlockingRunnable(mWindowManager, mV, params);
             mHandler.post(r);
-        }
+        }*/
     }
 
     private Runnable getBlockingRunnable(WindowManager wm, View v, WindowManager.LayoutParams params){
