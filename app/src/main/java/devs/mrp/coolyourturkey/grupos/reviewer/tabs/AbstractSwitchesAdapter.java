@@ -40,9 +40,9 @@ public abstract class AbstractSwitchesAdapter<VH extends RecyclerView.ViewHolder
     }
 
     private void checkAndEnableSwitch(Switch switchView) {
-        if (!switchView.isChecked()) {
-            switchView.setChecked(true);
+        if (!switchView.isEnabled() || !switchView.isChecked()) {
             switchView.setEnabled(true);
+            switchView.setChecked(true);
         }
     }
 
@@ -55,12 +55,16 @@ public abstract class AbstractSwitchesAdapter<VH extends RecyclerView.ViewHolder
         } else {
             switchView.setEnabled(true);
         }
+        // for second time in case it was disabled and the switch didn't move position
+        if (switchView.isChecked()) {
+            switchView.setChecked(false);
+        }
     }
 
     private void uncheckAndEnableSwitch(Switch switchView) {
-        if (switchView.isChecked()) {
-            switchView.setChecked(false);
+        if (!switchView.isEnabled() || switchView.isChecked()) {
             switchView.setEnabled(true);
+            switchView.setChecked(false);
         }
     }
 
