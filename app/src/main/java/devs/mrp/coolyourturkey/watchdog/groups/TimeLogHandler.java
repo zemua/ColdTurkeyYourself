@@ -45,6 +45,9 @@ import devs.mrp.coolyourturkey.grupos.timing.GroupGeneralAssembler;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.impl.AppUsageExportObserver;
+import devs.mrp.coolyourturkey.watchdog.groups.impl.ChecksLoggersMapImpl;
+import devs.mrp.coolyourturkey.watchdog.groups.impl.RandomChecksExportObserver;
+import devs.mrp.coolyourturkey.watchdog.groups.impl.TimeLoggersMapImpl;
 
 public class TimeLogHandler implements Feedbacker<Object> {
 
@@ -75,14 +78,15 @@ public class TimeLogHandler implements Feedbacker<Object> {
     private List<LiveData<?>> observableByRandomCheckCondition;
 
     private ExportObserver appUsageExportObserver;
+    private ExportObserver checksExportObserver;
 
     private Map<Integer, Boolean> mAllGruposPositivosIfConditionsMet;
     private List<Grupo> mAllGrupos = new ArrayList<>();
     private Map<Integer, List<TimeLogger>> mTodayTimeByGroupMap;
 
     private List<GrupoExport> mGrupoExportList;
-    private Map<Integer, List<TimeLogger>> mTimeLoggersByGroupId;
-    private Map<Integer, List<TimeBlockLogger>> mTimeBlockLoggersByGroupId;
+    private TimeLoggersMap<TimeLogger> mTimeLoggersByGroupId;
+    private TimeLoggersMap<TimeBlockLogger> mTimeBlockLoggersByGroupId;
 
     private TimeLogger timeLogger;
     private Long beginningOfDayRefreshed = 0L;
@@ -104,6 +108,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
         conditionChecker = ConditionCheckerFactory.getConditionChecker(application, lifecycleOwner);
 
         appUsageExportObserver = new AppUsageExportObserver(mContext,mLifecycleOwner,mApplication);
+        checksExportObserver = new RandomChecksExportObserver(mContext, mLifecycleOwner, mApplication);
 
         mTodayTimeByGroupMap = new HashMap<>();
 
@@ -120,8 +125,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
             }
         });
 
-        mTimeLoggersByGroupId = new HashMap<>();
-        mTimeBlockLoggersByGroupId = new HashMap<>();
+        mTimeLoggersByGroupId = new TimeLoggersMapImpl(mContext);
+        mTimeBlockLoggersByGroupId = new ChecksLoggersMapImpl(mContext);
         mGrupoExportRepository = GrupoExportRepository.getRepo(mApplication);
         mGrupoExportLiveData = mGrupoExportRepository.findAllGrupoExport();
         setExportObservers();
@@ -160,6 +165,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     @Override
                     public void onChanged(List<GrupoExport> grupoExports) {
                         mGrupoExportList = grupoExports;
+                        appUsageExportObserver.stop();
+                        checksExportObserver.stop();
                         grupoExports.stream().forEach(export -> {
                             // APP usage loggers
                             Observer<List<TimeLogger>> observer = new Observer<List<TimeLogger>>() {
@@ -176,7 +183,7 @@ public class TimeLogHandler implements Feedbacker<Object> {
                                     mTimeBlockLoggersByGroupId.put(export.getGroupId(), timeBlockLoggers);
                                 }
                             };
-                            // TODO
+                            checksExportObserver.observe(export.getGroupId(), export.getDays().longValue(), blockObserver);
                         });
                     }
                 };
@@ -404,21 +411,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
                     StringBuilder builder = new StringBuilder();
                     for (int i = 0; i < export.getDays(); i++) {
                         final long days = i;
-                        Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId())
-                                .stream()
-                                // filter only those values that are after the given offset day
-                                .filter(tl -> {
-                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
-                                    LocalDateTime ldt2 = MilisToTime.beginningOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
-                                    return ldt.isAfter(ldt2);
-                                })
-                                // filter only those values that are within the same day
-                                .filter(tl -> {
-                                    LocalDateTime ldt = MilisToTime.millisToLocalDateTime(tl.getMillistimestamp());
-                                    LocalDateTime ldt2 = MilisToTime.endOfOffsetDaysConsideringChangeOfDayInLocalDateTime(days, mContext);
-                                    return ldt.isBefore(ldt2);
-                                })
-                                .collect(Collectors.summingLong(logger -> logger.getCountedtimemilis()));
+                        Long timeMillis = mTimeLoggersByGroupId.get(export.getGroupId(), days);
+                        timeMillis += mTimeBlockLoggersByGroupId.get(export.getGroupId(), days);
                         if (i > 0) {
                             builder.append(System.lineSeparator());
                         }
