@@ -307,7 +307,7 @@ public class WatchdogService extends LifecycleService {
     public void onDestroy() {
         super.onDestroy();
         flagsOff();
-        mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
+        //mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
     }
 
     private void setEjecuta(boolean e) {

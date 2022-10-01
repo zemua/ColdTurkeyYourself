@@ -1,4 +1,4 @@
-package devs.mrp.coolyourturkey.condicionesnegativas;
+package devs.mrp.coolyourturkey.condicionesnegativas_old_deprecated;
 
 import android.app.Activity;
 import android.content.Context;

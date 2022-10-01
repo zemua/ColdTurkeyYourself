@@ -41,8 +41,8 @@
         <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.AddGroupConditionActivity"></activity>
         <activity android:name=".grupos.grupospositivos_old_deprecated.ExportGroupTimeActivity"></activity>
         <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.GroupLimitsActivity"></activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity"></activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas_old_deprecated.CondicionesNegativasActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas_old_deprecated.add.AddNegativeConditionActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity"></activity>

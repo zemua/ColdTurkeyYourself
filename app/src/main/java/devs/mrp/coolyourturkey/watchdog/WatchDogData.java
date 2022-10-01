@@ -3,12 +3,10 @@ package devs.mrp.coolyourturkey.watchdog;
 import android.app.Notification;
 
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
-import devs.mrp.coolyourturkey.condicionesnegativas.NegativeConditionTimeChecker;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
-import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageConditionsChecker;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;

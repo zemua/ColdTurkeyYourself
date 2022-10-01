@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import java.util.Optional;
 
-import devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity;
-
 public class TransferWithBinders {
 
     public static Bundle addToSend(Intent intent, String keyToReadLater, Object object) {
