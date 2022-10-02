@@ -17,11 +17,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 
+@AndroidEntryPoint
 public class ReviewerFragment extends FeedbackerFragment<Intent> {
 
     private static final String KEY_BUNDLE_GROUP_ID = "key.bundle.group.id";

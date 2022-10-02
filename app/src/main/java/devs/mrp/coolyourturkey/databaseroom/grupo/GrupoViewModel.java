@@ -41,4 +41,6 @@ public class GrupoViewModel extends AndroidViewModel {
 
     public void deleteById(Integer id) {mRepo.deleteById(id);}
 
+    public void setPreventCloseForGroupId(boolean value, int groupId) {mRepo.setPreventCloseForGroupId(value, groupId);}
+
 }

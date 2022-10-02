@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
@@ -21,6 +22,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.grupoexport.GrupoExportReposit
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
+@AndroidEntryPoint
 public class ReviewerActivity extends SingleFragmentActivity<Intent> {
 
     public static final String EXTRA_GROUP_ID = "extra_group_id";

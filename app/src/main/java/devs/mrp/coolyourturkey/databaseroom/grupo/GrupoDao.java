@@ -38,4 +38,7 @@ public interface GrupoDao {
    @Query("SELECT * FROM grupo WHERE type = :type ORDER BY id ASC")
    LiveData<List<Grupo>> findGruposByType(GrupoType type);
 
+   @Query("UPDATE grupo SET preventclose = :value WHERE id = :groupId")
+    void setPreventCloseForGroupId(boolean value, int groupId);
+
 }
