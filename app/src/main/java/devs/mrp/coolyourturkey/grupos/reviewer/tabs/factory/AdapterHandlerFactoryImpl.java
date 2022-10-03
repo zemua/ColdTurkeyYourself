@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleOwner;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.qualifiers.ActivityContext;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.AdapterHandler;
@@ -20,7 +19,7 @@ public class AdapterHandlerFactoryImpl implements AdapterHandlerFactory<GrupoCon
     private Application application;
 
     @Inject
-    AdapterHandlerFactoryImpl(@ActivityContext Context context, Application application){
+    public AdapterHandlerFactoryImpl(Context context, Application application){
         this.context = context;
         this.application = application;
     }
