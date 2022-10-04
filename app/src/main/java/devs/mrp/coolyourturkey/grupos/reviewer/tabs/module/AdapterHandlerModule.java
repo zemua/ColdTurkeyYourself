@@ -22,13 +22,8 @@ import devs.mrp.coolyourturkey.grupos.reviewer.tabs.factory.AdapterHandlerFactor
 @InstallIn(FragmentComponent.class)
 public class AdapterHandlerModule {
 
-    @Inject
-    Fragment fragment;
-    @Inject
-    Application application;
-
     @Provides
-    public AdapterHandlerFactory<GrupoCondition> bindAdapterHandlerFactory() {
+    public AdapterHandlerFactory<GrupoCondition> bindAdapterHandlerFactory(Fragment fragment, Application application) {
         return new AdapterHandlerFactoryImpl(fragment.getContext(), application);
     }
 }

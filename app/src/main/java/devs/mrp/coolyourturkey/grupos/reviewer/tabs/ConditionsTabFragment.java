@@ -51,7 +51,9 @@ public class ConditionsTabFragment extends Fragment {
     private GroupType type;
 
     @Inject
-    AdapterHandlerFactory<GrupoCondition> adapterHandlerFactory;
+    protected AdapterHandlerFactory<GrupoCondition> adapterHandlerFactory;
+    @Inject
+    protected ViewModelProvider mViewModelProvider;
 
     public ConditionsTabFragment(Integer groupId, String groupName, GroupType type) {
         super();
@@ -78,7 +80,7 @@ public class ConditionsTabFragment extends Fragment {
         mConditionsAdapterHandler = adapterHandlerFactory.getHandler(type, getViewLifecycleOwner());
         ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
 
-        grupoConditionViewModel = new ViewModelProvider(ConditionsTabFragment.this, viewModelFactory).get(GrupoConditionViewModel.class);
+        grupoConditionViewModel = mViewModelProvider.get(GrupoConditionViewModel.class);
         grupoConditionViewModel.findConditionsByGroupId(mGroupId).observe(getViewLifecycleOwner(), (conditions) -> {
             spinner.setVisibility(View.GONE);
             mConditionsAdapterHandler.setDataset(conditions);
@@ -88,7 +90,7 @@ public class ConditionsTabFragment extends Fragment {
         LinearLayoutManager layoutConditions = new LinearLayoutManager(mContext);
         mRecyclerView.setLayoutManager(layoutConditions);
 
-        grupoViewModel = new ViewModelProvider(this, viewModelFactory).get(GrupoViewModel.class);
+        grupoViewModel = mViewModelProvider.get(GrupoViewModel.class);
         grupoViewModel.findAllGruposPositivos().observe(getViewLifecycleOwner(), (grupos) -> {
             mConditionsAdapterHandler.setGrupos(grupos.stream().collect(Collectors.toMap(Grupo::getId, Function.identity())));
         });
