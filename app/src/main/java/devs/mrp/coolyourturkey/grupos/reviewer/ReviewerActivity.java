@@ -85,11 +85,11 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
 
     @Override
     protected FeedbackerFragment<Intent> returnFragmentInstance() {
-        ReviewerFragment fragment = new ReviewerFragment();
         Intent intent = getIntent();
         mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
         mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
         mGroupType = GrupoType.valueOf(intent.getStringExtra(EXTRA_GROUP_TYPE));
+        ReviewerFragment fragment = new ReviewerFragment();
         fragment.setGroupId(mGroupId);
         fragment.setGroupType(mGroupType);
         fragment.setGroupName(mGroupName);

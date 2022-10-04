@@ -43,7 +43,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     private int mIconResId;
     private String mTitle;
     private Integer mReplyValue;
-    private AlertDialog mDialogo;
+    protected AlertDialog mDialogo;
     private Integer mTiempo;
     private Context mContext;
     private boolean restaurar = false;
@@ -51,6 +51,10 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     public DialogWithDelay() {
         super();
         restaurar = true;
+    }
+
+    public DialogWithDelay(int iconResId, String title, String message) {
+        this(iconResId, title, message, 0);
     }
 
     public DialogWithDelay(int iconResId, String title, String message, Integer replyValue) {
@@ -167,7 +171,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         sendResult(Activity.RESULT_OK, true);
     }
 
-    private void sendResult(int resultCode, boolean aceptado) {
+    protected void sendResult(int resultCode, boolean aceptado) {
         if (aceptado) {
             giveFeedback(FEEDBACK_ALERT_DIALOG_ACEPTAR, mDialogo);
         } else {

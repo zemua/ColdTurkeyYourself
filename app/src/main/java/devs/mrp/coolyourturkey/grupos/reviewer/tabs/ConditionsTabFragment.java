@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +25,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.IntentAttacher;
 import devs.mrp.coolyourturkey.comun.impl.IntentAttacherImpl;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
@@ -46,7 +49,7 @@ public class ConditionsTabFragment extends Fragment {
     private GrupoConditionViewModel grupoConditionViewModel;
     private RecyclerView mRecyclerView;
     private Button mButton;
-    private Button mSecondButton;
+    private Switch mSecondButton;
     private AdapterHandler<GrupoCondition> mConditionsAdapterHandler;
     private GroupType type;
 
@@ -54,6 +57,8 @@ public class ConditionsTabFragment extends Fragment {
     protected AdapterHandlerFactory<GrupoCondition> adapterHandlerFactory;
     @Inject
     protected ViewModelProvider mViewModelProvider;
+    @Inject
+    protected DialogWithDelayPresenter dialogWithDelayPresenter;
 
     public ConditionsTabFragment(Integer groupId, String groupName, GroupType type) {
         super();
@@ -76,6 +81,7 @@ public class ConditionsTabFragment extends Fragment {
         mRecyclerView = v.findViewById(R.id.recyclerView);
         mButton = v.findViewById(R.id.button);
         mSecondButton = v.findViewById(R.id.second_button);
+        setPreventCloseButton(mSecondButton);
 
         mConditionsAdapterHandler = adapterHandlerFactory.getHandler(type, getViewLifecycleOwner());
         ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
@@ -138,6 +144,15 @@ public class ConditionsTabFragment extends Fragment {
         intent.putExtra(ConditionActionConstants.EXTRA_GROUP_ID, mGroupId);
         intent.putExtra(ConditionActionConstants.EXTRA_GROUP_NAME, mGroupName);
         return intent;
+    }
+
+    private void setPreventCloseButton(Switch button) {
+        if (!type.equals(GroupType.NEGATIVE)) {
+            mSecondButton.setVisibility(View.GONE);
+            return;
+        }
+        button.setText(R.string.evitar_cierre);
+
     }
 
 }
