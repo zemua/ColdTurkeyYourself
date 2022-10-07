@@ -28,6 +28,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     public static final String EXTRA_GROUP_ID = "extra_group_id";
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
     public static final String EXTRA_GROUP_TYPE = "extra_group_type";
+    public static final String EXTRA_PREVENT_CLOSE = "extra_prevent_close";
 
     private static final int EXPORT_LAST_DAYS = 30;
 
@@ -36,6 +37,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private int mGroupId;
     private String mGroupName;
     private GrupoType mGroupType;
+    private boolean mPreventClose;
 
     private GrupoRepository grupoRepository;
     private GrupoExportRepository grupoExportRepository;
@@ -89,10 +91,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
         mGroupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
         mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
         mGroupType = GrupoType.valueOf(intent.getStringExtra(EXTRA_GROUP_TYPE));
-        ReviewerFragment fragment = new ReviewerFragment();
-        fragment.setGroupId(mGroupId);
-        fragment.setGroupType(mGroupType);
-        fragment.setGroupName(mGroupName);
+        mPreventClose = intent.getBooleanExtra(EXTRA_PREVENT_CLOSE, false);
+        ReviewerFragment fragment = new ReviewerFragment(mGroupId, mGroupName, mGroupType, mPreventClose);
         return fragment;
     }
 

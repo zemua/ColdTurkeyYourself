@@ -13,13 +13,14 @@ import devs.mrp.coolyourturkey.comun.DialogWithDelayAndFragmentResponseFactory;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.impl.DialogWithDelayAndFragmentResponseFactoryImpl;
 import devs.mrp.coolyourturkey.comun.impl.DialogWithDelayPresenterImpl;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 
 @Module
 @InstallIn(FragmentComponent.class)
 public class DelayedDialogMakerModule {
     @Provides
-    public DialogWithDelayPresenter provideDialogWithDelay(Fragment fragment, DialogWithDelayAndFragmentResponseFactory factory) {
-        return new DialogWithDelayPresenterImpl(fragment, factory);
+    public DialogWithDelayPresenter provideDialogWithDelay(Fragment fragment, DialogWithDelayAndFragmentResponseFactory factory, MisPreferencias preferencias) {
+        return new DialogWithDelayPresenterImpl(fragment, factory, preferencias.getDelaySeconds());
     }
     @Provides
     public DialogWithDelayAndFragmentResponseFactory provideDialogWithDelayFactory() {

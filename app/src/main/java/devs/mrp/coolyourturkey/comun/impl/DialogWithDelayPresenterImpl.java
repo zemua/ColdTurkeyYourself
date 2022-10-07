@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentResultListener;
 
 import java.util.function.Consumer;
 
+import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayAndFragmentResponse;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayAndFragmentResponseFactory;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
@@ -18,11 +19,13 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     private FragmentManager fragmentManager;
     private Fragment fragment;
     private DialogWithDelayAndFragmentResponseFactory dialogFactory;
+    private int mDelaySeconds;
 
-    public DialogWithDelayPresenterImpl(Fragment fragment, DialogWithDelayAndFragmentResponseFactory factory) {
+    public DialogWithDelayPresenterImpl(Fragment fragment, DialogWithDelayAndFragmentResponseFactory factory, int delaySeconds) {
         fragmentManager = fragment.getActivity().getSupportFragmentManager();
         this.fragment = fragment;
         this.dialogFactory = factory;
+        this.mDelaySeconds = delaySeconds;
     }
 
     @Override
@@ -37,5 +40,10 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
             DialogWithDelayShower dwd = dialogFactory.getDialog(iconoResId, titulo, mensaje, fragmentManager, requestKey);
             dwd.show(fragmentManager, null);
         }
+    }
+
+    @Override
+    public void showDialog(String requestKey) {
+        showDialog(requestKey, fragment.getString(R.string.recapacita), fragment.getString(R.string.estas_seguro_que_debes_hacer_esto), R.drawable.lock_question);
     }
 }

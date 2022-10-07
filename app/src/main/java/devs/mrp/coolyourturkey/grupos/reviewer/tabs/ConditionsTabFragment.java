@@ -13,11 +13,12 @@ import android.widget.Switch;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,12 @@ public class ConditionsTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
 
+    private static final String REQUEST_KEY_PREVENT_CLOSE = "request.key.prevent.close";
+
     private Context mContext;
     private Integer mGroupId;
     private String mGroupName;
+    private boolean mGroupPreventClose;
     private ViewModelProvider.Factory viewModelFactory;
     private GrupoViewModel grupoViewModel;
     private GrupoConditionViewModel grupoConditionViewModel;
@@ -52,6 +56,7 @@ public class ConditionsTabFragment extends Fragment {
     private Switch mSecondButton;
     private AdapterHandler<GrupoCondition> mConditionsAdapterHandler;
     private GroupType type;
+    private List<GrupoCondition> handlerDataset;
 
     @Inject
     protected AdapterHandlerFactory<GrupoCondition> adapterHandlerFactory;
@@ -60,11 +65,12 @@ public class ConditionsTabFragment extends Fragment {
     @Inject
     protected DialogWithDelayPresenter dialogWithDelayPresenter;
 
-    public ConditionsTabFragment(Integer groupId, String groupName, GroupType type) {
+    public ConditionsTabFragment(Integer groupId, String groupName, GroupType type, boolean preventClose) {
         super();
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.type = type;
+        this.mGroupPreventClose = preventClose;
     }
 
     @Nullable
@@ -80,8 +86,6 @@ public class ConditionsTabFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_button_second_button_and_recycler, container, false);
         mRecyclerView = v.findViewById(R.id.recyclerView);
         mButton = v.findViewById(R.id.button);
-        mSecondButton = v.findViewById(R.id.second_button);
-        setPreventCloseButton(mSecondButton);
 
         mConditionsAdapterHandler = adapterHandlerFactory.getHandler(type, getViewLifecycleOwner());
         ProgressBar spinner = (ProgressBar) v.findViewById(R.id.groupAppSpinner);
@@ -89,7 +93,8 @@ public class ConditionsTabFragment extends Fragment {
         grupoConditionViewModel = mViewModelProvider.get(GrupoConditionViewModel.class);
         grupoConditionViewModel.findConditionsByGroupId(mGroupId).observe(getViewLifecycleOwner(), (conditions) -> {
             spinner.setVisibility(View.GONE);
-            mConditionsAdapterHandler.setDataset(conditions);
+            handlerDataset = conditions;
+            mConditionsAdapterHandler.setDataset(type.equals(GroupType.NEGATIVE) && mGroupPreventClose ? Collections.EMPTY_LIST : handlerDataset);
         });
 
         mRecyclerView.setAdapter(mConditionsAdapterHandler.getAdapter());
@@ -111,6 +116,9 @@ public class ConditionsTabFragment extends Fragment {
 
         mButton.setText(R.string.anhadir);
         mButton.setOnClickListener((view) -> launchAddCondition());
+
+        mSecondButton = v.findViewById(R.id.second_button);
+        setupPreventCloseButton(mSecondButton);
 
         return v;
     }
@@ -146,13 +154,43 @@ public class ConditionsTabFragment extends Fragment {
         return intent;
     }
 
-    private void setPreventCloseButton(Switch button) {
+    private void setupPreventCloseButton(Switch button) {
         if (!type.equals(GroupType.NEGATIVE)) {
             mSecondButton.setVisibility(View.GONE);
             return;
         }
         button.setText(R.string.evitar_cierre);
+        mSecondButton.setChecked(mGroupPreventClose);
+        setConditionsEnabled(!mGroupPreventClose);
 
+        mSecondButton.setOnClickListener(v -> {
+            if (mSecondButton.isChecked()) {
+                mSecondButton.setChecked(false);
+                dialogWithDelayPresenter.showDialog(REQUEST_KEY_PREVENT_CLOSE);
+            } else {
+                grupoViewModel.setPreventCloseForGroupId(false, mGroupId);
+                mGroupPreventClose = false;
+                setConditionsEnabled(true);
+            }
+        });
+
+        dialogWithDelayPresenter.setListener(REQUEST_KEY_PREVENT_CLOSE,result ->{
+            if (result) {
+                mSecondButton.setChecked(true);
+                grupoViewModel.setPreventCloseForGroupId(true, mGroupId);
+                mGroupPreventClose = true;
+                setConditionsEnabled(false);
+            }
+        });
+    }
+
+    private void setConditionsEnabled(boolean yesNo) {
+        mButton.setEnabled(yesNo);
+        if (yesNo) {
+            mConditionsAdapterHandler.setDataset(handlerDataset != null ? handlerDataset : Collections.EMPTY_LIST);
+        } else {
+            mConditionsAdapterHandler.setDataset(Collections.EMPTY_LIST);
+        }
     }
 
 }

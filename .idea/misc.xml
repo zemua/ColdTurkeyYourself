@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.24166666666666667" />
+        <entry key="app/src/main/res/drawable-xxhdpi/lock_question.xml" value="0.325" />
         <entry key="app/src/main/res/drawable/gray_border.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/drawable/ic_turkey_dices.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/layout/fragment_addcondition.xml" value="0.2265625" />

@@ -61,6 +61,8 @@ public class GrupoRepository {
         });
     }
 
-    public void setPreventCloseForGroupId(boolean value, int groupId) {mDao.setPreventCloseForGroupId(value, groupId);}
+    public void setPreventCloseForGroupId(boolean value, int groupId) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.setPreventCloseForGroupId(value, groupId));
+    }
 
 }

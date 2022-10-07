@@ -204,4 +204,6 @@
     <string name="you_are_close_to_the_change_of_day">Estás cerca del cambio de día</string>
     <string name="app_bloqued">¡App Bloqueada!</string>
     <string name="evitar_cierre">Evitar cierre</string>
+    <string name="recapacita">Recapacita</string>
+    <string name="estas_seguro_que_debes_hacer_esto">¿Estás seguro de que debes hacer esto?</string>
 </resources>

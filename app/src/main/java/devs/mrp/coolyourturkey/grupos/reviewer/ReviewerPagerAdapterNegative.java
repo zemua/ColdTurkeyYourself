@@ -17,12 +17,14 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
     private Context mContext;
     private Integer mGroupId;
     private String mGroupName;
+    private boolean mGroupPreventClose;
 
-    public ReviewerPagerAdapterNegative(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName) {
+    public ReviewerPagerAdapterNegative(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName, boolean preventClose) {
         super(fragmentManager, lifecycle);
         this.mContext = context;
         this.mGroupId = groupId;
         this.mGroupName = groupName;
+        this.mGroupPreventClose = preventClose;
     }
 
     @NonNull
@@ -32,7 +34,7 @@ public class ReviewerPagerAdapterNegative extends ReviewerPagerAdapter {
             case 0:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
             case 1:
-                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.NEGATIVE);
+                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.NEGATIVE, mGroupPreventClose);
             default:
                 return new AppsTabFragment(GroupType.NEGATIVE, mGroupId);
         }

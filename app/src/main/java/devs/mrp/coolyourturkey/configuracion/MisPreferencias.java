@@ -349,4 +349,9 @@ public class MisPreferencias {
         return i;
     }
 
+    public int getDelaySeconds() {
+        // default 30, not customizable at the time being
+        return 30;
+    }
+
 }
