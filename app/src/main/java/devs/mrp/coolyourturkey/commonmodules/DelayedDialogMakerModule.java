@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayAndFragmentResponseFactory;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
+import devs.mrp.coolyourturkey.comun.ObjectTransporter;
 import devs.mrp.coolyourturkey.comun.impl.DialogWithDelayAndFragmentResponseFactoryImpl;
 import devs.mrp.coolyourturkey.comun.impl.DialogWithDelayPresenterImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;

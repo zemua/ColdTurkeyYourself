@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -46,6 +47,10 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
     private Button buttonDelete;
     private ViewPager2 viewPager;
 
+    public ReviewerFragment() {
+        super();
+    }
+
     public ReviewerFragment(int groupId, String groupName, GrupoType grupoType, boolean preventClosing) {
         super();
         this.mGroupId = groupId;
@@ -78,7 +83,7 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName, mGroupPreventClosing);
+        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getChildFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName, mGroupPreventClosing);
         FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();
@@ -86,6 +91,15 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonExpTxt.setOnClickListener(view -> giveFeedback(ReviewerFeedbackCodes.SYNC, null));
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_BUNDLE_GROUP_ID, mGroupId);
+        outState.putString(KEY_BUNDLE_GROUP_NAME, mGroupName);
+        outState.putString(KEY_BUNDLE_GROUP_TYPE, mGroupType.toString());
+        outState.putBoolean(KEY_BUNDLE_PREVENT_CLOSING, mGroupPreventClosing);
+        super.onSaveInstanceState(outState);
     }
 
     private ReviewerPagerChooser.Type pagerType() {

@@ -48,6 +48,10 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private Button mSaveButton;
     private Button mButtonBorrar;
 
+    public AddConditionFragment() {
+        super();
+    }
+
     public AddConditionFragment(int groupId, String groupName) {
         this(groupId, groupName, new GrupoCondition(), false);
     }

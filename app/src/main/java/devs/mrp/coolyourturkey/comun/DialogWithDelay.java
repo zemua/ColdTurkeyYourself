@@ -81,11 +81,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (restaurar) {
-            mMensaje = savedInstanceState.getString(KEY_BUNDLE_MENSAJE);
-            mTitle = savedInstanceState.getString(KEY_BUNDLE_TITULO);
-            mReplyValue = savedInstanceState.getInt(KEY_BUNDLE_REPLY_VALUE);
-            mIconResId = savedInstanceState.getInt(KEY_BUNDLE_ICONO);
-            mTiempo = savedInstanceState.getInt(KEY_BUNDLE_TIEMPO);
+            restoreValues(savedInstanceState);
         }
         mIcon = getActivity().getDrawable(mIconResId);
 
@@ -151,7 +147,6 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         outstate.putInt(KEY_BUNDLE_REPLY_VALUE, mReplyValue);
         outstate.putInt(KEY_BUNDLE_ICONO, mIconResId);
         outstate.putInt(KEY_BUNDLE_TIEMPO, mDialogDelayer.getTiempo());
-
         super.onSaveInstanceState(outstate);
     }
 
@@ -165,6 +160,14 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         sendResult(Activity.RESULT_CANCELED, false);
+    }
+
+    protected void restoreValues(Bundle savedInstanceState) {
+        mMensaje = savedInstanceState.getString(KEY_BUNDLE_MENSAJE);
+        mTitle = savedInstanceState.getString(KEY_BUNDLE_TITULO);
+        mReplyValue = savedInstanceState.getInt(KEY_BUNDLE_REPLY_VALUE);
+        mIconResId = savedInstanceState.getInt(KEY_BUNDLE_ICONO);
+        mTiempo = savedInstanceState.getInt(KEY_BUNDLE_TIEMPO);
     }
 
     private void pulsadoAceptar() {

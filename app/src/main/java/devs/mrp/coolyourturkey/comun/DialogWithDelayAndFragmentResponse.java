@@ -4,16 +4,25 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentManager;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class DialogWithDelayAndFragmentResponse extends DialogWithDelay implements DialogWithDelayShower{
+
+    private static final String BUNDLE_REQUESTKEY = "bundle.request.key";
 
     public static final String RESULT_KEY = "result_key";
 
-    private FragmentManager fragmentManager;
     private String requestKey;
 
-    public DialogWithDelayAndFragmentResponse(int iconResId, String title, String message, FragmentManager fragmentManager, String requestKey) {
+    public DialogWithDelayAndFragmentResponse() {
+        super();
+    }
+
+    public DialogWithDelayAndFragmentResponse(int iconResId, String title, String message, String requestKey) {
         super(iconResId, title, message);
-        this.fragmentManager = fragmentManager;
         this.requestKey = requestKey;
     }
 
@@ -26,6 +35,19 @@ public class DialogWithDelayAndFragmentResponse extends DialogWithDelay implemen
         }
         Bundle result = new Bundle();
         result.putBoolean(RESULT_KEY, aceptado);
-        fragmentManager.setFragmentResult(requestKey, result);
+        getActivity().getSupportFragmentManager().setFragmentResult(requestKey, result);
+        getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outstate) {
+        outstate.putString(BUNDLE_REQUESTKEY, requestKey);
+        super.onSaveInstanceState(outstate);
+    }
+
+    @Override
+    protected void restoreValues(Bundle savedInstanceState) {
+        requestKey = savedInstanceState.getString(BUNDLE_REQUESTKEY);
+        super.restoreValues(savedInstanceState);
     }
 }

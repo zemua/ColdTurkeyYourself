@@ -36,6 +36,7 @@ import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 public class AppsTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_TYPE = "key.bundle.type";
 
     private RecyclerView mRecyclerView;
     private Handler mainHandler;
@@ -50,6 +51,10 @@ public class AppsTabFragment extends Fragment {
 
     private FutureTask<AppLister> fillAdapterTask;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
+
+    public AppsTabFragment(){
+        super();
+    }
 
     public AppsTabFragment(GroupType type, Integer groupId) {
         super();
@@ -68,6 +73,7 @@ public class AppsTabFragment extends Fragment {
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
+            this.type = GroupType.valueOf(savedInstanceState.getString(KEY_BUNDLE_TYPE));
         }
 
         View v = inflater.inflate(R.layout.fragment_single_recycler, container, false);
@@ -134,6 +140,7 @@ public class AppsTabFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
+        outState.putString(KEY_BUNDLE_TYPE, this.type.toString());
         super.onSaveInstanceState(outState);
     }
 

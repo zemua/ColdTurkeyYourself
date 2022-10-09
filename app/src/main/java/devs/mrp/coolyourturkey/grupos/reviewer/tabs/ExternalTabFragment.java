@@ -34,6 +34,8 @@ import devs.mrp.coolyourturkey.grupos.GroupType;
 public class ExternalTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_TYPE = "key.bundle.type";
+
     public static String TEXT_MIME_TYME = "text/plain";
 
     private ActivityResultLauncher<Intent> openFileLauncher;
@@ -48,6 +50,10 @@ public class ExternalTabFragment extends Fragment {
     private ExternalAdapter mExternalAdapter;
     private ElementToGroupViewModel elementToGroupViewModel;
     private GroupType type;
+
+    public ExternalTabFragment() {
+        super();
+    }
 
     public ExternalTabFragment(GroupType type, Integer groupId) {
         super();
@@ -66,6 +72,7 @@ public class ExternalTabFragment extends Fragment {
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             mGroupId = savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL);
+            type = GroupType.valueOf(savedInstanceState.getString(KEY_BUNDLE_TYPE));
         }
 
         View v = inflater.inflate(R.layout.fragment_button_and_recycler, container, false);
@@ -110,6 +117,7 @@ public class ExternalTabFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outstate) {
         outstate.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
+        outstate.putString(KEY_BUNDLE_TYPE, type.toString());
         super.onSaveInstanceState(outstate);
     }
 

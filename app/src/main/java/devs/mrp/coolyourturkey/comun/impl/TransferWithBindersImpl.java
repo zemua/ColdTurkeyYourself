@@ -1,11 +1,13 @@
-package devs.mrp.coolyourturkey.comun;
+package devs.mrp.coolyourturkey.comun.impl;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.Optional;
 
-public class TransferWithBinders {
+import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
+
+public class TransferWithBindersImpl {
 
     public static Bundle addToSend(Intent intent, String keyToReadLater, Object object) {
         Bundle bundle = new Bundle();

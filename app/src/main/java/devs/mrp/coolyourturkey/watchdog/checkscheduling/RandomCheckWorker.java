@@ -1,7 +1,6 @@
 package devs.mrp.coolyourturkey.watchdog.checkscheduling;
 
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -10,19 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.checkperformer.CheckPerformerActivity;
-import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.comun.NotificadorWithIntent;
-import devs.mrp.coolyourturkey.comun.TransferWithBinders;
-import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
-import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 
 public class RandomCheckWorker extends Worker {
 

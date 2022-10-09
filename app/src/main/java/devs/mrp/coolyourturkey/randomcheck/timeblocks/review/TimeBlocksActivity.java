@@ -9,9 +9,8 @@ import androidx.fragment.app.FragmentManager;
 import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.TransferWithBinders;
+import devs.mrp.coolyourturkey.comun.impl.TransferWithBindersImpl;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
-import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.feedbackchain.BlockFeedbackCommander;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 
@@ -29,7 +28,7 @@ public class TimeBlocksActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         mFragment = fm.findFragmentById(R.id.fragment_container);
         if (mFragment == null) {
-            Optional<Object> opt = TransferWithBinders.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_TIME_BLOCK);
+            Optional<Object> opt = TransferWithBindersImpl.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_TIME_BLOCK);
             if (opt.isPresent()) {
                 mFragment = new TimeBlocksFragment((AbstractTimeBlock) opt.get());
             } else {

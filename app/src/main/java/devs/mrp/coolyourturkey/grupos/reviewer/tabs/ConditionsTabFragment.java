@@ -41,6 +41,9 @@ import devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.ConditionAction
 public class ConditionsTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_NAME = "key.bundle.name";
+    private static final String KEY_BUNDLE_TYPE = "key.bundle.type";
+    private static final String KEY_BUNDLE_PREVENT_CLOSE = "key.bundle.prevent.close";
 
     private static final String REQUEST_KEY_PREVENT_CLOSE = "request.key.prevent.close";
 
@@ -65,6 +68,10 @@ public class ConditionsTabFragment extends Fragment {
     @Inject
     protected DialogWithDelayPresenter dialogWithDelayPresenter;
 
+    public ConditionsTabFragment() {
+        super();
+    }
+
     public ConditionsTabFragment(Integer groupId, String groupName, GroupType type, boolean preventClose) {
         super();
         this.mGroupId = groupId;
@@ -81,6 +88,9 @@ public class ConditionsTabFragment extends Fragment {
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             mGroupId = savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL);
+            mGroupName = savedInstanceState.getString(KEY_BUNDLE_NAME);
+            type = GroupType.valueOf(savedInstanceState.getString(KEY_BUNDLE_TYPE));
+            mGroupPreventClose = savedInstanceState.getBoolean(KEY_BUNDLE_PREVENT_CLOSE);
         }
 
         View v = inflater.inflate(R.layout.fragment_button_second_button_and_recycler, container, false);
@@ -132,6 +142,9 @@ public class ConditionsTabFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
+        outState.putString(KEY_BUNDLE_NAME, mGroupName);
+        outState.putString(KEY_BUNDLE_TYPE, type.toString());
+        outState.putBoolean(KEY_BUNDLE_PREVENT_CLOSE, mGroupPreventClose);
         super.onSaveInstanceState(outState);
     }
 
