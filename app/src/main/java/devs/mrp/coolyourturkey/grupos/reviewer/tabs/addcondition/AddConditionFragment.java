@@ -37,7 +37,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private String mGroupName;
     private List<Grupo> mGrupos;
     private GrupoCondition mGrupoCondition;
-    private boolean mIsEdit = false;
+    private boolean restorableValues = false;
     private ConditionBuildHelper mConditionHelper;
 
     private TextView mGroupNameTextView;
@@ -61,7 +61,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.mGrupoCondition = condition;
-        this.mIsEdit = isEdit;
+        this.restorableValues = isEdit;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             mGroupName = savedInstanceState.getString(KEY_BUNDLE_NAME_ACTUAL, "");
             mGrupos = (List<Grupo>) Optional.ofNullable(((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_LIST))).map(ObjectWrapperForBinder::getData).orElse(new ArrayList<>());
             mGrupoCondition = (GrupoCondition) Optional.ofNullable(((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT))).map(ObjectWrapperForBinder::getData).orElse(new GrupoCondition());
-            mIsEdit = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, false);
+            restorableValues = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, false);
         } else {
             mGrupos = new ArrayList<>();
         }
@@ -84,8 +84,9 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
         outState.putString(KEY_BUNDLE_NAME_ACTUAL, mGroupName);
         outState.putBinder(KEY_BUNDLE_GRUPOS_LIST, new ObjectWrapperForBinder(mGrupos));
+        outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, true);
+        setValuesFromFields(mGrupoCondition);
         outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mGrupoCondition));
-        outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEdit);
         super.onSaveInstanceState(outState);
     }
 
@@ -130,7 +131,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             groupSpinnerAdapter.clear();
             groupSpinnerAdapter.addAll(groupNames);
             groupSpinnerAdapter.notifyDataSetChanged();
-            if (mIsEdit) {
+            if (restorableValues) {
                 mConditionHelper.setupEditExistingCondition(mGrupoCondition, mTargetGroupSpinner, mGrupos, mUsedHoursEditText, mUsedMinutesEditText, mLapsedDaysEditText);
             }
         });
@@ -141,17 +142,15 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             }
             GrupoCondition condition = new GrupoCondition();
             condition.setGroupid(mGroupId);
-            condition.setConditionalgroupid(mTargetGroupSpinner.getSelectedItemPosition() >= 0 ? mGrupos.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
-            condition.setConditionalminutes(mConditionHelper.getConditionalMinutes(mUsedHoursEditText, mUsedMinutesEditText));
-            condition.setFromlastndays(Integer.parseInt(mLapsedDaysEditText.getText().toString()));
-            if (mIsEdit && mGrupoCondition != null) {
+            setValuesFromFields(condition);
+            if (restorableValues && mGrupoCondition != null) {
                 condition.setId(mGrupoCondition.getId());
             }
 
             giveFeedback(ConditionActionConstants.ACTION_SAVE, condition);
         });
 
-        if (mIsEdit) {
+        if (restorableValues) {
             mButtonBorrar.setVisibility(View.VISIBLE);
             mButtonBorrar.setOnClickListener(view -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getAttachContext());
@@ -167,5 +166,11 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         }
 
         return v;
+    }
+
+    private void setValuesFromFields(GrupoCondition condition) {
+        condition.setConditionalgroupid(mTargetGroupSpinner.getSelectedItemPosition() >= 0 ? mGrupos.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
+        condition.setConditionalminutes(mConditionHelper.getConditionalMinutes(mUsedHoursEditText, mUsedMinutesEditText));
+        condition.setFromlastndays(Integer.parseInt(mLapsedDaysEditText.getText().toString()));
     }
 }
