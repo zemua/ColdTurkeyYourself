@@ -13,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
@@ -22,6 +23,7 @@ import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.EntryCleanerImpl;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.ElementAndGroupFacade;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
@@ -44,6 +46,9 @@ import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public class WatchdogService extends LifecycleService {
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
@@ -63,6 +68,9 @@ public class WatchdogService extends LifecycleService {
     private Notifier changeOfDayNotifier;
 
     private WatchDogData mData;
+
+    @Inject
+    ElementAndGroupFacade elementAndGroupFacade;
 
     @Override
     public void onCreate() {
@@ -276,9 +284,14 @@ public class WatchdogService extends LifecycleService {
         }
         // check if we need to block
         data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
-            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !areMet))) {
+            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
+                    && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0
+                        || data.getToqueDeQuedaHandler().isToqueDeQueda()
+                        || !areMet))) {
                 if (PermisosChecker.checkPermisoAlertas(this)) {
-                    data.getScreenBlock().go();
+                    elementAndGroupFacade.onPreventClosing(data.getPackageName(), preventClose -> {
+                        if (!preventClose) {data.getScreenBlock().go();}
+                    });
                 }
             }
         });
