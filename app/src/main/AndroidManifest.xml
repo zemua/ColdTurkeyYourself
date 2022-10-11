@@ -19,16 +19,17 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         android:hasFragileUserData="true">
 
-        <receiver android:name="devs.mrp.coolyourturkey.watchdog.AutoStart">
+        <receiver android:name="devs.mrp.coolyourturkey.watchdog.AutoStart"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name="devs.mrp.coolyourturkey.MainActivity">
+        <activity android:name="devs.mrp.coolyourturkey.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

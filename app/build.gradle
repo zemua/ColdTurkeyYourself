@@ -10,9 +10,9 @@ android {
     defaultConfig {
         applicationId "devs.mrp.coolyourturkey"
         minSdkVersion 26
-        targetSdkVersion 30
-        versionCode 11
-        versionName "0.5.3"
+        targetSdkVersion 31
+        versionCode 12
+        versionName "0.5.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
