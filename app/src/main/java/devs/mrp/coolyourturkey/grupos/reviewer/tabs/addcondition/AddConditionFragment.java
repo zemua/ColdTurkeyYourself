@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +32,17 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private static final String KEY_BUNDLE_NAME_ACTUAL = "key.bundle.name.actual";
     private static final String KEY_BUNDLE_GRUPOS_LIST = "key.bundle.grupos.positivos.list";
     private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
+    private static final String KEY_BUNDLE_IF_IS_RESTORABLE = "key.bundle.if.is.restorable";
     private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
+
+    private static final String TAG = "AddConditionFragment";
 
     private int mGroupId;
     private String mGroupName;
     private List<Grupo> mGrupos;
     private GrupoCondition mGrupoCondition;
     private boolean restorableValues = false;
+    private boolean mIsEdit = false;
     private ConditionBuildHelper mConditionHelper;
 
     private TextView mGroupNameTextView;
@@ -61,6 +66,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.mGrupoCondition = condition;
+        this.mIsEdit = isEdit;
         this.restorableValues = isEdit;
     }
 
@@ -72,7 +78,8 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             mGroupName = savedInstanceState.getString(KEY_BUNDLE_NAME_ACTUAL, "");
             mGrupos = (List<Grupo>) Optional.ofNullable(((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_GRUPOS_LIST))).map(ObjectWrapperForBinder::getData).orElse(new ArrayList<>());
             mGrupoCondition = (GrupoCondition) Optional.ofNullable(((ObjectWrapperForBinder)savedInstanceState.getBinder(KEY_BUNDLE_CONDITION_FOR_EDIT))).map(ObjectWrapperForBinder::getData).orElse(new GrupoCondition());
-            restorableValues = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, false);
+            restorableValues = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_RESTORABLE, false);
+            mIsEdit = savedInstanceState.getBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, false);
         } else {
             mGrupos = new ArrayList<>();
         }
@@ -84,7 +91,8 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
         outState.putString(KEY_BUNDLE_NAME_ACTUAL, mGroupName);
         outState.putBinder(KEY_BUNDLE_GRUPOS_LIST, new ObjectWrapperForBinder(mGrupos));
-        outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, true);
+        outState.putBoolean(KEY_BUNDLE_IF_IS_RESTORABLE, true);
+        outState.putBoolean(KEY_BUNDLE_IF_IS_EDIT_ACTION, mIsEdit);
         setValuesFromFields(mGrupoCondition);
         outState.putBinder(KEY_BUNDLE_CONDITION_FOR_EDIT, new ObjectWrapperForBinder(mGrupoCondition));
         super.onSaveInstanceState(outState);
@@ -131,7 +139,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             groupSpinnerAdapter.clear();
             groupSpinnerAdapter.addAll(groupNames);
             groupSpinnerAdapter.notifyDataSetChanged();
-            if (restorableValues) {
+            if (restorableValues || mIsEdit) {
                 mConditionHelper.setupEditExistingCondition(mGrupoCondition, mTargetGroupSpinner, mGrupos, mUsedHoursEditText, mUsedMinutesEditText, mLapsedDaysEditText);
             }
         });
@@ -143,14 +151,14 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             GrupoCondition condition = new GrupoCondition();
             condition.setGroupid(mGroupId);
             setValuesFromFields(condition);
-            if (restorableValues && mGrupoCondition != null) {
+            if (mIsEdit && mGrupoCondition != null) {
                 condition.setId(mGrupoCondition.getId());
             }
 
             giveFeedback(ConditionActionConstants.ACTION_SAVE, condition);
         });
 
-        if (restorableValues) {
+        if (mIsEdit) {
             mButtonBorrar.setVisibility(View.VISIBLE);
             mButtonBorrar.setOnClickListener(view -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getAttachContext());
@@ -168,9 +176,19 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         return v;
     }
 
+    private Integer lapsedDays() {
+        String content = mLapsedDaysEditText.getText().toString();
+        try {
+            return Integer.parseInt(!"".equals(content) ? content : "0");
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing number from lapsed days", e);
+            return 0;
+        }
+    }
+
     private void setValuesFromFields(GrupoCondition condition) {
         condition.setConditionalgroupid(mTargetGroupSpinner.getSelectedItemPosition() >= 0 ? mGrupos.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
         condition.setConditionalminutes(mConditionHelper.getConditionalMinutes(mUsedHoursEditText, mUsedMinutesEditText));
-        condition.setFromlastndays(Integer.parseInt(mLapsedDaysEditText.getText().toString()));
+        condition.setFromlastndays(lapsedDays());
     }
 }
