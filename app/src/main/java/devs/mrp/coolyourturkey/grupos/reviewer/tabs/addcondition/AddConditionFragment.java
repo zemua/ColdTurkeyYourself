@@ -18,7 +18,11 @@ import java.util.ListIterator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
@@ -26,6 +30,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ConditionBuildHelper;
 
+@AndroidEntryPoint
 public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
@@ -34,6 +39,9 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private static final String KEY_BUNDLE_CONDITION_FOR_EDIT = "key.bundle.condition.for.edit";
     private static final String KEY_BUNDLE_IF_IS_RESTORABLE = "key.bundle.if.is.restorable";
     private static final String KEY_BUNDLE_IF_IS_EDIT_ACTION = "key.bundle.if.is.edit.action";
+
+    private static final String CALLBACK_DELETE = "callback.delete";
+    private static final String CALLBACK_SAVE = "callback.save";
 
     private static final String TAG = "AddConditionFragment";
 
@@ -52,6 +60,9 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
     private EditText mLapsedDaysEditText;
     private Button mSaveButton;
     private Button mButtonBorrar;
+
+    @Inject
+    protected DialogWithDelayPresenter dialogWithDelayPresenter;
 
     public AddConditionFragment() {
         super();
@@ -144,32 +155,31 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
             }
         });
 
+        dialogWithDelayPresenter.setListener(CALLBACK_SAVE, result -> {
+            if (result) {
+                saveAction();
+            }
+        });
         mSaveButton.setOnClickListener(view -> {
             if (!mConditionHelper.verifyData(mUsedMinutesEditText, mUsedHoursEditText, mLapsedDaysEditText, mTargetGroupSpinner)) {
                 return;
             }
-            GrupoCondition condition = new GrupoCondition();
-            condition.setGroupid(mGroupId);
-            setValuesFromFields(condition);
-            if (mIsEdit && mGrupoCondition != null) {
-                condition.setId(mGrupoCondition.getId());
+            if (mIsEdit) {
+                dialogWithDelayPresenter.showDialog(CALLBACK_SAVE);
+            } else {
+                saveAction();
             }
-
-            giveFeedback(ConditionActionConstants.ACTION_SAVE, condition);
         });
 
+        dialogWithDelayPresenter.setListener(CALLBACK_DELETE, result -> {
+            if (result) {
+                giveFeedback(ConditionActionConstants.ACTION_DELETE, mGrupoCondition);
+            }
+        });
         if (mIsEdit) {
             mButtonBorrar.setVisibility(View.VISIBLE);
             mButtonBorrar.setOnClickListener(view -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getAttachContext());
-                builder.setTitle(R.string.confirmacion);
-                builder.setMessage(R.string.seguro_que_deseas_borrar_esta_condicion);
-                builder.setPositiveButton(R.string.borrar, (dialog, which) -> {
-                    giveFeedback(ConditionActionConstants.ACTION_DELETE, mGrupoCondition);
-                });
-                builder.setNegativeButton(R.string.conservar, null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                dialogWithDelayPresenter.showDialog(CALLBACK_DELETE, getString(R.string.confirmacion), getString(R.string.seguro_que_deseas_borrar_esta_condicion));
             });
         }
 
@@ -190,5 +200,15 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         condition.setConditionalgroupid(mTargetGroupSpinner.getSelectedItemPosition() >= 0 ? mGrupos.get(mTargetGroupSpinner.getSelectedItemPosition()).getId() : -1);
         condition.setConditionalminutes(mConditionHelper.getConditionalMinutes(mUsedHoursEditText, mUsedMinutesEditText));
         condition.setFromlastndays(lapsedDays());
+    }
+
+    private void saveAction() {
+        GrupoCondition condition = new GrupoCondition();
+        condition.setGroupid(mGroupId);
+        setValuesFromFields(condition);
+        if (mIsEdit && mGrupoCondition != null) {
+            condition.setId(mGrupoCondition.getId());
+        }
+        giveFeedback(ConditionActionConstants.ACTION_SAVE, condition);
     }
 }

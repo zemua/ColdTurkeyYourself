@@ -43,7 +43,12 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     }
 
     @Override
+    public void showDialog(String requestKey, String titulo, String mensaje) {
+        showDialog(requestKey, titulo, mensaje, R.drawable.lock_question);
+    }
+
+    @Override
     public void showDialog(String requestKey) {
-        showDialog(requestKey, fragment.getString(R.string.recapacita), fragment.getString(R.string.estas_seguro_que_debes_hacer_esto), R.drawable.lock_question);
+        showDialog(requestKey, fragment.getString(R.string.recapacita), fragment.getString(R.string.estas_seguro_que_debes_hacer_esto));
     }
 }

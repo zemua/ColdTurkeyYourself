@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition;
 
 import android.content.Intent;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.IntentAttacher;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
@@ -10,6 +11,7 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 
+@AndroidEntryPoint
 public class AddConditionActivity extends SingleFragmentActivity {
 
     private static final String TAG = "AddConditionActivity";
