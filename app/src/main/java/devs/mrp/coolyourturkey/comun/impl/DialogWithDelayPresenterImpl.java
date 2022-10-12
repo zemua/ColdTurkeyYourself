@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.R;
@@ -20,6 +21,7 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     private Fragment fragment;
     private DialogWithDelayAndFragmentResponseFactory dialogFactory;
     private int mDelaySeconds;
+    private Object data = null;
 
     public DialogWithDelayPresenterImpl(Fragment fragment, DialogWithDelayAndFragmentResponseFactory factory, int delaySeconds) {
         fragmentManager = fragment.getActivity().getSupportFragmentManager();
@@ -31,7 +33,13 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     @Override
     public void setListener(String requestKey, Consumer<Boolean> consumer) {
         FragmentResultListener fragmentResultListener = (key, bundle) -> consumer.accept(bundle.getBoolean(resultKey));
-        fragmentManager.setFragmentResultListener(requestKey, fragment.getViewLifecycleOwner(), fragmentResultListener);
+        fragmentManager.setFragmentResultListener(requestKey, fragment, fragmentResultListener);
+    }
+
+    @Override
+    public void setListener(String requestKey, BiConsumer<Boolean, Object> consumer) {
+        FragmentResultListener fragmentResultListener = (key, bundle) -> consumer.accept(bundle.getBoolean(resultKey), data);
+        fragmentManager.setFragmentResultListener(requestKey, fragment, fragmentResultListener);
     }
 
     @Override
@@ -50,5 +58,11 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     @Override
     public void showDialog(String requestKey) {
         showDialog(requestKey, fragment.getString(R.string.recapacita), fragment.getString(R.string.estas_seguro_que_debes_hacer_esto));
+    }
+
+    @Override
+    public void showDialog(String requestKey, Object data) {
+        this.data = data;
+        showDialog(requestKey);
     }
 }
