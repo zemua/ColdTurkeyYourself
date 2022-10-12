@@ -413,7 +413,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     static final Migration MIGRATION_25_26 = new Migration(25, 26) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE 'grupo' ADD 'preventclose' INTEGER DEFAULT(0)");
+            database.execSQL("ALTER TABLE 'grupo' ADD 'preventclose' INTEGER NOT NULL DEFAULT(0)");
         }
     };
 

@@ -25,7 +25,7 @@ public class Grupo {
     @TypeConverters(GrupoTypeConverter.class)
     private GrupoType type;
 
-    @ColumnInfo(name = "preventclose")
+    @ColumnInfo(name = "preventclose", defaultValue = "0")
     private boolean preventclose;
 
     public Grupo(String nombre) {this.nombre = nombre;}
