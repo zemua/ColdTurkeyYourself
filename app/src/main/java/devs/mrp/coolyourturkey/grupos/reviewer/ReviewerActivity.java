@@ -9,9 +9,12 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
+import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionFragment;
@@ -52,8 +55,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
                 public void giveFeedback(int tipo, Intent feedback, Object... args) {
                     switch (tipo) {
                         case (ReviewerFeedbackCodes.DELETE):
-                            final DialogWithDelay dialog = new DialogWithDelay(R.drawable.trash_can_outline, getString(R.string.borrar), getString(R.string.estas_seguro), 0, 0, (tipo2, feedback2, args2) -> {
-                                if (tipo == DialogWithDelay.FEEDBACK_ALERT_DIALOG_ACEPTAR) {
+                            final DialogWithDelay dialog = new DialogWithDelay(R.drawable.trash_can_outline, getString(R.string.borrar), getString(R.string.estas_seguro), 0, 30, (tipo2, feedback2, args2) -> {
+                                if (tipo2 == DialogWithDelay.FEEDBACK_ALERT_DIALOG_ACEPTAR) {
                                     grupoRepository.deleteById(mGroupId);
                                     finish();
                                 }
