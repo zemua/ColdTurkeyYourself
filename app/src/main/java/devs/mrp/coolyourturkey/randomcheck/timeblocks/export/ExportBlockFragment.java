@@ -96,7 +96,7 @@ public class ExportBlockFragment extends Fragment implements MyObservable<Object
                 mSaveButton.setVisibility(View.VISIBLE);
             }
         } else {
-            mBlockExportViewModel.findTimeBlockExportByBlockId(mBlockId).observe(this, new Observer<List<TimeBlockExport>>() {
+            mBlockExportViewModel.findTimeBlockExportByBlockId(mBlockId).observe(getViewLifecycleOwner(), new Observer<List<TimeBlockExport>>() {
                 @Override
                 public void onChanged(List<TimeBlockExport> grupoExports) {
                     if (grupoExports != null && grupoExports.size() > 0) {

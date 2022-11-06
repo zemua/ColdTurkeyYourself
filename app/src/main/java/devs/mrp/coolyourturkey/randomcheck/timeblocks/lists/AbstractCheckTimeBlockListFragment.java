@@ -72,7 +72,7 @@ public abstract class AbstractCheckTimeBlockListFragment<T extends TimeBlockWith
         mViewModel = new CheckTimeBlockViewModel(this.getActivity().getApplication());
 
         TimeBlockAdapter<T> adapter = new TimeBlockAdapter();
-        getTimeBlocks(mViewModel).observe(this, new Observer<List<T>>() {
+        getTimeBlocks(mViewModel).observe(getViewLifecycleOwner(), new Observer<List<T>>() {
             @Override
             public void onChanged(List<T> checkTimeBlocks) {
                 adapter.updateDataset(checkTimeBlocks);

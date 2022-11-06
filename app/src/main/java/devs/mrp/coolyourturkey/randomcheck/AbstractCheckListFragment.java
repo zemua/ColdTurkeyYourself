@@ -73,7 +73,7 @@ public abstract class AbstractCheckListFragment<T extends Check> extends Fragmen
         CheckFactory factory = new CheckFactory();
         mRepo = RandomCheckRepository.getRepo(this.getActivity().getApplication());
         CheckListAdapter<T> adapter = new CheckListAdapter(mContext, getColor());
-        getChecks(mRepo).observe(this, new Observer<List<RandomCheck>>() {
+        getChecks(mRepo).observe(getViewLifecycleOwner(), new Observer<List<RandomCheck>>() {
             @Override
             public void onChanged(List<RandomCheck> randomChecks) {
                 List<T> checks = getCheckFromExisting(randomChecks);
