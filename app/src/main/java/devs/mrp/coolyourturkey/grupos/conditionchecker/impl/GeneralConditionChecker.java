@@ -7,7 +7,9 @@ import androidx.lifecycle.LiveData;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,61 +35,60 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
         this.conditionRepository = conditionRepository;
     }
 
+    private void observeOnTimeCounted(Iterator<ConditionChecker> checkers, GrupoCondition condition, long result, Consumer<Long> action) {
+        if (checkers.hasNext()) {
+            ConditionChecker checker = checkers.next();
+            checker.onTimeCounted(condition, longResult -> {
+                observeOnTimeCounted(checkers, condition, result+longResult, action);
+            });
+        } else {
+            action.accept(result);
+        }
+    }
+
     @Override
     public void onTimeCounted(GrupoCondition condition, Consumer<Long> action) {
-        Set<String> recorded = new HashSet<>();
-        AtomicLong result = new AtomicLong(0L);
-        checkers.forEach(checker -> checker.onTimeCounted(condition, longResult -> {
-            if (recorded.contains(checker.getClass().getSimpleName())) {
-                return;
-            }
-            recorded.add(checker.getClass().getSimpleName());
-            long res = result.addAndGet(longResult);
-            if (recorded.size() == checkers.size()) {
-                action.accept(res);
-            }
-        }));
+        observeOnTimeCounted(checkers.listIterator(), condition, 0L, action);
+    }
+
+    private void observeOnConditionMet(Iterator<ConditionChecker> checkers, GrupoCondition condition, long result, Consumer<Boolean> action) {
+        if (checkers.hasNext()) {
+            ConditionChecker checker = checkers.next();
+            checker.onTimeCounted(condition, longResult -> {
+                observeOnConditionMet(checkers, condition, result+longResult, action);
+            });
+        } else {
+            action.accept(result >= MilisToTime.getMilisDeMinutos(condition.getConditionalminutes()));
+        }
     }
 
     @Override
     public void onConditionMet(GrupoCondition condition, Consumer<Boolean> action) {
-        Set<String> recorded = new HashSet<>();
-        AtomicLong result = new AtomicLong(0L);
-        checkers.forEach(checker -> checker.onTimeCounted(condition, longResult -> {
-            if (recorded.contains(checker.getClass().getSimpleName())) {
-                return;
-            }
-            recorded.add(checker.getClass().getSimpleName());
-            long res = result.addAndGet(longResult);
-            if (recorded.size() == checkers.size()) {
-                action.accept(res >= MilisToTime.getMilisDeMinutos(condition.getConditionalminutes()));
-            }
-        }));
+        observeOnConditionMet(checkers.listIterator(), condition, 0L, action);
+    }
+
+    private void observeOnAllConditionsMet(Iterator<GrupoCondition> conditions, Consumer<Boolean> action) {
+        if (conditions.hasNext()) {
+            GrupoCondition condition = conditions.next();
+            onConditionMet(condition, bool -> {
+                if (!bool) {
+                    action.accept(false);
+                } else {
+                    observeOnAllConditionsMet(conditions, action);
+                }
+            });
+        } else {
+            // didn't found unmet conditions
+            action.accept(true);
+        }
     }
 
     @Override
     public void onAllConditionsMet(int groupId, Consumer<Boolean> action) {
         LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(groupId);
         cons.observe(owner, conditions -> {
-            if (conditions.size() == 0) {
-                cons.removeObservers(owner);
-                action.accept(true); // no conditions for group, so true, all met
-            }
-            Set<Integer> recorded = new HashSet<>();
-            AtomicBoolean result = new AtomicBoolean(true);
-            conditions.forEach(condition -> onConditionMet(condition, bool -> {
-                if (recorded.contains(condition.getId())) {
-                    return;
-                }
-                recorded.add(condition.getId());
-                if (!bool) {
-                    result.set(false);
-                }
-                if (recorded.size() >= conditions.size() || !result.get()) {
-                    cons.removeObservers(owner);
-                    action.accept(result.get());
-                }
-            }));
+            cons.removeObservers(owner);
+            observeOnAllConditionsMet(conditions.listIterator(), action);
         });
     }
 }
