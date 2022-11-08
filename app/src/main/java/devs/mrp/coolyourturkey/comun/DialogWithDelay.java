@@ -47,6 +47,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     private Integer mTiempo;
     private Context mContext;
     private boolean restaurar = false;
+    private boolean buttonPushed = false;
 
     public DialogWithDelay() {
         super();
@@ -153,12 +154,16 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        sendResult(Activity.RESULT_CANCELED, false);
+        if (!buttonPushed) {
+            sendResult(Activity.RESULT_CANCELED, false);
+        }
+        buttonPushed = false;
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
+        buttonPushed = true;
         sendResult(Activity.RESULT_CANCELED, false);
     }
 
@@ -171,6 +176,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     }
 
     private void pulsadoAceptar() {
+        buttonPushed = true;
         sendResult(Activity.RESULT_OK, true);
     }
 
