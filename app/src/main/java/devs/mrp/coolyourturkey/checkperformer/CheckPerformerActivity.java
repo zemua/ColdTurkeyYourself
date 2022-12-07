@@ -65,17 +65,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPreferencias = new MisPreferencias(this);
-        if (mPreferencias.getLastRandomCheckTimeStamp() >= getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l)) {
-            finalizar();
-            return;
-        } else {
-            mPreferencias.setLastRandomCheckTimeStamp(getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l));
-        }
-
-        fm = getSupportFragmentManager();
-        mFragment = fm.findFragmentById(R.id.fragment_container);
-
         if (savedInstanceState != null) {
             blockId = savedInstanceState.getInt(BUNDLE_BLOCK_ID);
             mIsFinished = savedInstanceState.getBoolean(BUNDLE_FINISHED);
@@ -87,11 +76,9 @@ public class CheckPerformerActivity extends AppCompatActivity {
             resetData(); // on fragment
         }
 
-        setContentView(R.layout.activity_singlefragment);
-
-        timePusher = new TimePusherFactory().get(ContadorRepository.getRepo(getApplication()));
-
-        blockId = -1;
+        if (blockId == null) {
+            blockId = -1;
+        }
         if (getIntent().hasExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID)) {
             blockId = getIntent().getIntExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID, -1);
             if (blockId == -1 || mIsFinished) {
@@ -102,6 +89,21 @@ public class CheckPerformerActivity extends AppCompatActivity {
             finalizar();
             return;
         }
+
+        mPreferencias = new MisPreferencias(this);
+        if (mPreferencias.getLastRandomCheckTimeStamp(blockId) >= getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l)) {
+            finalizar();
+            return;
+        } else {
+            mPreferencias.setLastRandomCheckTimeStamp(blockId, getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l));
+        }
+
+        fm = getSupportFragmentManager();
+        mFragment = fm.findFragmentById(R.id.fragment_container);
+
+        setContentView(R.layout.activity_singlefragment);
+
+        timePusher = new TimePusherFactory().get(ContadorRepository.getRepo(getApplication()));
 
         mRepo = CheckTimeBlockRepository.getRepo(getApplication());
         mLogger = TimeBlockLoggerRepository.getRepo(getApplication());
@@ -216,9 +218,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     private void finalizar() {
         mIsFinished = true;
-        //Intent intent = new Intent(CheckPerformerActivity.this, PreventsBack.class);
-        //intent.putExtra(PreventsBack.INTENT_IF_PRIZE, ifPrize);
-        //startActivity(intent);
         finish();
     }
 

@@ -305,14 +305,14 @@ public class MisPreferencias {
         return uri;
     }
 
-    public void setLastRandomCheckTimeStamp(long time) {
+    public void setLastRandomCheckTimeStamp(int blockId, long time) {
         SharedPreferences.Editor e = getSharedPreferences().edit();
-        e.putLong(RANDOM_CHECK_TIMESTAMP, time);
+        e.putLong(RANDOM_CHECK_TIMESTAMP + blockId, time);
         e.apply();
     }
 
-    public long getLastRandomCheckTimeStamp() {
-        long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP, 0L);
+    public long getLastRandomCheckTimeStamp(int blockId) {
+        long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP + blockId, 0L);
         return l;
     }
 
