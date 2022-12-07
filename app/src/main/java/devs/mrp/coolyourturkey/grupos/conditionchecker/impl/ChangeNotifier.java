@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
@@ -82,7 +81,7 @@ public class ChangeNotifier implements ChangeChecker {
                     observeUntilLast(conditions, groupId, groupName, type);
                 }
             });
-        } else if (!Optional.ofNullable(beforeMap.get(groupId)).orElse(false)) {
+        } else if (!beforeMap.getOrDefault(groupId, false)) {
             // if no false was detected before, then all conditions are met
             notifyConditionsChanged(groupName, type);
             beforeMap.put(groupId, true);
