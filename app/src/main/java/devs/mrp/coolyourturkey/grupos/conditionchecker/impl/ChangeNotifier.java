@@ -25,7 +25,7 @@ import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander
 
 public class ChangeNotifier implements ChangeChecker {
 
-    private final int NOTIFICATION_ID = -32;
+    private final int NOTIFICATION_ID = 4230000;
 
     private TimeBounded timer;
     private ConditionCheckerCommander checker;
@@ -83,7 +83,7 @@ public class ChangeNotifier implements ChangeChecker {
             });
         } else if (!beforeMap.getOrDefault(groupId, false)) {
             // if no false was detected before, then all conditions are met
-            notifyConditionsChanged(groupName, type);
+            notifyConditionsChanged(groupName, type, groupId);
             beforeMap.put(groupId, true);
         }
     }
@@ -92,11 +92,11 @@ public class ChangeNotifier implements ChangeChecker {
         observeUntilLast(conditions.listIterator(), groupId, groupName, type);
     }
 
-    private void notifyConditionsChanged(String groupName, GrupoType type) {
+    private void notifyConditionsChanged(String groupName, GrupoType type, int groupId) {
         if (preferencias.getNotifyConditionsJustMet()) {
             Integer drawable = type.equals(GrupoType.NEGATIVE) ? R.drawable.bug : R.drawable.plus_circle_outline;
             String description = app.getString(R.string.ahora_cumple_las_condiciones);
-            notificador.createNotification(drawable, groupName, description, Notificador.CONDITION_MET_CHANNEL_ID, NOTIFICATION_ID);
+            notificador.createNotification(drawable, groupName, description, Notificador.CONDITION_MET_CHANNEL_ID, NOTIFICATION_ID + groupId);
         }
     }
 }
