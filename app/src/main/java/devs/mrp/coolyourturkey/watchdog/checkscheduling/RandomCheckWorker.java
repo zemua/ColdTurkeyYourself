@@ -39,14 +39,21 @@ public class RandomCheckWorker extends Worker {
     @Override
     public Result doWork() {
         Log.d(TAG, "do work");
-        Intent intent = new Intent(mContext, CheckPerformerActivity.class);
         Integer blockId = getInputData().getInt(CheckManager.EXTRA_BLOCK_ID, -1);
         String blockName = getInputData().getString(CheckManager.EXTRA_BLOCK_NAME);
-        intent.putExtra(KEY_FOR_BLOCK_ID, blockId);
-        intent.putExtra(KEY_FOR_TIMESTAMP, System.currentTimeMillis());
-        Notification n;
-        n = NotificadorWithIntent.notifyWithIntent(R.drawable.seal, mContext.getString(R.string.notification_channel_for_random_checks_name) + " - " + blockName, mContext.getString(R.string.notification_channel_for_random_checks_description), mContext, intent, NOTIFICATION_CHANNEL_ID, blockId);
-        NotificadorWithIntent.notify(n, mContext, (NOTIFICATION_ID+blockId));
+
+        StaticRandomCheckWorkerChecker.onRandomCheckGroupId(blockId, groupId -> {
+            StaticRandomCheckWorkerChecker.onAllConditionsMet(groupId, areMet -> {
+                if (areMet) {
+                    Intent intent = new Intent(mContext, CheckPerformerActivity.class);
+                    intent.putExtra(KEY_FOR_BLOCK_ID, blockId);
+                    intent.putExtra(KEY_FOR_TIMESTAMP, System.currentTimeMillis());
+                    Notification n;
+                    n = NotificadorWithIntent.notifyWithIntent(R.drawable.seal, mContext.getString(R.string.notification_channel_for_random_checks_name) + " - " + blockName, mContext.getString(R.string.notification_channel_for_random_checks_description), mContext, intent, NOTIFICATION_CHANNEL_ID, blockId);
+                    NotificadorWithIntent.notify(n, mContext, (NOTIFICATION_ID+blockId));
+                }
+            });
+        });
 
         return Result.success();
     }

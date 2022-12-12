@@ -16,7 +16,7 @@ public class Scheduler implements IScheduler{
     private long now;
     private long hourNow;
     private long currentSchedule;
-    private long fullday = 24*60*60*1000;
+    private long fullday = 24*60*60*1000; // miliseconds on a day
     private long from;
     private long to;
     private long randomLapse;
@@ -56,36 +56,6 @@ public class Scheduler implements IScheduler{
         } else {
             return schedule;
         }
-    }
-
-    private long timeFrame() {
-        if (from == to) {
-            return fullday;
-        }
-        if (from < to) {
-            return to - from;
-        }
-        if (from > to) {
-            return (fullday - from) + to;
-        }
-        return 0;
-    }
-
-    private long timeNotOfFrame() {
-        if (from == to) {
-            return 0L;
-        }
-        if (from < to) {
-            return fullday-to+from;
-        }
-        if (from > to) {
-            return from-to;
-        }
-        return fullday;
-    }
-
-    private boolean nowInsideTimeFrame() {
-        return insideTimeFrame(hourNow);
     }
 
     private boolean scheduleInsideTimeFrame() {
@@ -134,68 +104,6 @@ public class Scheduler implements IScheduler{
         }
         return jumpTime;
     }
-
-    // replaced and simplified in previous function because of bugs
-    /*private long milisToJumpFromNow(long timeLeft) {
-        Log.d(TAG, "calculate milis to jump for " + mBlock.getName());
-        long timeJumped = 0;
-        long timeToDecrease = timeLeft;
-        long nextStart = 0;
-        if (nowInsideTimeFrame()) {
-            if (ifDayIncluded(now)) {
-                if (to > hourNow){
-                    // we are later than "from" and earlier than "to"
-                    if (timeToDecrease > to-hourNow){
-                        timeJumped += fullday-hourNow+from;
-                        timeToDecrease -= to-hourNow;
-                        nextStart = now+fullday-hourNow+from;
-                        Log.d(TAG, "Cond A");
-                    } else {
-                        Log.d(TAG, "Cond B");
-                        return timeToDecrease;
-                    }
-                } else {
-                    // "to" is earlier than "from" and we are later than "from"
-                    // so we have until the end of today to schedule
-                    if (timeToDecrease > fullday-hourNow+to) {
-                        timeJumped += fullday-hourNow+from;
-                        timeToDecrease -= to+fullday-hourNow;
-                        nextStart = now+fullday-hourNow+from;
-                        Log.d(TAG, "Cond A2");
-                    } else {
-                        Log.d(TAG, "Cond B2");
-                        return timeToDecrease;
-                    }
-                }
-            } else {
-                timeJumped += fullday-hourNow+from;
-                nextStart = now+fullday-hourNow+from; // decrease time to tomorrow on open timeframe
-                Log.d(TAG, "Cond C");
-            }
-        } else {
-            if (hourNow <= from) {
-                timeJumped += from-hourNow;
-                nextStart = now+from-hourNow;
-                Log.d(TAG, "Cond D");
-            } else {
-                timeJumped += fullday-hourNow+from;
-                nextStart = now+fullday-hourNow+from;
-                Log.d(TAG, "Cond E");
-            }
-        }
-        while (timeToDecrease > timeFrame() || !ifDayIncluded(nextStart)) {
-            Log.d(TAG, "Cond F1");
-            if (ifDayIncluded(nextStart)){
-                timeToDecrease -= timeFrame();
-                Log.d(TAG, "Cond F2");
-            }
-            timeJumped += fullday;
-            nextStart += fullday;
-        }
-        Log.d(TAG, "done");
-        timeJumped += timeToDecrease;
-        return timeJumped;
-    }*/
 
     private long timeRemainingInCurrentFrame() {
         if (!insideTimeFrame(hourNow)){

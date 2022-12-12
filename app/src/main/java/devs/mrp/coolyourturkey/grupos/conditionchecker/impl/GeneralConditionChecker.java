@@ -1,6 +1,7 @@
 package devs.mrp.coolyourturkey.grupos.conditionchecker.impl;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -27,6 +28,8 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
     private Application app;
     private LifecycleOwner owner;
     private GrupoConditionRepository conditionRepository;
+
+    private String TAG = "GeneralConditionChecker";
 
     public GeneralConditionChecker(Application app, LifecycleOwner owner, GrupoConditionRepository conditionRepository) {
         this.app = app;
@@ -85,6 +88,11 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
 
     @Override
     public void onAllConditionsMet(int groupId, Consumer<Boolean> action) {
+        if (groupId < 1) {
+            Log.d(TAG, "No group assigned as groupId " + groupId + ", running action with return value 'true'");
+            action.accept(true);
+            return;
+        }
         LiveData<List<GrupoCondition>> cons = conditionRepository.findConditionsByGroupId(groupId);
         cons.observe(owner, conditions -> {
             cons.removeObservers(owner);

@@ -67,6 +67,7 @@ public class CheckManager implements ICheckManager{
         mWorkManager = WorkManager.getInstance(app);
         mainHandler = new Handler(Looper.getMainLooper());
         misPreferencias = new MisPreferencias(app);
+        StaticRandomCheckWorkerChecker.setContext(app, owner);
     }
 
     public static CheckManager getInstance(Application app, LifecycleOwner owner) {
@@ -78,9 +79,9 @@ public class CheckManager implements ICheckManager{
         return instance;
     }
 
-    //public void setNotificationChannel() {
-        //instance.mNotificador.createNotificationChannelWithCustomSound(R.string.notification_channel_for_random_checks_name, R.string.notification_channel_for_random_checks_description, RandomCheckWorker.NOTIFICATION_CHANNEL_ID, misPreferencias.getRandomCheckSound());
-    //}
+    public static CheckManager getInstance() {
+        return instance;
+    }
 
     @Override
     public void refresh() {

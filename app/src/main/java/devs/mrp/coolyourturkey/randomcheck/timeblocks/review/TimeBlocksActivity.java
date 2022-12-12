@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
@@ -38,7 +39,10 @@ public class TimeBlocksActivity extends AppCompatActivity {
         }
 
         ((TimeBlocksFragment)mFragment).addObserver((tipo, feedback) -> {
-            BlockFeedbackCommander.get(this, CheckManager.getInstance(getApplication(), this)).receiveRequest(tipo, feedback);
+            CheckManager checker = CheckManager.getInstance();
+            if (Objects.nonNull(checker)) {
+                BlockFeedbackCommander.get(this, checker).receiveRequest(tipo, feedback);
+            }
         });
     }
 
