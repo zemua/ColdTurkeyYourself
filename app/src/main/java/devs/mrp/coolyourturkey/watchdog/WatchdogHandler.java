@@ -177,9 +177,8 @@ public class WatchdogHandler implements Feedbacker<Object> {
         try {
             ApplicationInfo pi = mPackageManager.getApplicationInfo(packageName, 0);
             label = String.valueOf(mPackageManager.getApplicationLabel(pi));
-        } catch (
-                PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Package name not found: " + packageName, e);
         }
         return label;
     }

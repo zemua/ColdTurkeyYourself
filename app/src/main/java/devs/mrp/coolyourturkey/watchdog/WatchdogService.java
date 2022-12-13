@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
@@ -29,10 +30,8 @@ import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository
 import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ChangeCheckerFactory;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
-import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.grupos.packagemapper.impl.PackageConditionsCheckerFactory;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.AbstractHandler;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
@@ -94,7 +93,6 @@ public class WatchdogService extends LifecycleService {
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
-                .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this))
                 .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
                 .setConditionChecker(ConditionCheckerFactory.getConditionChecker(this.getApplication(), this))
                 .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this));
@@ -221,7 +219,6 @@ public class WatchdogService extends LifecycleService {
 
             data.getTimeLogHandler().watchDog();
             data.getChangeNotificationChecker().onChangedToMet(); // send notification if some groups changes to meet conditions
-            data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
             changeOfDayNotifier.notify(null);
@@ -248,7 +245,9 @@ public class WatchdogService extends LifecycleService {
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Interrupted exception during loop work", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Generic exception during loop work", e);
         }
     }
 

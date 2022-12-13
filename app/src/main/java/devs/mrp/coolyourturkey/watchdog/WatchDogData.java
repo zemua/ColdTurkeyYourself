@@ -9,7 +9,6 @@ import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageConditionsChecker;
-import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class WatchDogData {
@@ -282,14 +281,5 @@ public class WatchDogData {
     }
     public PackageConditionsChecker getPackageConditionsChecker() {
         return this.packageConditionsChecker;
-    }
-
-    private TimeBlockExporter timeBlockExporter;
-    public WatchDogData setTimeBlockExporter(TimeBlockExporter exporter) {
-        this.timeBlockExporter = exporter;
-        return this;
-    }
-    public TimeBlockExporter getTimeBlockExporter() {
-        return this.timeBlockExporter;
     }
 }
