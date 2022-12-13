@@ -34,6 +34,10 @@ public class RandomCheck {
     @ColumnInfo(name = "multiplicador")
     private Integer multiplicador;
 
+    @NonNull
+    @ColumnInfo(name = "frequency")
+    private Integer frequency;
+
 
     @NonNull
     public Integer getId() {
@@ -77,5 +81,17 @@ public class RandomCheck {
 
     public void setMultiplicador(Integer multiplicador) {
         this.multiplicador = multiplicador;
+    }
+
+    @NonNull
+    public Integer getFrequency() {
+        if (frequency == null) {
+            return 1;
+        }
+        return frequency;
+    }
+
+    public void setFrequency(@NonNull Integer frequency) {
+        this.frequency = frequency;
     }
 }

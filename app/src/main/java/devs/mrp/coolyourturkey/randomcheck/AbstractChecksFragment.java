@@ -41,6 +41,12 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
     protected Button mSaveButton;
     protected Button mDeleteButton;
 
+    protected TextView mFrequencyText;
+    protected Button mFrequencyPlus;
+    protected Button mFrequencyMinus;
+    protected int frequency = 1;
+    private static final int MAX_FREQUENCY = 50;
+
     protected View mView;
 
     @Override
@@ -69,6 +75,9 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
         mQuestionText = mView.findViewById(R.id.editTextPregunta);
         mSaveButton = mView.findViewById(R.id.buttonGuardar);
         mDeleteButton = mView.findViewById(R.id.buttonDel);
+        mFrequencyText = mView.findViewById(R.id.frequencytext);
+        mFrequencyMinus = mView.findViewById(R.id.frequencyminus);
+        mFrequencyPlus = mView.findViewById(R.id.frequencyplus);
         initializeOtherFields(mView);
 
         setNameHint(mNameText);
@@ -85,6 +94,20 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
             fillFields();
             doStuffIfExisting();
         }
+
+        mFrequencyMinus.setOnClickListener(v -> {
+            if (frequency > 1) {
+                frequency --;
+                mFrequencyText.setText(String.valueOf(frequency));
+            }
+        });
+
+        mFrequencyPlus.setOnClickListener(v -> {
+            if (frequency < MAX_FREQUENCY) {
+                frequency ++;
+                mFrequencyText.setText(String.valueOf(frequency));
+            }
+        });
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +152,8 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
     private void fillFields() {
         mNameText.setText(mCheck.getName());
         mQuestionText.setText(mCheck.getQuestion());
+        mFrequencyText.setText(String.valueOf(mCheck.getFrequency()));
+        frequency = mCheck.getFrequency();
         fillOtherFields(mView);
     }
 
@@ -137,6 +162,7 @@ public abstract class AbstractChecksFragment<T extends Check> extends Fragment i
     private void guardar() {
         mCheck.setName(mNameText.getText().toString());
         mCheck.setQuestion(mQuestionText.getText().toString());
+        mCheck.setFrequency(frequency);
         if (assertValid()) {
             doCallBack(mCurrent, mCheck);
         }

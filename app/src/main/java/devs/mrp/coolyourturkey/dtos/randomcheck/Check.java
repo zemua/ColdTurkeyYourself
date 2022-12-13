@@ -7,6 +7,7 @@ public abstract class Check implements MyNombrable {
     private Integer id;
     private String name;
     private String question;
+    private Integer frequency;
 
     public void setId(Integer i) {
         id = i;
@@ -27,6 +28,16 @@ public abstract class Check implements MyNombrable {
     }
     public String getQuestion() {
         return question;
+    }
+
+    public Integer getFrequency() {
+        if (frequency == null) {
+            return 1;
+        }
+        return frequency;
+    }
+    public void setFrequency(Integer frequency) {
+        this.frequency = frequency;
     }
 
 }
