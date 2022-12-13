@@ -277,16 +277,6 @@ public class MisPreferencias {
         return getSharedPreferences().getBoolean(NOTIFY_CONDITIONS_JUST_MET, true);
     }
 
-    public void setNotifyLimitesReached(boolean b) {
-        SharedPreferences.Editor e = getSharedPreferences().edit();
-        e.putBoolean(NOTIFY_LIMITES_REACHED, b);
-        e.apply();
-    }
-
-    public boolean getNotifyLimitesReached() {
-        return getSharedPreferences().getBoolean(NOTIFY_LIMITES_REACHED, true);
-    }
-
     public void setRandomCheckSound(Uri uri){
         SharedPreferences.Editor e = getSharedPreferences().edit();
         e.putString(RANDOM_CHECK_CUSTOM_SOUND, uri.getPath());
