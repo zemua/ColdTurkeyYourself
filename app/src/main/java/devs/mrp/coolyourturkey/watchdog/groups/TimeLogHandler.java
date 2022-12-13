@@ -208,6 +208,8 @@ public class TimeLogHandler implements Feedbacker<Object> {
                 liveData.removeObservers(mLifecycleOwner);
                 if (grupos.size()>0) {
                     grupo.accept(grupos.get(0));
+                } else {
+                    grupo.accept(null);
                 }
             });
         });

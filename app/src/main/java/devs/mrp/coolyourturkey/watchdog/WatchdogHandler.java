@@ -18,6 +18,7 @@ import devs.mrp.coolyourturkey.MainActivity;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -25,6 +26,7 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class WatchdogHandler implements Feedbacker<Object> {
@@ -124,7 +126,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
                 logger.onAllConditionsMet(paquete, conditionsMet -> {
                     String message = "";
                     if (logger.appIsGrouped(paquete)) {
-                        String groupName = grupo.getNombre();
+                        String groupName = Optional.ofNullable(grupo).map(Grupo::getNombre).orElse("");
                         Long timeLong = logger.todayTimeOnAppGroup(paquete);
                         String timeFormat = MilisToTime.getFormated(timeLong);
                         message = mContext.getText(R.string.grupo) + " " + groupName + " - " + timeFormat + " " + mContext.getText(R.string.hoy) ;
