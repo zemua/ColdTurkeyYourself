@@ -76,12 +76,13 @@ public class CheckPerformerActivity extends AppCompatActivity {
             resetData(); // on fragment
         }
 
-        if (blockId == null) {
-            blockId = -1;
+        if (mIsFinished) {
+            finalizar();
+            return;
         }
         if (getIntent().hasExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID)) {
             blockId = getIntent().getIntExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID, -1);
-            if (blockId == -1 || mIsFinished) {
+            if (blockId == -1) {
                 finalizar();
                 return;
             }
