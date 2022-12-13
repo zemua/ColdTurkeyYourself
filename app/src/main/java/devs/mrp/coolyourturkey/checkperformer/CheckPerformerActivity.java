@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +25,7 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogg
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
@@ -116,6 +120,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
             if (timeBlockWithChecks.size() > 0) {
                 TimeBlockWithChecks tbwc = timeBlockWithChecks.get(0);
                 AbstractTimeBlock tb = new TimeBlockFactory().importFrom(tbwc);
+                tb.setNegativeChecks(checksQtyAdjustedToFrequency(tb.getNegativeChecks()));
+                tb.setPositiveChecks(positiveChecksQtyAdjustedToFrequency(tb.getPositiveChecks()));
 
                 Random rand = new Random();
 
@@ -124,7 +130,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                     if (positiveQuestion.isEmpty()) {
                         pCheck = tb.getPositiveChecks().get(rand.nextInt(tb.getPositiveChecks().size()));
                         positiveQuestion = pCheck.getQuestion();
-                        //mPremio = ((((tb.getMaximumLapse()-tb.getMinimumLapse())/2)+tb.getMinimumLapse())*pCheck.getMultiplicador());
                         mPremio = tb.getPrizeammount()*60*1000*pCheck.getMultiplicador();
                     }
                 } else {
@@ -142,17 +147,13 @@ public class CheckPerformerActivity extends AppCompatActivity {
                     return;
                 }
 
-                //final String pq = positiveQuestion;
-
                 if (mFragment == null) {
                     mFragment = new CheckPerformerFragment();
                     if (!negativeQuestion.equals("") && !mNegativeDone) {
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(negativeQuestion, true, false, false, this);
                     } else {
                         mNegativeDone = true;
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(positiveQuestion, false, true, true, this);
                     }
                     fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
                 }
@@ -163,7 +164,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                         fm.beginTransaction().remove(mFragment).commit();
                         mFragment = new CheckPerformerFragment();
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(pq, false, true, true, this);
                         addPositiveObserver();
                         ((MyObservableNegative<?>) mFragment).addNegativeObserver((t, b) -> {
                             CheckPerformerActivity.this.finalizar();
@@ -202,7 +202,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 });
                 fm.beginTransaction().remove(mFragment).commit();
                 fm.beginTransaction().add(R.id.fragment_container, fr).commit();
-                //finalizar();
             } else {
                 CheckPerformerActivity.this.finalizar();
             }
@@ -245,5 +244,21 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {}
+
+    private List<Check> checksQtyAdjustedToFrequency(List<Check> checks) {
+        List<Check> result = new LinkedList<>();
+        checks.forEach(check -> {
+            result.addAll(Collections.nCopies(check.getFrequency(), check));
+        });
+        return result;
+    }
+
+    private List<PositiveCheck> positiveChecksQtyAdjustedToFrequency(List<PositiveCheck> checks) {
+        List<PositiveCheck> result = new LinkedList<>();
+        checks.forEach(check -> {
+            result.addAll(Collections.nCopies(check.getFrequency(), check));
+        });
+        return result;
+    }
 
 }
