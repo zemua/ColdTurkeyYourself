@@ -51,4 +51,10 @@ public class TimeBlockLoggerRepository {
         return mDao.findByTimeNewerAndGroupId(from, groupId);
     }
 
+    public void deleteByEarlierThan(Long millisTimestamp) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> {
+            mDao.deleteByOlderThanTimestamp(millisTimestamp);
+        });
+    }
+
 }

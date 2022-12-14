@@ -26,4 +26,7 @@ public interface TimeBlockLoggerDao {
     @Query("SELECT * FROM timeblocklogger WHERE epoch >= :from AND groupid = :groupid")
     LiveData<List<TimeBlockLogger>> findByTimeNewerAndGroupId(Long from, Integer groupid);
 
+    @Query("DELETE FROM timeblocklogger WHERE epoch < :beforemillis")
+    void deleteByOlderThanTimestamp(Long beforemillis);
+
 }
