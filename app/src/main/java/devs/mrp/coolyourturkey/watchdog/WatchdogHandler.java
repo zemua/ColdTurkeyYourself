@@ -50,6 +50,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
     WatchdogScreenOnOffReceiver br;
     PackageManager mPackageManager;
     private ToqueDeQuedaHandler mToqueDeQuedaHandler;
+    private static boolean channelCreated = false;
 
     WatchdogHandler(Context context) {
         mContext = context;
@@ -201,6 +202,9 @@ public class WatchdogHandler implements Feedbacker<Object> {
     }
 
     private void createNotificationChannel() {
+        if (channelCreated) {
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && serviceChannel == null) {
             serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
@@ -210,6 +214,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
             serviceChannel.setSound(null, null);
             NotificationManager manager = mContext.getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
+            channelCreated = true;
         }
     }
 
