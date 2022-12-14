@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.ObjectWrapperForBinder;
+import devs.mrp.coolyourturkey.comun.impl.MinMaxFilter;
+import devs.mrp.coolyourturkey.databaseroom.EntryCleanerImpl;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
@@ -122,6 +125,7 @@ public class AddConditionFragment extends FeedbackerFragment<GrupoCondition> {
         mUsedHoursEditText = v.findViewById(R.id.editTextHoras);
         mUsedMinutesEditText = v.findViewById(R.id.editTextMinutos);
         mLapsedDaysEditText = v.findViewById(R.id.editTextDaysLapsed);
+        mLapsedDaysEditText.setFilters(new InputFilter[]{new MinMaxFilter(0, EntryCleanerImpl.DAYS_OLD_TO_DELETE)});
         mSaveButton = v.findViewById(R.id.buttonAnhadir);
         mButtonBorrar = v.findViewById(R.id.buttonBorrar);
 

@@ -202,6 +202,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:ems="10"
+                        android:hint="@string/zero_to_30"
                         android:inputType="number"
                         android:maxLength="2"
                         android:textAlignment="center"

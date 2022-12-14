@@ -207,4 +207,5 @@
     <string name="recapacita">Recapacita</string>
     <string name="estas_seguro_que_debes_hacer_esto">¿Estás seguro de que debes hacer esto?</string>
     <string name="frequency">Frecuencia</string>
+    <string name="zero_to_30">0 to 30</string>
 </resources>
