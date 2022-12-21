@@ -11,8 +11,8 @@ android {
         applicationId "devs.mrp.coolyourturkey"
         minSdkVersion 26
         targetSdkVersion 31
-        versionCode 18
-        versionName "0.5.10"
+        versionCode 19
+        versionName "0.5.11"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
