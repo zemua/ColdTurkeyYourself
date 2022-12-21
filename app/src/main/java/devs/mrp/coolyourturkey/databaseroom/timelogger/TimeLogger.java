@@ -3,10 +3,11 @@ package devs.mrp.coolyourturkey.databaseroom.timelogger;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-@Entity(tableName = "timelogger")
+@Entity(tableName = "timelogger", indices = {@Index("millistimestamp")})
 public class TimeLogger {
 
     public enum Type {
