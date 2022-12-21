@@ -7,10 +7,13 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.FileTimeGetter;
+import devs.mrp.coolyourturkey.comun.GenericCache;
 import devs.mrp.coolyourturkey.comun.impl.FileTimeGetterImpl;
+import devs.mrp.coolyourturkey.comun.impl.TurkeyFactoryProvider;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
@@ -18,6 +21,8 @@ import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
 
 public class FileChecker implements ConditionChecker {
+
+    GenericCache<Long,GrupoCondition> conditionTimeSpent = TurkeyFactoryProvider.<Long,GrupoCondition>getGenericCache().getInstance();
 
     private FileTimeGetter fileTimeGetter;
     private ElementToGroupRepository elementToGroupRepository;
@@ -31,12 +36,18 @@ public class FileChecker implements ConditionChecker {
 
     @Override
     public void onTimeCounted(GrupoCondition condition, Consumer<Long> action) {
-        LiveData<List<ElementToGroup>> els = elementToGroupRepository.findElementsOfGroupAndType(condition.getConditionalgroupid(), ElementType.FILE);
-        els.observe(owner, elements -> {
-            els.removeObservers(owner);
-            // the files are expected to have the time per day considering hour for change of day in the device that creates them
-            long result = elements.stream().mapToLong(e -> fileTimeGetter.fromFileLastDays(condition.getFromlastndays(), Uri.parse(e.getName()))).sum();
-            action.accept(result);
-        });
+        Long cached = conditionTimeSpent.get(condition);
+        if (Objects.nonNull(cached)) {
+            action.accept(cached);
+        } else {
+            LiveData<List<ElementToGroup>> els = elementToGroupRepository.findElementsOfGroupAndType(condition.getConditionalgroupid(), ElementType.FILE);
+            els.observe(owner, elements -> {
+                els.removeObservers(owner);
+                // the files are expected to have the time per day considering hour for change of day in the device that creates them
+                long result = elements.stream().mapToLong(e -> fileTimeGetter.fromFileLastDays(condition.getFromlastndays(), Uri.parse(e.getName()))).sum();
+                conditionTimeSpent.put(condition, result);
+                action.accept(result);
+            });
+        }
     }
 }
