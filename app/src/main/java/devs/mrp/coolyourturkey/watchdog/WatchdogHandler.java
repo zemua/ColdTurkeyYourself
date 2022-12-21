@@ -128,9 +128,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
                     String message = "";
                     if (logger.appIsGrouped(paquete)) {
                         String groupName = Optional.ofNullable(grupo).map(Grupo::getNombre).orElse("");
-                        Long timeLong = logger.todayTimeOnAppGroup(paquete);
-                        String timeFormat = MilisToTime.getFormated(timeLong);
-                        message = mContext.getText(R.string.grupo) + " " + groupName + " - " + timeFormat + " " + mContext.getText(R.string.hoy) ;
+                        message = mContext.getText(R.string.grupo) + " " + groupName + " - " ;
                     }
                     if (conditionsMet) {
                         mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
