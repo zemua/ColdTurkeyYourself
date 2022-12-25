@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -17,22 +18,26 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoType;
 import devs.mrp.coolyourturkey.grupos.reviewer.tabs.ReviewerFeedbackCodes;
 
+@AndroidEntryPoint
 public class ReviewerFragment extends FeedbackerFragment<Intent> {
 
     private static final String KEY_BUNDLE_GROUP_ID = "key.bundle.group.id";
     private static final String KEY_BUNDLE_GROUP_NAME = "key.bundle.group.name";
     private static final String KEY_BUNDLE_GROUP_TYPE = "key.bundle.group.type";
+    private static final String KEY_BUNDLE_PREVENT_CLOSING = "key.bundle.prevent.closing";
 
     private ViewModelProvider.Factory viewModelFactory;
 
     private int mGroupId;
     private String mGroupName;
     private GrupoType mGroupType;
+    private boolean mGroupPreventClosing;
     private Context mContext;
     private Handler mainHandler;
 
@@ -41,6 +46,18 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
     private Button buttonExpTxt;
     private Button buttonDelete;
     private ViewPager2 viewPager;
+
+    public ReviewerFragment() {
+        super();
+    }
+
+    public ReviewerFragment(int groupId, String groupName, GrupoType grupoType, boolean preventClosing) {
+        super();
+        this.mGroupId = groupId;
+        this.mGroupName = groupName;
+        this.mGroupType = grupoType;
+        this.mGroupPreventClosing = preventClosing;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,17 +70,20 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
             mGroupId = savedInstanceState.getInt(KEY_BUNDLE_GROUP_ID);
             mGroupName = savedInstanceState.getString(KEY_BUNDLE_GROUP_NAME);
             mGroupType = GrupoType.valueOf(savedInstanceState.getString(KEY_BUNDLE_GROUP_TYPE));
+            mGroupPreventClosing = savedInstanceState.getBoolean(KEY_BUNDLE_PREVENT_CLOSING);
         }
 
         View v = inflater.inflate(R.layout.fragment_reviewer, container, false);
 
         groupNameTextView = v.findViewById(R.id.groupNameText);
+        groupNameTextView.setText(mGroupName);
+
         tabLayout = v.findViewById(R.id.tabLayout);
         buttonExpTxt = v.findViewById(R.id.buttonExp);
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getActivity().getSupportFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName);
+        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getChildFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName, mGroupPreventClosing);
         FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();
@@ -73,16 +93,13 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         return v;
     }
 
-    public void setGroupId(int mGroupId) {
-        this.mGroupId = mGroupId;
-    }
-
-    public void setGroupName(String mGroupName) {
-        this.mGroupName = mGroupName;
-    }
-
-    public void setGroupType(GrupoType mGroupType) {
-        this.mGroupType = mGroupType;
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_BUNDLE_GROUP_ID, mGroupId);
+        outState.putString(KEY_BUNDLE_GROUP_NAME, mGroupName);
+        outState.putString(KEY_BUNDLE_GROUP_TYPE, mGroupType.toString());
+        outState.putBoolean(KEY_BUNDLE_PREVENT_CLOSING, mGroupPreventClosing);
+        super.onSaveInstanceState(outState);
     }
 
     private ReviewerPagerChooser.Type pagerType() {

@@ -43,14 +43,19 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     private int mIconResId;
     private String mTitle;
     private Integer mReplyValue;
-    private AlertDialog mDialogo;
+    protected AlertDialog mDialogo;
     private Integer mTiempo;
     private Context mContext;
     private boolean restaurar = false;
+    private boolean buttonPushed = false;
 
     public DialogWithDelay() {
         super();
         restaurar = true;
+    }
+
+    public DialogWithDelay(int iconResId, String title, String message) {
+        this(iconResId, title, message, 0);
     }
 
     public DialogWithDelay(int iconResId, String title, String message, Integer replyValue) {
@@ -77,11 +82,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (restaurar) {
-            mMensaje = savedInstanceState.getString(KEY_BUNDLE_MENSAJE);
-            mTitle = savedInstanceState.getString(KEY_BUNDLE_TITULO);
-            mReplyValue = savedInstanceState.getInt(KEY_BUNDLE_REPLY_VALUE);
-            mIconResId = savedInstanceState.getInt(KEY_BUNDLE_ICONO);
-            mTiempo = savedInstanceState.getInt(KEY_BUNDLE_TIEMPO);
+            restoreValues(savedInstanceState);
         }
         mIcon = getActivity().getDrawable(mIconResId);
 
@@ -147,27 +148,39 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
         outstate.putInt(KEY_BUNDLE_REPLY_VALUE, mReplyValue);
         outstate.putInt(KEY_BUNDLE_ICONO, mIconResId);
         outstate.putInt(KEY_BUNDLE_TIEMPO, mDialogDelayer.getTiempo());
-
         super.onSaveInstanceState(outstate);
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        sendResult(Activity.RESULT_CANCELED, false);
+        if (!buttonPushed) {
+            sendResult(Activity.RESULT_CANCELED, false);
+        }
+        buttonPushed = false;
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
+        buttonPushed = true;
         sendResult(Activity.RESULT_CANCELED, false);
     }
 
+    protected void restoreValues(Bundle savedInstanceState) {
+        mMensaje = savedInstanceState.getString(KEY_BUNDLE_MENSAJE);
+        mTitle = savedInstanceState.getString(KEY_BUNDLE_TITULO);
+        mReplyValue = savedInstanceState.getInt(KEY_BUNDLE_REPLY_VALUE);
+        mIconResId = savedInstanceState.getInt(KEY_BUNDLE_ICONO);
+        mTiempo = savedInstanceState.getInt(KEY_BUNDLE_TIEMPO);
+    }
+
     private void pulsadoAceptar() {
+        buttonPushed = true;
         sendResult(Activity.RESULT_OK, true);
     }
 
-    private void sendResult(int resultCode, boolean aceptado) {
+    protected void sendResult(int resultCode, boolean aceptado) {
         if (aceptado) {
             giveFeedback(FEEDBACK_ALERT_DIALOG_ACEPTAR, mDialogo);
         } else {

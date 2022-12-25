@@ -63,7 +63,7 @@ public abstract class GruposAdapter extends RecyclerView.Adapter<GruposAdapter.G
         holder.grupo = mDataset.get(position);
         String nombre = mDataset.get(position).getNombre();
         mTimeLogHandler.onGroupTimeToday(new GeneralAssemblerImpl(type, owner, app), holder.grupo.getId(), formattedTime -> {
-            if (nombre.equals(mDataset.get(position).getNombre())){ // avoid racing condition
+            if (mDataset.size() > position && nombre.equals(mDataset.get(position).getNombre())){ // avoid racing condition
                 holder.textView.setText(mDataset.get(position).getNombre() + " (" + formattedTime + " " + mContext.getString(R.string.hoy) + ")");
             }
         });

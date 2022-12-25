@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import devs.mrp.coolyourturkey.databaseroom.TurkeyDatabaseRoom;
-import devs.mrp.coolyourturkey.databaseroom.timelogger.TimeLoggerRepository;
 
 public class GrupoRepository {
 
@@ -60,6 +59,10 @@ public class GrupoRepository {
             mDao.deleteConditionsByThisGroup(id);
             mDao.deleteConditionsByThisTarget(id);
         });
+    }
+
+    public void setPreventCloseForGroupId(boolean value, int groupId) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.setPreventCloseForGroupId(value, groupId));
     }
 
 }

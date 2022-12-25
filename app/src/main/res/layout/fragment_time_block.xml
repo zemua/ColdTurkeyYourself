@@ -431,45 +431,27 @@
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/buttonExportTB"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/exportar"
-                    android:visibility="gone"
-                    app:icon="@android:drawable/ic_popup_sync"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
                     android:id="@+id/buttonSaveBlock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/guardar"
                     app:icon="@drawable/content_save"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/buttonExportTB" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <Button
                     android:id="@+id/buttonDeleteBlock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/borrar"
                     android:visibility="gone"
                     app:icon="@drawable/trash_can_outline"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/buttonExportTB" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

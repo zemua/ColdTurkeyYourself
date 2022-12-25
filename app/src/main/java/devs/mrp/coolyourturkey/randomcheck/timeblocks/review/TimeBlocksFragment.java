@@ -95,7 +95,6 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     protected RecyclerView mPositiveRecycler;
     protected Button mDeleteBlock;
     protected Button mSaveBlock;
-    protected Button mExportButton;
 
     private SelectablesAdapter<APositiveCheckSelectable> mPositiveAdapter;
     private SelectablesAdapter<ANegativeCheckSelectable> mNegativeAdapter;
@@ -167,7 +166,6 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
         mPositiveRecycler = mView.findViewById(R.id.recyclerControlesPositivos);
         mDeleteBlock = mView.findViewById(R.id.buttonDeleteBlock);
         mSaveBlock = mView.findViewById(R.id.buttonSaveBlock);
-        mExportButton = mView.findViewById(R.id.buttonExportTB);
 
         mPositiveAdapter = new SelectablesAdapter<>();
         mNegativeAdapter = new SelectablesAdapter<>();
@@ -195,11 +193,9 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             mCurrentFeedback = FEEDBACK_SAVE_NEW;
             mTimeBlock = new TimeBlockFactory().getNew();
             mDeleteBlock.setVisibility(View.GONE);
-            mExportButton.setVisibility(View.GONE);
         } else {
             mCurrentFeedback = FEEDBACK_SAVE_EXISTING;
             mDeleteBlock.setVisibility(View.VISIBLE);
-            mExportButton.setVisibility(View.VISIBLE);
             fillFieldsWithExistingData(mTimeBlock);
         }
 
@@ -223,10 +219,6 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
             builder.setNegativeButton(R.string.conservar, null);
             AlertDialog dialog = builder.create();
             dialog.show();
-        });
-
-        mExportButton.setOnClickListener(view -> {
-            doCallBack(FEEDBACK_EXPORT_TXT, mTimeBlock);
         });
 
         if (!fromSavedInstance) {
@@ -263,13 +255,11 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (resultCode == Activity.RESULT_OK) {
-            //Log.d(TAG, "llamado onActivityResult");
             new PickerCommander(mView, this).getHandlerChain().receiveRequest(String.valueOf(requestCode), resultData);
         }
     }
 
     private void fillFieldsWithExistingData(AbstractTimeBlock timeBlock) {
-        //Log.d(TAG, timeBlock.toString());
         mName.setText(timeBlock.getName());
         fromH = (int) (timeBlock.getFromTime()/(60*60*1000));
         fromM = (int) (timeBlock.getFromTime()%(60*60*1000))/(60*1000);
@@ -310,10 +300,6 @@ public class TimeBlocksFragment extends Fragment implements MyObservable<Abstrac
 
     private void guardar(View v) {
         saveDataInTimeBlock();
-
-        //Log.d(TAG, "checked negatives: " + mTimeBlock.getNegativeChecks());
-        //Log.d(TAG, "checked positives: " + mTimeBlock.getPositiveChecks());
-
         if (assertValid()) {
             doCallBack(mCurrentFeedback, mTimeBlock);
         }

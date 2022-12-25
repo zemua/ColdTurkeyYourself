@@ -19,16 +19,17 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         android:hasFragileUserData="true">
 
-        <receiver android:name="devs.mrp.coolyourturkey.watchdog.AutoStart">
+        <receiver android:name="devs.mrp.coolyourturkey.watchdog.AutoStart"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name="devs.mrp.coolyourturkey.MainActivity">
+        <activity android:name="devs.mrp.coolyourturkey.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,8 +42,8 @@
         <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.AddGroupConditionActivity"></activity>
         <activity android:name=".grupos.grupospositivos_old_deprecated.ExportGroupTimeActivity"></activity>
         <activity android:name=".grupos.grupospositivos_old_deprecated.conditions.GroupLimitsActivity"></activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.CondicionesNegativasActivity"></activity>
-        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas.add.AddNegativeConditionActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas_old_deprecated.CondicionesNegativasActivity"></activity>
+        <activity android:name="devs.mrp.coolyourturkey.condicionesnegativas_old_deprecated.add.AddNegativeConditionActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.RandomChecksActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.review.PositiveChecksActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.positivecheck.lists.PositiveChecksListActivity"></activity>
@@ -51,7 +52,6 @@
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.lists.CheckTimeBlockListActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.review.TimeBlocksActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.checkperformer.CheckPerformerActivity" android:screenOrientation="portrait" android:configChanges="orientation|keyboardHidden"></activity>
-        <activity android:name="devs.mrp.coolyourturkey.randomcheck.timeblocks.export.ExportBlockActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.checkperformer.PreventsBack"  android:screenOrientation="portrait" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name="devs.mrp.coolyourturkey.grupos.gruposnegativos.GruposNegativosActivity"></activity>
         <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.ReviewerActivity"></activity>

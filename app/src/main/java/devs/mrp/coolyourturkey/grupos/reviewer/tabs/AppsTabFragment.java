@@ -23,7 +23,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroup;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupViewModel;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
@@ -33,9 +37,13 @@ import devs.mrp.coolyourturkey.grupos.GroupType;
 import devs.mrp.coolyourturkey.listados.AppLister;
 import devs.mrp.coolyourturkey.listados.callables.ListerConstructor;
 
+@AndroidEntryPoint
 public class AppsTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_TYPE = "key.bundle.type";
+
+    private static final String CALLBACK_REMOVE_APP = "callback.remove.app";
 
     private RecyclerView mRecyclerView;
     private Handler mainHandler;
@@ -50,6 +58,13 @@ public class AppsTabFragment extends Fragment {
 
     private FutureTask<AppLister> fillAdapterTask;
     private ExecutorService executor = Executors.newFixedThreadPool(1);
+
+    @Inject
+    protected DialogWithDelayPresenter dialogWithDelayPresenter;
+
+    public AppsTabFragment(){
+        super();
+    }
 
     public AppsTabFragment(GroupType type, Integer groupId) {
         super();
@@ -68,6 +83,7 @@ public class AppsTabFragment extends Fragment {
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             setGroupId(savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL));
+            this.type = GroupType.valueOf(savedInstanceState.getString(KEY_BUNDLE_TYPE));
         }
 
         View v = inflater.inflate(R.layout.fragment_single_recycler, container, false);
@@ -117,13 +133,21 @@ public class AppsTabFragment extends Fragment {
             }
         });
 
+        dialogWithDelayPresenter.setListener(CALLBACK_REMOVE_APP, (result, data) -> {
+            if (result && data instanceof Integer) {
+                elementToGroupViewModel.deleteById((Integer) data);
+            } else {
+                // if cancelled refresh switches position
+                mAppsAdapter.notifyDataSetChanged();
+            }
+        });
         mAppsAdapter.addFeedbackListener((tipo, feedback, parameters) -> {
             switch (tipo) {
                 case AppsAdapter.FEEDBACK_SET_APPTOGROUP:
                     elementToGroupViewModel.insert(feedback);
                     break;
                 case AppsAdapter.FEEDBACK_DEL_APPTOGROUP:
-                    elementToGroupViewModel.deleteById(feedback.getId());
+                    dialogWithDelayPresenter.showDialog(CALLBACK_REMOVE_APP, feedback.getId());
                     break;
             }
         });
@@ -134,6 +158,7 @@ public class AppsTabFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, getGroupId());
+        outState.putString(KEY_BUNDLE_TYPE, this.type.toString());
         super.onSaveInstanceState(outState);
     }
 

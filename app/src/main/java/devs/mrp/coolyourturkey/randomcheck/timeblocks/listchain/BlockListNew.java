@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import devs.mrp.coolyourturkey.comun.ChainHandler;
-import devs.mrp.coolyourturkey.comun.TransferWithBinders;
 import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.TimeBlockWithChecks;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.lists.AbstractCheckTimeBlockListFragment;
 import devs.mrp.coolyourturkey.randomcheck.timeblocks.review.TimeBlocksActivity;

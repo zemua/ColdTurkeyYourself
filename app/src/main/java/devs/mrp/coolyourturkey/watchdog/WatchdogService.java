@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
@@ -13,6 +14,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
@@ -22,15 +24,14 @@ import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.EntryCleanerImpl;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
+import devs.mrp.coolyourturkey.databaseroom.grupo.ElementAndGroupFacade;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListadaRepository;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.EntryCleaner;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ChangeCheckerFactory;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.ConditionCheckerFactory;
-import devs.mrp.coolyourturkey.grupos.conditionchecker.impl.GeneralConditionChecker;
 import devs.mrp.coolyourturkey.grupos.packagemapper.impl.PackageConditionsCheckerFactory;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.randomcheck.timeblocks.export.TimeBlockExporter;
 import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 import devs.mrp.coolyourturkey.watchdog.actionchain.AbstractHandler;
 import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
@@ -44,6 +45,9 @@ import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public class WatchdogService extends LifecycleService {
 
     private static final String TAG = "WATCHDOG SERVICE TAG";
@@ -63,6 +67,9 @@ public class WatchdogService extends LifecycleService {
     private Notifier changeOfDayNotifier;
 
     private WatchDogData mData;
+
+    @Inject
+    ElementAndGroupFacade elementAndGroupFacade;
 
     @Override
     public void onCreate() {
@@ -86,7 +93,6 @@ public class WatchdogService extends LifecycleService {
                 .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
-                .setTimeBlockExporter(new TimeBlockExporter(this.getApplication(), this, this))
                 .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
                 .setConditionChecker(ConditionCheckerFactory.getConditionChecker(this.getApplication(), this))
                 .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this));
@@ -213,7 +219,6 @@ public class WatchdogService extends LifecycleService {
 
             data.getTimeLogHandler().watchDog();
             data.getChangeNotificationChecker().onChangedToMet(); // send notification if some groups changes to meet conditions
-            data.getTimeBlockExporter().refresh();
             mEntryCleaner.cleanOlEntries();
             mCheckManager.refresh();
             changeOfDayNotifier.notify(null);
@@ -240,7 +245,9 @@ public class WatchdogService extends LifecycleService {
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Interrupted exception during loop work", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Generic exception during loop work", e);
         }
     }
 
@@ -276,12 +283,15 @@ public class WatchdogService extends LifecycleService {
         }
         // check if we need to block
         data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
-            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO) && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0 || data.getToqueDeQuedaHandler().isToqueDeQueda() || !areMet))) {
+            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
+                    && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0
+                        || data.getToqueDeQuedaHandler().isToqueDeQueda()
+                        || !areMet))) {
                 if (PermisosChecker.checkPermisoAlertas(this)) {
-                    data.getScreenBlock().go();
+                    elementAndGroupFacade.onPreventClosing(data.getPackageName(), preventClose -> {
+                        if (!preventClose) {data.getScreenBlock().go();}
+                    });
                 }
-            } else { // or else unblock if it is blocked
-                data.getScreenBlock().desbloquear();
             }
         });
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
@@ -309,8 +319,7 @@ public class WatchdogService extends LifecycleService {
     public void onDestroy() {
         super.onDestroy();
         flagsOff();
-        mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
-        mData.getScreenBlock().desbloquear();
+        //mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
     }
 
     private void setEjecuta(boolean e) {

@@ -14,6 +14,7 @@ public class CheckFactory {
         pc.setId(rc.getId());
         pc.setName(rc.getName());
         pc.setQuestion(rc.getQuestion());
+        pc.setFrequency(rc.getFrequency());
         return pc;
     }
 
@@ -23,6 +24,7 @@ public class CheckFactory {
         nc.setId(rc.getId());
         nc.setName(rc.getName());
         nc.setQuestion(rc.getQuestion());
+        nc.setFrequency(rc.getFrequency());
         return nc;
     }
 
@@ -33,6 +35,7 @@ public class CheckFactory {
         rc.setType(RandomCheck.CheckType.POSITIVE);
         rc.setName(pc.getName());
         rc.setQuestion(pc.getQuestion());
+        rc.setFrequency(pc.getFrequency());
         return rc;
     }
 
@@ -44,6 +47,7 @@ public class CheckFactory {
         rc.setType(RandomCheck.CheckType.POSITIVE);
         rc.setName(pc.getName());
         rc.setMultiplicador(pc.getMultiplicador());
+        rc.setFrequency(pc.getFrequency());
         return rc;
     }
 
@@ -53,6 +57,7 @@ public class CheckFactory {
         rc.setName(c.getName());
         rc.setQuestion(c.getQuestion());
         rc.setType(RandomCheck.CheckType.NEGATIVE);
+        rc.setFrequency(c.getFrequency());
         return rc;
     }
 
@@ -63,6 +68,7 @@ public class CheckFactory {
         rc.setName(c.getName());
         rc.setType(RandomCheck.CheckType.NEGATIVE);
         rc.setQuestion(c.getQuestion());
+        rc.setFrequency(c.getFrequency());
         return rc;
     }
 

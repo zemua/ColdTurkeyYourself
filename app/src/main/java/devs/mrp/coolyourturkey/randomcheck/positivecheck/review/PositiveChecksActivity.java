@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MyObserver;
-import devs.mrp.coolyourturkey.comun.TransferWithBinders;
+import devs.mrp.coolyourturkey.comun.impl.TransferWithBindersImpl;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.randomcheck.positivecheck.chainfeedback.PositiveCheckFeedbackComander;
 
@@ -44,7 +44,7 @@ public class PositiveChecksActivity extends AppCompatActivity {
     }
 
     private void addReceivedCheck(PositiveChecksFragment f) {
-        Optional<Object> optional = (Optional<Object>)TransferWithBinders.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_CHECK);
+        Optional<Object> optional = (Optional<Object>) TransferWithBindersImpl.receiveAndRead(getIntent(), KEY_FOR_RECEIVED_CHECK);
         if (optional.isPresent()) {
             f.setCheck((PositiveCheck) optional.get());
         }

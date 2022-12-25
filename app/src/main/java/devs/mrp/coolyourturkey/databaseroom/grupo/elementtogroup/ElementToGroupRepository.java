@@ -2,6 +2,7 @@ package devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup;
 
 import android.app.Application;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;

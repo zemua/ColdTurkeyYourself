@@ -29,10 +29,12 @@ public class NegativeAction extends AbstractHandler{
         } else {
             data.setUpdated(false);
         }
-        // block screen when needed
-        if (!data.getScreenBlock().estamosBloqueando()) {
-            data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
-            try {data.getTimeLogHandler().insertTimeBadApp(data.getPackageName(), data.getMilisTranscurridos());} catch (Exception e) {e.printStackTrace();}
+        // log time
+        data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
+        try {
+            data.getTimeLogHandler().insertTimeBadApp(data.getPackageName(), data.getMilisTranscurridos());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         // send notice when needed
         new TimeToaster(data.getService().getApplication()).noticeTimeLeft((data.getTiempoAcumulado() + data.getTiempoImportado()) / data.getProporcion());

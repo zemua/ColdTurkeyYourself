@@ -65,6 +65,7 @@ public abstract class GruposFragment<T extends Grupo> extends FeedbackerFragment
             intent.putExtra(ReviewerActivity.EXTRA_GROUP_ID, feedback.getId());
             intent.putExtra(ReviewerActivity.EXTRA_GROUP_NAME, feedback.getNombre());
             intent.putExtra(ReviewerActivity.EXTRA_GROUP_TYPE, feedback.getType().toString());
+            intent.putExtra(ReviewerActivity.EXTRA_PREVENT_CLOSE, feedback.isPreventclose());
             giveFeedback(REVIEW_INTENT, intent);
         });
         mTimeLogHandler.addFeedbackListener((tipo, feedback, args) -> {

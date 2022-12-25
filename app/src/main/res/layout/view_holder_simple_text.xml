@@ -15,7 +15,6 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/gray_rounded_corner_with_border"
         android:padding="16dp"
-        android:text="TextView"
         android:textAlignment="center"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"

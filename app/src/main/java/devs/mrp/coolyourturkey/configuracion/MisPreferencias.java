@@ -277,16 +277,6 @@ public class MisPreferencias {
         return getSharedPreferences().getBoolean(NOTIFY_CONDITIONS_JUST_MET, true);
     }
 
-    public void setNotifyLimitesReached(boolean b) {
-        SharedPreferences.Editor e = getSharedPreferences().edit();
-        e.putBoolean(NOTIFY_LIMITES_REACHED, b);
-        e.apply();
-    }
-
-    public boolean getNotifyLimitesReached() {
-        return getSharedPreferences().getBoolean(NOTIFY_LIMITES_REACHED, true);
-    }
-
     public void setRandomCheckSound(Uri uri){
         SharedPreferences.Editor e = getSharedPreferences().edit();
         e.putString(RANDOM_CHECK_CUSTOM_SOUND, uri.getPath());
@@ -305,14 +295,14 @@ public class MisPreferencias {
         return uri;
     }
 
-    public void setLastRandomCheckTimeStamp(long time) {
+    public void setLastRandomCheckTimeStamp(int blockId, long time) {
         SharedPreferences.Editor e = getSharedPreferences().edit();
-        e.putLong(RANDOM_CHECK_TIMESTAMP, time);
+        e.putLong(RANDOM_CHECK_TIMESTAMP + blockId, time);
         e.apply();
     }
 
-    public long getLastRandomCheckTimeStamp() {
-        long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP, 0L);
+    public long getLastRandomCheckTimeStamp(int blockId) {
+        long l = getSharedPreferences().getLong(RANDOM_CHECK_TIMESTAMP + blockId, 0L);
         return l;
     }
 
@@ -347,6 +337,11 @@ public class MisPreferencias {
     public int getMinutesNotifyChangeOfDay() {
         int i = getSharedPreferences().getInt(NOTIFY_CHANGE_OF_DAY_MINUTES, 10);
         return i;
+    }
+
+    public int getDelaySeconds() {
+        // default 30, not customizable at the time being
+        return 30;
     }
 
 }

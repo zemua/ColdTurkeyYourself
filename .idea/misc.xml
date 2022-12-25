@@ -4,15 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.24166666666666667" />
+        <entry key="app/src/main/res/drawable-xxhdpi/lock_question.xml" value="0.325" />
         <entry key="app/src/main/res/drawable/gray_border.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/drawable/ic_turkey_dices.xml" value="0.24270833333333333" />
         <entry key="app/src/main/res/layout/fragment_addcondition.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_addcondition_group.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_addgroup.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_button_and_recycler.xml" value="0.3890625" />
+        <entry key="app/src/main/res/layout/fragment_button_second_button_and_recycler.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_checks_listing.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_condiciones_negativas.xml" value="0.2265625" />
-        <entry key="app/src/main/res/layout/fragment_configuracion.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_configuracion.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_exportgrouptime.xml" value="0.19479166666666667" />
         <entry key="app/src/main/res/layout/fragment_grupos.xml" value="0.4125" />
         <entry key="app/src/main/res/layout/fragment_grupospositivos.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/fragment_lista_on_off.xml" value="0.2265625" />

@@ -96,7 +96,7 @@ public class ExportGroupTimeFragment extends Fragment implements Feedbacker<Obje
                 mSaveButton.setVisibility(View.VISIBLE);
             }
         } else {
-            mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(this, new Observer<List<GrupoExport>>() {
+            mGrupoExportViewModel.findGrupoExportByGroupId(mGroupId).observe(getViewLifecycleOwner(), new Observer<List<GrupoExport>>() {
                 @Override
                 public void onChanged(List<GrupoExport> grupoExports) {
                     if (grupoExports != null && grupoExports.size() > 0) {

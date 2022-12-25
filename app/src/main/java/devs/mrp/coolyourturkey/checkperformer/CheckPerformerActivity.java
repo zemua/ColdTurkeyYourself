@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +25,7 @@ import devs.mrp.coolyourturkey.databaseroom.checktimeblocks.logger.TimeBlockLogg
 import devs.mrp.coolyourturkey.databaseroom.contador.ContadorRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementToGroupRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.elementtogroup.ElementType;
+import devs.mrp.coolyourturkey.dtos.randomcheck.Check;
 import devs.mrp.coolyourturkey.dtos.randomcheck.PositiveCheck;
 import devs.mrp.coolyourturkey.dtos.timeblock.AbstractTimeBlock;
 import devs.mrp.coolyourturkey.dtos.timeblock.TimeBlockFactory;
@@ -65,17 +69,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPreferencias = new MisPreferencias(this);
-        if (mPreferencias.getLastRandomCheckTimeStamp() >= getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l)) {
-            finalizar();
-            return;
-        } else {
-            mPreferencias.setLastRandomCheckTimeStamp(getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l));
-        }
-
-        fm = getSupportFragmentManager();
-        mFragment = fm.findFragmentById(R.id.fragment_container);
-
         if (savedInstanceState != null) {
             blockId = savedInstanceState.getInt(BUNDLE_BLOCK_ID);
             mIsFinished = savedInstanceState.getBoolean(BUNDLE_FINISHED);
@@ -87,14 +80,13 @@ public class CheckPerformerActivity extends AppCompatActivity {
             resetData(); // on fragment
         }
 
-        setContentView(R.layout.activity_singlefragment);
-
-        timePusher = new TimePusherFactory().get(ContadorRepository.getRepo(getApplication()));
-
-        blockId = -1;
+        if (mIsFinished) {
+            finalizar();
+            return;
+        }
         if (getIntent().hasExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID)) {
             blockId = getIntent().getIntExtra(RandomCheckWorker.KEY_FOR_BLOCK_ID, -1);
-            if (blockId == -1 || mIsFinished) {
+            if (blockId == -1) {
                 finalizar();
                 return;
             }
@@ -102,6 +94,21 @@ public class CheckPerformerActivity extends AppCompatActivity {
             finalizar();
             return;
         }
+
+        mPreferencias = new MisPreferencias(this);
+        if (mPreferencias.getLastRandomCheckTimeStamp(blockId) >= getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l)) {
+            finalizar();
+            return;
+        } else {
+            mPreferencias.setLastRandomCheckTimeStamp(blockId, getIntent().getLongExtra(RandomCheckWorker.KEY_FOR_TIMESTAMP, 0l));
+        }
+
+        fm = getSupportFragmentManager();
+        mFragment = fm.findFragmentById(R.id.fragment_container);
+
+        setContentView(R.layout.activity_singlefragment);
+
+        timePusher = new TimePusherFactory().get(ContadorRepository.getRepo(getApplication()));
 
         mRepo = CheckTimeBlockRepository.getRepo(getApplication());
         mLogger = TimeBlockLoggerRepository.getRepo(getApplication());
@@ -113,6 +120,8 @@ public class CheckPerformerActivity extends AppCompatActivity {
             if (timeBlockWithChecks.size() > 0) {
                 TimeBlockWithChecks tbwc = timeBlockWithChecks.get(0);
                 AbstractTimeBlock tb = new TimeBlockFactory().importFrom(tbwc);
+                tb.setNegativeChecks(checksQtyAdjustedToFrequency(tb.getNegativeChecks()));
+                tb.setPositiveChecks(positiveChecksQtyAdjustedToFrequency(tb.getPositiveChecks()));
 
                 Random rand = new Random();
 
@@ -121,7 +130,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                     if (positiveQuestion.isEmpty()) {
                         pCheck = tb.getPositiveChecks().get(rand.nextInt(tb.getPositiveChecks().size()));
                         positiveQuestion = pCheck.getQuestion();
-                        //mPremio = ((((tb.getMaximumLapse()-tb.getMinimumLapse())/2)+tb.getMinimumLapse())*pCheck.getMultiplicador());
                         mPremio = tb.getPrizeammount()*60*1000*pCheck.getMultiplicador();
                     }
                 } else {
@@ -139,17 +147,13 @@ public class CheckPerformerActivity extends AppCompatActivity {
                     return;
                 }
 
-                //final String pq = positiveQuestion;
-
                 if (mFragment == null) {
                     mFragment = new CheckPerformerFragment();
                     if (!negativeQuestion.equals("") && !mNegativeDone) {
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(negativeQuestion, true, false, false, this);
                     } else {
                         mNegativeDone = true;
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(positiveQuestion, false, true, true, this);
                     }
                     fm.beginTransaction().add(R.id.fragment_container, mFragment).commit();
                 }
@@ -160,7 +164,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                         fm.beginTransaction().remove(mFragment).commit();
                         mFragment = new CheckPerformerFragment();
                         resetData();
-                        //((CheckPerformerFragment)mFragment).setData(pq, false, true, true, this);
                         addPositiveObserver();
                         ((MyObservableNegative<?>) mFragment).addNegativeObserver((t, b) -> {
                             CheckPerformerActivity.this.finalizar();
@@ -199,7 +202,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
                 });
                 fm.beginTransaction().remove(mFragment).commit();
                 fm.beginTransaction().add(R.id.fragment_container, fr).commit();
-                //finalizar();
             } else {
                 CheckPerformerActivity.this.finalizar();
             }
@@ -216,9 +218,6 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     private void finalizar() {
         mIsFinished = true;
-        //Intent intent = new Intent(CheckPerformerActivity.this, PreventsBack.class);
-        //intent.putExtra(PreventsBack.INTENT_IF_PRIZE, ifPrize);
-        //startActivity(intent);
         finish();
     }
 
@@ -245,5 +244,21 @@ public class CheckPerformerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {}
+
+    private List<Check> checksQtyAdjustedToFrequency(List<Check> checks) {
+        List<Check> result = new LinkedList<>();
+        checks.forEach(check -> {
+            result.addAll(Collections.nCopies(check.getFrequency(), check));
+        });
+        return result;
+    }
+
+    private List<PositiveCheck> positiveChecksQtyAdjustedToFrequency(List<PositiveCheck> checks) {
+        List<PositiveCheck> result = new LinkedList<>();
+        checks.forEach(check -> {
+            result.addAll(Collections.nCopies(check.getFrequency(), check));
+        });
+        return result;
+    }
 
 }

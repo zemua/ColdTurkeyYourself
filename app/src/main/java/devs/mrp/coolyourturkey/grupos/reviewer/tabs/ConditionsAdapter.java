@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -135,18 +136,22 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsAdapter.Co
         });
     }
 
+    private void observeUntilLast(Iterator<GrupoCondition> conditions) {
+        if (conditions.hasNext()) {
+            GrupoCondition con = conditions.next();
+            assembler.forGroupSinceDays(con.getConditionalgroupid(), con.getFromlastndays(), longResult -> {
+                spentOnTarget.put(con, longResult);
+                observeUntilLast(conditions);
+            });
+        } else {
+            notifyDataSetChanged();
+        }
+    }
+
     public void setDataset(List<GrupoCondition> dataSet) {
         mDataSet = dataSet;
         spentOnTarget.clear();
-        mDataSet.stream().forEach(con -> {
-            assembler.forGroupSinceDays(con.getConditionalgroupid(), con.getFromlastndays(), longResult -> {
-                spentOnTarget.put(con, longResult);
-                if (spentOnTarget.size() == mDataSet.size()) {
-                    notifyDataSetChanged();
-                }
-            });
-        });
-        notifyDataSetChanged();
+        observeUntilLast(dataSet.listIterator());
     }
 
     public void setGrupos(Map<Integer, Grupo> grupos) {

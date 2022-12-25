@@ -7,9 +7,9 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.Notificador;
@@ -25,7 +25,7 @@ import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander
 
 public class ChangeNotifier implements ChangeChecker {
 
-    private final int NOTIFICATION_ID = -32;
+    private final int NOTIFICATION_ID = 4230000;
 
     private TimeBounded timer;
     private ConditionCheckerCommander checker;
@@ -70,25 +70,33 @@ public class ChangeNotifier implements ChangeChecker {
         });
     }
 
-    private void onConditionsMet(List<GrupoCondition> conditions, int groupId, String groupName, GrupoType type) {
-        Map<Integer,Boolean> meetMap = new HashMap<>();
-        conditions.forEach(c -> checker.onConditionMet(c, booleanResult -> {
-            meetMap.put(c.getId(), booleanResult);
-            if (meetMap.size() == conditions.size()) {
-                boolean result = meetMap.values().stream().filter(b -> b.equals(false)).findAny().orElse(true);
-                if (!Optional.ofNullable(beforeMap.get(groupId)).orElse(false) && result) {
-                    notifyConditionsChanged(groupName, type);
+    private void observeUntilLast(Iterator<GrupoCondition> conditions, int groupId, String groupName, GrupoType type) {
+        if (conditions.hasNext()) {
+            GrupoCondition c = conditions.next();
+            checker.onConditionMet(c, booleanResult -> {
+                if (!booleanResult) {
+                    // condition not met has been found
+                    beforeMap.put(groupId, false);
+                } else {
+                    observeUntilLast(conditions, groupId, groupName, type);
                 }
-                beforeMap.put(groupId, result);
-            }
-        }));
+            });
+        } else if (!beforeMap.getOrDefault(groupId, false)) {
+            // if no false was detected before, then all conditions are met
+            notifyConditionsChanged(groupName, type, groupId);
+            beforeMap.put(groupId, true);
+        }
     }
 
-    private void notifyConditionsChanged(String groupName, GrupoType type) {
+    private void onConditionsMet(List<GrupoCondition> conditions, int groupId, String groupName, GrupoType type) {
+        observeUntilLast(conditions.listIterator(), groupId, groupName, type);
+    }
+
+    private void notifyConditionsChanged(String groupName, GrupoType type, int groupId) {
         if (preferencias.getNotifyConditionsJustMet()) {
             Integer drawable = type.equals(GrupoType.NEGATIVE) ? R.drawable.bug : R.drawable.plus_circle_outline;
             String description = app.getString(R.string.ahora_cumple_las_condiciones);
-            notificador.createNotification(drawable, groupName, description, Notificador.CONDITION_MET_CHANNEL_ID, NOTIFICATION_ID);
+            notificador.createNotification(drawable, groupName, description, Notificador.CONDITION_MET_CHANNEL_ID, NOTIFICATION_ID + groupId);
         }
     }
 }

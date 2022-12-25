@@ -18,6 +18,7 @@ import devs.mrp.coolyourturkey.MainActivity;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
@@ -25,6 +26,7 @@ import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class WatchdogHandler implements Feedbacker<Object> {
@@ -48,6 +50,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
     WatchdogScreenOnOffReceiver br;
     PackageManager mPackageManager;
     private ToqueDeQuedaHandler mToqueDeQuedaHandler;
+    private static boolean channelCreated = false;
 
     WatchdogHandler(Context context) {
         mContext = context;
@@ -124,10 +127,8 @@ public class WatchdogHandler implements Feedbacker<Object> {
                 logger.onAllConditionsMet(paquete, conditionsMet -> {
                     String message = "";
                     if (logger.appIsGrouped(paquete)) {
-                        String groupName = grupo.getNombre();
-                        Long timeLong = logger.todayTimeOnAppGroup(paquete);
-                        String timeFormat = MilisToTime.getFormated(timeLong);
-                        message = mContext.getText(R.string.grupo) + " " + groupName + " - " + timeFormat + " " + mContext.getText(R.string.hoy) ;
+                        String groupName = Optional.ofNullable(grupo).map(Grupo::getNombre).orElse("");
+                        message = mContext.getText(R.string.grupo) + " " + groupName + " - " ;
                     }
                     if (conditionsMet) {
                         mNotificacion = new Notification.Builder(mContext, CHANNEL_ID)
@@ -177,9 +178,8 @@ public class WatchdogHandler implements Feedbacker<Object> {
         try {
             ApplicationInfo pi = mPackageManager.getApplicationInfo(packageName, 0);
             label = String.valueOf(mPackageManager.getApplicationLabel(pi));
-        } catch (
-                PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Package name not found: " + packageName, e);
         }
         return label;
     }
@@ -200,6 +200,9 @@ public class WatchdogHandler implements Feedbacker<Object> {
     }
 
     private void createNotificationChannel() {
+        if (channelCreated) {
+            return;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && serviceChannel == null) {
             serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
@@ -209,6 +212,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
             serviceChannel.setSound(null, null);
             NotificationManager manager = mContext.getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
+            channelCreated = true;
         }
     }
 

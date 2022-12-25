@@ -6,6 +6,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import java.util.Objects;
+
 @Entity(tableName = "grupo")
 public class Grupo {
 
@@ -22,6 +24,9 @@ public class Grupo {
     @ColumnInfo(name = "type")
     @TypeConverters(GrupoTypeConverter.class)
     private GrupoType type;
+
+    @ColumnInfo(name = "preventclose", defaultValue = "0")
+    private boolean preventclose;
 
     public Grupo(String nombre) {this.nombre = nombre;}
 
@@ -50,5 +55,17 @@ public class Grupo {
 
     public void setType(@NonNull GrupoType type) {
         this.type = type;
+    }
+
+    public boolean isPreventclose() {
+        if (!GrupoType.NEGATIVE.equals(this.type)) {
+            // if not negative, prevent closing always
+            return true;
+        }
+        return Objects.isNull(this.preventclose) ? false : this.preventclose;
+    }
+
+    public void setPreventclose(boolean preventclose) {
+        this.preventclose = preventclose;
     }
 }

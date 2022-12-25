@@ -203,4 +203,9 @@
     <string name="cuantos_minutos_antes_del_cambio_de_dia_debo_avisarte">Cuántos minutos antes del cambio de día debo avisarte?</string>
     <string name="you_are_close_to_the_change_of_day">Estás cerca del cambio de día</string>
     <string name="app_bloqued">¡App Bloqueada!</string>
+    <string name="evitar_cierre">Evitar cierre</string>
+    <string name="recapacita">Recapacita</string>
+    <string name="estas_seguro_que_debes_hacer_esto">¿Estás seguro de que debes hacer esto?</string>
+    <string name="frequency">Frecuencia</string>
+    <string name="zero_to_30">0 to 30</string>
 </resources>

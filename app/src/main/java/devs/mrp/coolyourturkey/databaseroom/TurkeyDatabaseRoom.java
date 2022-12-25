@@ -53,7 +53,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // Añade aquí tus Entities
-@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class, AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class, GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class, TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class, GrupoCondition.class}, version = 25)
+@Database(entities = {AplicacionListada.class, ValueMap.class, Contador.class, Importables.class, GrupoPositivo.class,
+        AppToGroup.class, ConditionToGroup.class, ConditionNegativeToGroup.class, TimeLogger.class, GrupoExport.class,
+        GroupLimit.class, RandomCheck.class, CheckTimeBlock.class, TimeBlockAndChecksCrossRef.class, TimeBlockSchedule.class,
+        TimeBlockLogger.class, TimeBlockExport.class, Grupo.class, ElementToGroup.class, GrupoCondition.class},
+        version = 29)
 public abstract class TurkeyDatabaseRoom extends RoomDatabase {
 
     // Anñade aquí tus DAOs
@@ -401,6 +405,60 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
     };
 
     /**
+     * Migrate from:
+     * version 25
+     * to
+     * version 26
+     */
+    static final Migration MIGRATION_25_26 = new Migration(25, 26) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'grupo' ADD 'preventclose' INTEGER NOT NULL DEFAULT(0)");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 26
+     * to
+     * version 27
+     */
+    static final Migration MIGRATION_26_27 = new Migration(26, 27) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'randomcheck' ADD 'frequency' INTEGER NOT NULL DEFAULT(1)");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 27
+     * to
+     * version 28
+     */
+    static final Migration MIGRATION_27_28 = new Migration(27, 28) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE INDEX IF NOT EXISTS 'index_timelogger_millistimestamp' ON timelogger(millistimestamp)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS 'index_timeblocklogger_epoch' ON timeblocklogger(epoch)");
+        }
+    };
+
+    /**
+     * Migrate from:
+     * version 28
+     * to
+     * version 29
+     */
+    static final Migration MIGRATION_28_29 = new Migration(28, 29) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE INDEX IF NOT EXISTS 'index_timelogger_millistimestamp_groupid' ON timelogger(millistimestamp, groupid)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS 'index_timeblocklogger_epoch_groupid' ON timeblocklogger(epoch, groupid)");
+        }
+    };
+
+    /**
      * No more migration scripts
      * Need to include them in the following in getDatabase()
      */
@@ -416,7 +474,7 @@ public abstract class TurkeyDatabaseRoom extends RoomDatabase {
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8,
                                     MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15,
                                     MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22,
-                                    MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25)
+                                    MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28, MIGRATION_28_29)
                             .build();
                 }
             }

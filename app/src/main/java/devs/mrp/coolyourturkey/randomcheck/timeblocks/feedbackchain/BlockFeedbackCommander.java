@@ -25,10 +25,8 @@ public class BlockFeedbackCommander implements ChainComander {
     public ChainHandler getHandlerChain() {
         ChainHandler<AbstractTimeBlock> saveHandler = new BlockFeedbackSaveHandler(mActivity);
         ChainHandler<AbstractTimeBlock> deleteHandler = new BlockFeedbackDeleteHandler(mActivity, checkManager);
-        ChainHandler<AbstractTimeBlock> exportHandler = new BlockFeedbackExportHandler(mActivity);
 
         saveHandler.setNextHandler(deleteHandler);
-        deleteHandler.setNextHandler(exportHandler);
 
         return saveHandler;
     }

@@ -28,6 +28,7 @@ import devs.mrp.coolyourturkey.grupos.GroupType;
 public class ChecksTabFragment extends Fragment {
 
     private static final String KEY_BUNDLE_ID_ACTUAL = "key.bundle.id.actual";
+    private static final String KEY_BUNDLE_TYPE = "key.bundle.type";
 
     private RecyclerView mRecyclerView;
     private Handler mainHandler;
@@ -39,6 +40,10 @@ public class ChecksTabFragment extends Fragment {
 
     private CheckTimeBlockViewModel checkTimeBlockViewModel;
     private ChecksAdapter mChecksAdapter;
+
+    public ChecksTabFragment() {
+        super();
+    }
 
     public ChecksTabFragment(GroupType type, Integer groupId) {
         super();
@@ -56,6 +61,7 @@ public class ChecksTabFragment extends Fragment {
 
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             mGroupId = savedInstanceState.getInt(KEY_BUNDLE_ID_ACTUAL);
+            this.type = GroupType.valueOf(savedInstanceState.getString(KEY_BUNDLE_TYPE));
         }
 
         View v = inflater.inflate(R.layout.fragment_single_recycler, container, false);
@@ -103,6 +109,7 @@ public class ChecksTabFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_BUNDLE_ID_ACTUAL, mGroupId);
+        outState.putString(KEY_BUNDLE_TYPE, this.type.toString());
         super.onSaveInstanceState(outState);
     }
 
