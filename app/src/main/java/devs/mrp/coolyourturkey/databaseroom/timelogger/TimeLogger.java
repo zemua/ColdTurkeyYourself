@@ -7,7 +7,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-@Entity(tableName = "timelogger", indices = {@Index("millistimestamp")})
+@Entity(tableName = "timelogger", indices = {@Index("millistimestamp"), @Index(value = {"millistimestamp", "groupid"})})
 public class TimeLogger {
 
     public enum Type {

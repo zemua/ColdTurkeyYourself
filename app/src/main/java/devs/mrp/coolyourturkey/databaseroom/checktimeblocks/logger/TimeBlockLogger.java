@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "timeblocklogger", indices = {@Index("epoch")})
+@Entity(tableName = "timeblocklogger", indices = {@Index("epoch"), @Index(value = {"epoch", "groupid"})})
 public class TimeBlockLogger {
 
     public TimeBlockLogger(){}
