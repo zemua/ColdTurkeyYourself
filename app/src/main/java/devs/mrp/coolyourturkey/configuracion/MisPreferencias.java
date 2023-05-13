@@ -52,6 +52,22 @@ public class MisPreferencias {
         return mSharedPreferences;
     }
 
+    public void setBoolean(String property, Boolean value) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putBoolean(property, value);
+        e.apply();
+    }
+
+    public Boolean getBoolean(String property) {
+        return getBoolean(getSharedPreferences());
+    }
+
+    private Boolean getBoolean(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(FLAG_EXPORT, false);
+    }
+
+    // TODO decouple to composition all set/get specific implementations
+
     public void setExport(boolean b) {
         SharedPreferences.Editor e = getSharedPreferences().edit();
         e.putBoolean(FLAG_EXPORT, b);

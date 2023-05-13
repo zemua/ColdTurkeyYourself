@@ -25,7 +25,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.ClickListenerFactory;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
@@ -39,6 +41,10 @@ import devs.mrp.coolyourturkey.watchdog.Exporter;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+@AndroidEntryPoint
 public class ConfiguracionFragment extends Fragment {
 
     private static String TAG = "CONFIGURACION FRAGMENT";
@@ -64,6 +70,10 @@ public class ConfiguracionFragment extends Fragment {
     public static String IMPORT_TXT_YES_NO_KEY = "import txt currently or not";
     public static String TRUE = "true";
     public static String FALSE = "false";
+
+    @Inject
+    @Named("lockdownNegativesAreClosed")
+    ClickListenerFactory lockdownNegativesClosedClickListenerFactory;
 
     private Context mContext;
     ColorStateList oldColors;
