@@ -39,7 +39,7 @@ public class MisPreferencias {
     private static final String RANDOM_CHECK_TIMESTAMP = "random.check.time.stamp";
 
     Context mContext;
-    private static SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences;
 
     public MisPreferencias(Context context) {
         mContext = context;
@@ -58,12 +58,8 @@ public class MisPreferencias {
         e.apply();
     }
 
-    public Boolean getBoolean(String property) {
-        return getBoolean(getSharedPreferences());
-    }
-
-    private Boolean getBoolean(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(FLAG_EXPORT, false);
+    public Boolean getBoolean(String property, Boolean def) {
+        return getSharedPreferences().getBoolean(property, def);
     }
 
     // TODO decouple to composition all set/get specific implementations
