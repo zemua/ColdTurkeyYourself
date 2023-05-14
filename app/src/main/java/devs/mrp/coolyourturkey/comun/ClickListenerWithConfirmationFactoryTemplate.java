@@ -35,54 +35,27 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
     protected abstract T fromView(View view) throws InvalidViewTypeException;
 
     private void performAction(T s) {
-        if (isPositiveAction(s)) {
-            if (isDialogOnPositive()) {
-                performPositiveButtonAction(s);
-            } else {
-                doPositiveAction(s);
-            }
+        if (shouldShowConfirmationDialog(s)) {
+            performButtonAction(s);
         } else {
-            if (isDialogOnNegative()) {
-                performNegativeButtonAction(s);
-            } else {
-                doNegativeAction(s);
-            }
+            doAction(s);
         }
     }
 
-    protected abstract boolean isPositiveAction(T t);
+    protected abstract boolean shouldShowConfirmationDialog(T t);
 
-    protected abstract boolean isDialogOnPositive();
-
-    private void performPositiveButtonAction(T s) {
-        String positiveSuffix = "_positive";
-        dialogWithDelayPresenter.setListener(getEventId() + positiveSuffix, b -> handlePositiveFeedback(b, s));
-        dialogWithDelayPresenter.showDialog(getEventId() + positiveSuffix);
+    private void performButtonAction(T s) {
+        dialogWithDelayPresenter.setListener(getEventId(), b -> handleFeedback(b, s));
+        dialogWithDelayPresenter.showDialog(getEventId());
     }
 
-    private void handlePositiveFeedback(boolean accept, T s) {
+    private void handleFeedback(boolean accept, T s) {
         if (accept) {
-            doPositiveAction(s);
+            doAction(s);
         }
     }
 
-    protected abstract void doPositiveAction(T t);
-
-    protected abstract boolean isDialogOnNegative();
-
-    private void performNegativeButtonAction(T s) {
-        String negativeSuffix = "_negative";
-        dialogWithDelayPresenter.setListener(getEventId() + negativeSuffix, b -> handleNegativeFeedback(b, s));
-        dialogWithDelayPresenter.showDialog(getEventId() + negativeSuffix);
-    }
-
-    private void handleNegativeFeedback(boolean accept, T s) {
-        if (accept) {
-            doNegativeAction(s);
-        }
-    }
-
-    protected abstract void doNegativeAction(T t);
+    protected abstract void doAction(T t);
 
     protected abstract String getEventId();
 

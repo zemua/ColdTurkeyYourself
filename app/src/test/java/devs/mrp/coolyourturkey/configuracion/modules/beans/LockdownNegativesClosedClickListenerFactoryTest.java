@@ -54,10 +54,10 @@ class LockdownNegativesClosedClickListenerFactoryTest {
         when(view.isChecked()).thenReturn(false);
         listener.onClick(view);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
-        verify(dialogWithDelayPresenter, times(1)).showDialog(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue() + "_negative");
+        verify(dialogWithDelayPresenter, times(1)).showDialog(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue());
 
         ArgumentCaptor<Consumer<Boolean>> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
-        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue() + "_negative"), consumerCaptor.capture());
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue()), consumerCaptor.capture());
 
         Consumer<Boolean> consumer = consumerCaptor.getValue();
         consumer.accept(true);
