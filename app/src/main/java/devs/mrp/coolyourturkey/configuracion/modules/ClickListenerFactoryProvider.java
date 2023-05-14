@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.configuracion.modules;
 
+import android.widget.Switch;
+
 import javax.inject.Named;
 
 import dagger.Module;
@@ -16,8 +18,8 @@ import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNegativesClos
 public class ClickListenerFactoryProvider {
 
     @Provides
-    @Named("lockdownNegativesAreClosed")
-    public ClickListenerWithConfirmationFactoryTemplate lockdownNegativesFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
+    @Named("lockdownNegativesAreClosedListenerFactory")
+    public ClickListenerWithConfirmationFactoryTemplate<Switch> lockdownNegativesFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         return new LockdownNegativesClosedClickListenerFactory(preferencias, dialogWithDelayPresenter);
     }
 
