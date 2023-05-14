@@ -36,19 +36,44 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
 
     private void performAction(T s) {
         if (isPositiveAction(s)) {
-            doPositiveAction(s);
+            if (isDialogOnPositive()) {
+                performPositiveButtonAction(s);
+            } else {
+                doPositiveAction(s);
+            }
         } else {
-            performNegativeButtonAction(s);
+            if (isDialogOnNegative()) {
+                performNegativeButtonAction(s);
+            } else {
+                doNegativeAction(s);
+            }
         }
     }
 
     protected abstract boolean isPositiveAction(T t);
 
+    protected abstract boolean isDialogOnPositive();
+
+    private void performPositiveButtonAction(T s) {
+        String positiveSuffix = "_positive";
+        dialogWithDelayPresenter.setListener(getEventId() + positiveSuffix, b -> handlePositiveFeedback(b, s));
+        dialogWithDelayPresenter.showDialog(getEventId() + positiveSuffix);
+    }
+
+    private void handlePositiveFeedback(boolean accept, T s) {
+        if (accept) {
+            doPositiveAction(s);
+        }
+    }
+
     protected abstract void doPositiveAction(T t);
 
+    protected abstract boolean isDialogOnNegative();
+
     private void performNegativeButtonAction(T s) {
-        dialogWithDelayPresenter.setListener(TAG, b -> handleNegativeFeedback(b, s));
-        dialogWithDelayPresenter.showDialog(TAG);
+        String negativeSuffix = "_negative";
+        dialogWithDelayPresenter.setListener(getEventId() + negativeSuffix, b -> handleNegativeFeedback(b, s));
+        dialogWithDelayPresenter.showDialog(getEventId() + negativeSuffix);
     }
 
     private void handleNegativeFeedback(boolean accept, T s) {
@@ -58,5 +83,7 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
     }
 
     protected abstract void doNegativeAction(T t);
+
+    protected abstract String getEventId();
 
 }

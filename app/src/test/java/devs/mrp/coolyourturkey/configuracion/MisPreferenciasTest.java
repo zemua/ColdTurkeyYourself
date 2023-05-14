@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.configuracion;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,7 +11,6 @@ import android.content.SharedPreferences;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import devs.mrp.coolyourturkey.R;
@@ -26,7 +24,7 @@ class MisPreferenciasTest {
 
     private MisPreferencias misPreferencias;
 
-    private String propertyName = "someProperty";
+    private PreferencesEnum propertyName = PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK;
 
     @BeforeEach
     void setup() {
@@ -43,13 +41,13 @@ class MisPreferenciasTest {
         editor = mock(SharedPreferences.Editor.class);
         when(sharedPreferences.edit()).thenReturn(editor);
         misPreferencias.setBoolean(propertyName, true);
-        verify(editor, times(1)).putBoolean(propertyName, true);
+        verify(editor, times(1)).putBoolean(propertyName.getValue(), true);
         verify(editor, times(1)).apply();
     }
 
     @Test
     void getBoolean() {
         misPreferencias.getBoolean(propertyName, true);
-        verify(sharedPreferences, times(1)).getBoolean(propertyName, true);
+        verify(sharedPreferences, times(1)).getBoolean(propertyName.getValue(), true);
     }
 }

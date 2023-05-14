@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.Settings;
-import android.util.Log;
-
-import devs.mrp.coolyourturkey.R;
 
 import java.util.Formatter;
+
+import devs.mrp.coolyourturkey.R;
 
 public class MisPreferencias {
 
@@ -52,14 +51,14 @@ public class MisPreferencias {
         return mSharedPreferences;
     }
 
-    public void setBoolean(String property, Boolean value) {
+    public void setBoolean(PreferencesEnum property, Boolean value) {
         SharedPreferences.Editor e = getSharedPreferences().edit();
-        e.putBoolean(property, value);
+        e.putBoolean(property.getValue(), value);
         e.apply();
     }
 
-    public Boolean getBoolean(String property, Boolean def) {
-        return getSharedPreferences().getBoolean(property, def);
+    public Boolean getBoolean(PreferencesEnum property, Boolean def) {
+        return getSharedPreferences().getBoolean(property.getValue(), def);
     }
 
     // TODO decouple to composition all set/get specific implementations

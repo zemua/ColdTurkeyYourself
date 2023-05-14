@@ -52,7 +52,7 @@ public class LockdownNegativesViewBuilder implements UiViewBuilder<Switch> {
     }
 
     protected void setInitialState(Switch aSwitch) {
-        Boolean isChecked = misPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), true);
+        Boolean isChecked = misPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
         aSwitch.setChecked(isChecked);
     }
 }

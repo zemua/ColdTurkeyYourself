@@ -45,7 +45,7 @@ class LockdownNegativesClosedClickListenerFactoryTest {
         View.OnClickListener listener = clickListenerFactory.getListener();
         when(view.isChecked()).thenReturn(true);
         listener.onClick(view);
-        verify(preferencias, times(1)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), true);
+        verify(preferencias, times(1)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
     }
 
     @Test
@@ -54,14 +54,14 @@ class LockdownNegativesClosedClickListenerFactoryTest {
         when(view.isChecked()).thenReturn(false);
         listener.onClick(view);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
-        verify(dialogWithDelayPresenter, times(1)).showDialog(ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName());
+        verify(dialogWithDelayPresenter, times(1)).showDialog(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue() + "_negative");
 
         ArgumentCaptor<Consumer<Boolean>> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
-        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName()), consumerCaptor.capture());
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue() + "_negative"), consumerCaptor.capture());
 
         Consumer<Boolean> consumer = consumerCaptor.getValue();
         consumer.accept(true);
-        verify(preferencias, times(1)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), false);
+        verify(preferencias, times(1)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, false);
         verify(view, times(1)).setChecked(false);
     }
 
@@ -70,7 +70,7 @@ class LockdownNegativesClosedClickListenerFactoryTest {
         View.OnClickListener listener = clickListenerFactory.getListener();
         Button button = mock(Button.class);
         listener.onClick(button);
-        verify(preferencias, times(0)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), true);
+        verify(preferencias, times(0)).setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
     }
 
 }

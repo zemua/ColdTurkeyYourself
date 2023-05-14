@@ -42,12 +42,12 @@ class LockdownNegativesViewBuilderTest {
     void testBuildElement() {
         when(parent.findViewById(123)).thenReturn(aSwitch);
         when(clickListenerFactoryProvider.getListener()).thenReturn(clickListener);
-        when(preferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), true)).thenReturn(true);
+        when(preferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true)).thenReturn(true);
 
         builder.buildElement(parent, 123);
 
         verify(aSwitch, times(1)).setOnClickListener(clickListener);
-        verify(preferencias, times(1)).getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue(), true);
+        verify(preferencias, times(1)).getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
         verify(aSwitch, times(1)).setChecked(true);
     }
 
