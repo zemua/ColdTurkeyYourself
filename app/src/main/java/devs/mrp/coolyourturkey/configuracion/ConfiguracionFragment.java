@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.ClickListenerFactory;
+import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
@@ -73,7 +73,7 @@ public class ConfiguracionFragment extends Fragment {
 
     @Inject
     @Named("lockdownNegativesAreClosed")
-    ClickListenerFactory lockdownNegativesClosedClickListenerFactory;
+    ClickListenerWithConfirmationFactoryTemplate lockdownNegativesClosedClickListenerFactory;
 
     private Context mContext;
     ColorStateList oldColors;
@@ -190,6 +190,9 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayMinus = (Button) v.findViewById(R.id.minusWarnChangeOfDay);
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
+
+        Switch lockdownCloseNegativesSwitch = (Switch) v.findViewById(R.id.closeNegativeLockdown);
+        lockdownCloseNegativesSwitch.setOnClickListener(lockdownNegativesClosedClickListenerFactory.getListener());
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {

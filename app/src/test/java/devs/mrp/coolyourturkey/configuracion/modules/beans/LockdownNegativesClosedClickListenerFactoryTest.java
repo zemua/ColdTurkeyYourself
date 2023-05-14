@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.configuracion.modules.beans;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Consumer;
 
-import devs.mrp.coolyourturkey.comun.ClickListenerFactory;
+import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
@@ -28,7 +27,7 @@ import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 @ExtendWith(MockitoExtension.class)
 class LockdownNegativesClosedClickListenerFactoryTest {
 
-    private ClickListenerFactory clickListenerFactory;
+    private ClickListenerWithConfirmationFactoryTemplate clickListenerFactory;
     private MisPreferencias preferencias;
     @Mock
     private Switch view;
@@ -55,10 +54,10 @@ class LockdownNegativesClosedClickListenerFactoryTest {
         when(view.isChecked()).thenReturn(false);
         listener.onClick(view);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
-        verify(dialogWithDelayPresenter, times(1)).showDialog(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue());
+        verify(dialogWithDelayPresenter, times(1)).showDialog(ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName());
 
         ArgumentCaptor<Consumer<Boolean>> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
-        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue()), consumerCaptor.capture());
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName()), consumerCaptor.capture());
 
         Consumer<Boolean> consumer = consumerCaptor.getValue();
         consumer.accept(true);

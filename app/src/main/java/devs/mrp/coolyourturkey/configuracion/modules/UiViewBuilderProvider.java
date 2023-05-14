@@ -13,10 +13,10 @@ import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNegativesClos
 
 @Module
 @InstallIn(FragmentComponent.class)
-public class ClickListenerFactoryProvider {
+public class UiViewBuilderProvider {
 
     @Provides
-    @Named("lockdownNegativesAreClosed")
+    @Named("viewBuilderLockdownNegativesAreClosed")
     public ClickListenerWithConfirmationFactoryTemplate lockdownNegativesFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         return new LockdownNegativesClosedClickListenerFactory(preferencias, dialogWithDelayPresenter);
     }

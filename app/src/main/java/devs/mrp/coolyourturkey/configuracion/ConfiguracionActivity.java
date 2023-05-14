@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 
+@AndroidEntryPoint
 public class ConfiguracionActivity extends AppCompatActivity {
 
     private static final String TAG = "CONFIGURACION ACTIVITY";
