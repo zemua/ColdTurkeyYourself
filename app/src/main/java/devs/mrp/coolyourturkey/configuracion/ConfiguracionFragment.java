@@ -25,24 +25,24 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
+import devs.mrp.coolyourturkey.comun.UiViewBuilder;
 import devs.mrp.coolyourturkey.comun.UriUtils;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapViewModel;
 import devs.mrp.coolyourturkey.watchdog.Exporter;
-
-import java.util.List;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 @AndroidEntryPoint
 public class ConfiguracionFragment extends Fragment {
@@ -72,8 +72,8 @@ public class ConfiguracionFragment extends Fragment {
     public static String FALSE = "false";
 
     @Inject
-    @Named("lockdownNegativesAreClosed")
-    ClickListenerWithConfirmationFactoryTemplate lockdownNegativesClosedClickListenerFactory;
+    @Named("viewBuilderLockdownNegativesAreClosed")
+    UiViewBuilder<Switch> lockdownNegativesClosedBuilder;
 
     private Context mContext;
     ColorStateList oldColors;
@@ -191,8 +191,7 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
-        Switch lockdownCloseNegativesSwitch = (Switch) v.findViewById(R.id.closeNegativeLockdown);
-        lockdownCloseNegativesSwitch.setOnClickListener(lockdownNegativesClosedClickListenerFactory.getListener());
+        lockdownNegativesClosedBuilder.buildElement(v, R.id.closeNegativeLockdown);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {

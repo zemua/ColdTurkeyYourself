@@ -5,14 +5,14 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
-import dagger.hilt.android.components.FragmentComponent;
+import dagger.hilt.components.SingletonComponent;
 import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNegativesClosedClickListenerFactory;
 
 @Module
-@InstallIn(FragmentComponent.class)
+@InstallIn(SingletonComponent.class)
 public class ClickListenerFactoryProvider {
 
     @Provides

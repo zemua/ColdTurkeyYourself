@@ -2,10 +2,10 @@ package devs.mrp.coolyourturkey.comun;
 
 import android.view.View;
 
-public abstract class UiViewBuilder<T extends View> {
+import java.util.Optional;
 
-    public final T buildElement(View parent, int resourceId) {
-        return null;
-    }
+public interface UiViewBuilder<T extends View> {
+
+    public Optional<T> buildElement(View parent, int resourceId);
 
 }
