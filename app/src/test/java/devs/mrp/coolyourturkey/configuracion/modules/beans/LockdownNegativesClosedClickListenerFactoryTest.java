@@ -66,6 +66,23 @@ class LockdownNegativesClosedClickListenerFactoryTest {
     }
 
     @Test
+    void testDeactivateCancelledSwitchGoesBack() {
+        View.OnClickListener listener = clickListenerFactory.getListener();
+        when(view.isChecked()).thenReturn(false);
+        listener.onClick(view);
+        verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
+        verify(dialogWithDelayPresenter, times(1)).showDialog(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue());
+
+        ArgumentCaptor<Consumer<Boolean>> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue()), consumerCaptor.capture());
+
+        Consumer<Boolean> consumer = consumerCaptor.getValue();
+        consumer.accept(false);
+        verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
+        verify(view, times(1)).setChecked(true);
+    }
+
+    @Test
     void wrongViewType() {
         View.OnClickListener listener = clickListenerFactory.getListener();
         Button button = mock(Button.class);

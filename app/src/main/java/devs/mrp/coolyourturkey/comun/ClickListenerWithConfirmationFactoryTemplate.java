@@ -38,7 +38,7 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
         if (shouldShowConfirmationDialog(s)) {
             performButtonAction(s);
         } else {
-            doAction(s);
+            doOnDialogAcceptAction(s);
         }
     }
 
@@ -51,11 +51,15 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
 
     private void handleFeedback(boolean accept, T s) {
         if (accept) {
-            doAction(s);
+            doOnDialogAcceptAction(s);
+        } else {
+            doOnDialogRejectAction(s);
         }
     }
 
-    protected abstract void doAction(T t);
+    protected abstract void doOnDialogAcceptAction(T t);
+
+    protected abstract void doOnDialogRejectAction(T t);
 
     protected abstract String getEventId();
 

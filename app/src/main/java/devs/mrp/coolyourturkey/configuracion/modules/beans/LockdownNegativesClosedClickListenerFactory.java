@@ -29,12 +29,17 @@ public class LockdownNegativesClosedClickListenerFactory extends ClickListenerWi
     }
 
     @Override
-    protected void doAction(Switch aSwitch) {
+    protected void doOnDialogAcceptAction(Switch aSwitch) {
         if (aSwitch.isChecked()) {
             preferencias.setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
         } else {
             doNegativeAction(aSwitch);
         }
+    }
+
+    @Override
+    protected void doOnDialogRejectAction(Switch aSwitch) {
+        aSwitch.setChecked(true);
     }
 
     private void doNegativeAction(Switch aSwitch) {
