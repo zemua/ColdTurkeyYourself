@@ -9,14 +9,14 @@ import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public class LockdownNegativesViewBuilder extends UiViewBuilder<Switch> {
+public class LockdownNeutralDecreaseViewBuilder extends UiViewBuilder<Switch>  {
 
-    private static final String TAG = LockdownNegativesViewBuilder.class.getSimpleName();
+    private static final String TAG = LockdownNeutralDecreaseViewBuilder.class.getSimpleName();
 
     private MisPreferencias misPreferencias;
     private ClickListenerWithConfirmationFactoryTemplate<Switch> clickListenerFactory;
 
-    public LockdownNegativesViewBuilder(MisPreferencias prefs, ClickListenerWithConfirmationFactoryTemplate<Switch> listenerFactory) {
+    public LockdownNeutralDecreaseViewBuilder(MisPreferencias prefs, ClickListenerWithConfirmationFactoryTemplate<Switch> listenerFactory) {
         this.misPreferencias = prefs;
         this.clickListenerFactory = listenerFactory;
     }
@@ -36,7 +36,7 @@ public class LockdownNegativesViewBuilder extends UiViewBuilder<Switch> {
 
     @Override
     protected void setInitialState(Switch aSwitch) {
-        Boolean isChecked = misPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
-        aSwitch.setChecked(isChecked);
+        aSwitch.setChecked(misPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE, true));
     }
+
 }
