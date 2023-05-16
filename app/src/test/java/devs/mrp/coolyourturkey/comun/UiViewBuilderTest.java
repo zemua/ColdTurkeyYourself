@@ -20,8 +20,7 @@ import java.util.stream.Stream;
 
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
-import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNegativesViewBuilder;
-import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNeutralDecreaseViewBuilder;
+import devs.mrp.coolyourturkey.configuracion.modules.beans.ConfirmDeactivateSwitchViewBuilder;
 
 @ExtendWith(MockitoExtension.class)
 class UiViewBuilderTest {
@@ -34,11 +33,11 @@ class UiViewBuilderTest {
     private View.OnClickListener clickListener;
 
     private static Stream<Arguments> providesTestData() {
-        BiFunction<MisPreferencias, ClickListenerWithConfirmationFactoryTemplate, UiViewBuilder> negativesClosed = (p, d) -> new LockdownNegativesViewBuilder(p, d);
-        BiFunction<MisPreferencias, ClickListenerWithConfirmationFactoryTemplate, UiViewBuilder> neutralDecrease = (p, d) -> new LockdownNeutralDecreaseViewBuilder(p, d);
+        BiFunction<MisPreferencias, ClickListenerWithConfirmationFactoryTemplate, UiViewBuilder> negativesBifunction = (p, d) -> new ConfirmDeactivateSwitchViewBuilder(p, d, true);
+        BiFunction<MisPreferencias, ClickListenerWithConfirmationFactoryTemplate, UiViewBuilder> neutralDecreaseBifunction = (p, d) -> new ConfirmDeactivateSwitchViewBuilder(p, d, true);
         return Stream.of(
-                Arguments.of(mock(MisPreferencias.class), mock(ClickListenerWithConfirmationFactoryTemplate.class), negativesClosed, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK),
-                Arguments.of(mock(MisPreferencias.class), mock(ClickListenerWithConfirmationFactoryTemplate.class), neutralDecrease, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                Arguments.of(mock(MisPreferencias.class), mock(ClickListenerWithConfirmationFactoryTemplate.class), negativesBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK),
+                Arguments.of(mock(MisPreferencias.class), mock(ClickListenerWithConfirmationFactoryTemplate.class), neutralDecreaseBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
         );
     }
 
@@ -51,10 +50,10 @@ class UiViewBuilderTest {
                           PreferencesEnum type) {
         UiViewBuilder builder = bifunc.apply(preferencias, clickListenerFactoryProvider);
         when(parent.findViewById(123)).thenReturn(aSwitch);
-        when(clickListenerFactoryProvider.getListener()).thenReturn(clickListener);
+        when(clickListenerFactoryProvider.getListener(type)).thenReturn(clickListener);
         when(preferencias.getBoolean(type, defaultChecked)).thenReturn(defaultChecked);
 
-        builder.buildElement(parent, 123);
+        builder.buildElement(parent, 123, type);
 
         verify(aSwitch, times(1)).setOnClickListener(clickListener);
         verify(preferencias, times(1)).getBoolean(type, defaultChecked);

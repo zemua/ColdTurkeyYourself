@@ -9,9 +9,9 @@ import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public class LockdownNegativesClosedClickListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch> {
+public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> {
 
-    public LockdownNegativesClosedClickListenerFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
+    public ConfirmDeactivateSwitchListenerFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         super(preferencias, dialogWithDelayPresenter);
     }
 
@@ -20,7 +20,7 @@ public class LockdownNegativesClosedClickListenerFactory extends ClickListenerWi
         if (view instanceof Switch) {
             return (Switch) view;
         }
-        throw new InvalidViewTypeException("View is not of type Switch: " + view.toString());
+        throw new InvalidViewTypeException("View is not of type Switch");
     }
 
     @Override
@@ -29,23 +29,23 @@ public class LockdownNegativesClosedClickListenerFactory extends ClickListenerWi
     }
 
     @Override
-    protected void doOnNegativeDialogAcceptAction(Switch aSwitch) {
-        preferencias.setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, false);
+    protected void doOnNegativeDialogAcceptAction(Switch aSwitch, PreferencesEnum identifier) {
+        preferencias.setBoolean(identifier, false);
         aSwitch.setChecked(false);
     }
 
     @Override
-    protected void doOnNegativeDialogRejectAction(Switch aSwitch) {
+    protected void doOnNegativeDialogRejectAction(Switch aSwitch, PreferencesEnum identifier) {
         aSwitch.setChecked(true);
     }
 
     @Override
-    protected void doOnPositiveAction(Switch aSwitch) {
-        preferencias.setBoolean(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
+    protected void doOnPositiveAction(Switch aSwitch, PreferencesEnum identifier) {
+        preferencias.setBoolean(identifier, true);
     }
 
     @Override
-    protected String getEventId() {
-        return PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK.getValue();
+    protected String getEventId(PreferencesEnum identifier) {
+        return identifier.getValue();
     }
 }

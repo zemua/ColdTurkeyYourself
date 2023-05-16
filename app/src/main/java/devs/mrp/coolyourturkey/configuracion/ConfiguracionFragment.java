@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
@@ -72,8 +71,7 @@ public class ConfiguracionFragment extends Fragment {
     public static String FALSE = "false";
 
     @Inject
-    @Named("viewBuilderLockdownNegativesAreClosed")
-    UiViewBuilder<Switch> lockdownNegativesClosedBuilder;
+    UiViewBuilder<Switch, PreferencesEnum> confirmDeactivateSwitchViewBuilder;
 
     private Context mContext;
     ColorStateList oldColors;
@@ -191,7 +189,9 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
-        lockdownNegativesClosedBuilder.buildElement(v, R.id.closeNegativeLockdown);
+        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
+        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE);
+        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM);
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {

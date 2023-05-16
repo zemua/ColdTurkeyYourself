@@ -23,8 +23,7 @@ import java.util.stream.Stream;
 
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
-import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNegativesClosedClickListenerFactory;
-import devs.mrp.coolyourturkey.configuracion.modules.beans.LockdownNeutralClickListenerFactory;
+import devs.mrp.coolyourturkey.configuracion.modules.beans.ConfirmDeactivateSwitchListenerFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ClickListenerWithConfirmationFactoryTemplateTest {
@@ -33,11 +32,11 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
     private Switch view;
 
     private static Stream<Arguments> providesTestData() {
-        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> negativesClosed = (p, d) -> new LockdownNegativesClosedClickListenerFactory(p, d);
-        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> neutralDecrease = (p, d) -> new LockdownNeutralClickListenerFactory(p, d);
+        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> negativesBifunction = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d);
+        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> neutralDecreaseBifunction = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d);
         return Stream.of(
-                Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), negativesClosed, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK),
-                Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), neutralDecrease, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), negativesBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK),
+                Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), neutralDecreaseBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
         );
     }
 
@@ -49,7 +48,7 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
                                     Boolean isViewChecked,
                                     PreferencesEnum type) {
         ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = bifunction.apply(preferencias, dialogWithDelayPresenter);
-        View.OnClickListener listener = clickListenerFactory.getListener();
+        View.OnClickListener listener = clickListenerFactory.getListener(type);
         when(view.isChecked()).thenReturn(isViewChecked);
         listener.onClick(view);
         verify(preferencias, times(1)).setBoolean(type, true);
@@ -63,7 +62,7 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
                                                Boolean isViewChecked,
                                                PreferencesEnum type) {
         ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = bifunction.apply(preferencias, dialogWithDelayPresenter);
-        View.OnClickListener listener = clickListenerFactory.getListener();
+        View.OnClickListener listener = clickListenerFactory.getListener(type);
         when(view.isChecked()).thenReturn(!isViewChecked);
         listener.onClick(view);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
@@ -86,7 +85,7 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
                                                Boolean isViewChecked,
                                                PreferencesEnum type) {
         ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = bifunction.apply(preferencias, dialogWithDelayPresenter);
-        View.OnClickListener listener = clickListenerFactory.getListener();
+        View.OnClickListener listener = clickListenerFactory.getListener(type);
         when(view.isChecked()).thenReturn(!isViewChecked);
         listener.onClick(view);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());
@@ -109,7 +108,7 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
                        Boolean isViewChecked,
                        PreferencesEnum type) {
         ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = bifunction.apply(preferencias, dialogWithDelayPresenter);
-        View.OnClickListener listener = clickListenerFactory.getListener();
+        View.OnClickListener listener = clickListenerFactory.getListener(type);
         View genericView = mock(View.class);
         listener.onClick(genericView);
         verify(preferencias, times(0)).setBoolean(ArgumentMatchers.any(), ArgumentMatchers.any());

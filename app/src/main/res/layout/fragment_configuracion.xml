@@ -119,7 +119,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Switch
-                        android:id="@+id/switch4"
+                        android:id="@+id/decreaseNeutralLockdown"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/activado"
@@ -148,7 +148,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Switch
-                        android:id="@+id/switch5"
+                        android:id="@+id/dontSumPositiveLockdown"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/activado"

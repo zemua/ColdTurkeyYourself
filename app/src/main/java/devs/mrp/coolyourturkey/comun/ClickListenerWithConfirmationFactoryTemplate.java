@@ -6,7 +6,7 @@ import android.view.View;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
+public abstract class ClickListenerWithConfirmationFactoryTemplate<T, I> {
 
     private static final String TAG = ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName();
 
@@ -18,15 +18,15 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
         this.dialogWithDelayPresenter = dialogWithDelayPresenter;
     }
 
-    public final View.OnClickListener getListener() {
+    public final View.OnClickListener getListener(I identifier) {
         return view -> {
-            handleClick(view);
+            handleClick(view, identifier);
         };
     }
 
-    private void handleClick(View view) {
+    private void handleClick(View view, I identifier) {
         try {
-            performAction(fromView(view));
+            performAction(fromView(view), identifier);
         } catch (InvalidViewTypeException e) {
             Log.e(TAG, e.toString());
         }
@@ -34,35 +34,35 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
 
     protected abstract T fromView(View view) throws InvalidViewTypeException;
 
-    private void performAction(T s) {
+    private void performAction(T s, I identifier) {
         if (isNegativeAction(s)) {
-            performButtonAction(s);
+            performButtonAction(s, identifier);
         } else {
-            doOnPositiveAction(s);
+            doOnPositiveAction(s, identifier);
         }
     }
 
     protected abstract boolean isNegativeAction(T t);
 
-    private void performButtonAction(T s) {
-        dialogWithDelayPresenter.setListener(getEventId(), b -> handleFeedback(b, s));
-        dialogWithDelayPresenter.showDialog(getEventId());
+    private void performButtonAction(T s, I identifier) {
+        dialogWithDelayPresenter.setListener(getEventId(identifier), b -> handleFeedback(b, s, identifier));
+        dialogWithDelayPresenter.showDialog(getEventId(identifier));
     }
 
-    private void handleFeedback(boolean accept, T s) {
+    private void handleFeedback(boolean accept, T s, I identifier) {
         if (accept) {
-            doOnNegativeDialogAcceptAction(s);
+            doOnNegativeDialogAcceptAction(s, identifier);
         } else {
-            doOnNegativeDialogRejectAction(s);
+            doOnNegativeDialogRejectAction(s, identifier);
         }
     }
 
-    protected abstract void doOnNegativeDialogAcceptAction(T t);
+    protected abstract void doOnNegativeDialogAcceptAction(T t, I identifier);
 
-    protected abstract void doOnNegativeDialogRejectAction(T t);
+    protected abstract void doOnNegativeDialogRejectAction(T t, I identifier);
 
-    protected abstract void doOnPositiveAction(T t);
+    protected abstract void doOnPositiveAction(T t, I identifier);
 
-    protected abstract String getEventId();
+    protected abstract String getEventId(I identifier);
 
 }
