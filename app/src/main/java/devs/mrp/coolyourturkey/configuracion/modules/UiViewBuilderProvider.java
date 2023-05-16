@@ -17,7 +17,7 @@ import devs.mrp.coolyourturkey.configuracion.modules.beans.ConfirmDeactivateSwit
 public class UiViewBuilderProvider {
 
     @Provides
-    public UiViewBuilder<Switch, PreferencesEnum> lockdownNegativesViewBuilder(MisPreferencias preferencias, ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> clickListenerFactoryProvider) {
+    public UiViewBuilder<Switch, PreferencesEnum> confirmDeactivateSwitchViewBuilder(MisPreferencias preferencias, ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> clickListenerFactoryProvider) {
         return new ConfirmDeactivateSwitchViewBuilder(preferencias, clickListenerFactoryProvider, true);
     }
 

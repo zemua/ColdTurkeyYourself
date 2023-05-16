@@ -17,7 +17,7 @@ import devs.mrp.coolyourturkey.configuracion.modules.beans.ConfirmDeactivateSwit
 public class ClickListenerFactoryProvider {
 
     @Provides
-    public ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> lockdownNegativesFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
+    public ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> clickListenerWithConfirmationFactoryTemplate(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         return new ConfirmDeactivateSwitchListenerFactory(preferencias, dialogWithDelayPresenter);
     }
 
