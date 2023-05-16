@@ -6,6 +6,7 @@ import android.widget.Switch;
 import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
+import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
 public class LockdownNeutralClickListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch> {
@@ -16,26 +17,35 @@ public class LockdownNeutralClickListenerFactory extends ClickListenerWithConfir
 
     @Override
     protected Switch fromView(View view) throws InvalidViewTypeException {
-        return null;
+        if (view instanceof Switch) {
+            return (Switch) view;
+        }
+        throw new InvalidViewTypeException("View is not of type Switch");
     }
 
     @Override
-    protected boolean shouldShowConfirmationDialog(Switch aSwitch) {
-        return false;
+    protected boolean isNegativeAction(Switch aSwitch) {
+        return !aSwitch.isChecked();
     }
 
     @Override
-    protected void doOnDialogAcceptAction(Switch aSwitch) {
-
+    protected void doOnNegativeDialogAcceptAction(Switch aSwitch) {
+        preferencias.setBoolean(PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE, false);
+        aSwitch.setChecked(false);
     }
 
     @Override
-    protected void doOnDialogRejectAction(Switch aSwitch) {
+    protected void doOnNegativeDialogRejectAction(Switch aSwitch) {
+        aSwitch.setChecked(true);
+    }
 
+    @Override
+    protected void doOnPositiveAction(Switch aSwitch) {
+        preferencias.setBoolean(PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE, true);
     }
 
     @Override
     protected String getEventId() {
-        return null;
+        return PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE.getValue();
     }
 }

@@ -35,14 +35,14 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
     protected abstract T fromView(View view) throws InvalidViewTypeException;
 
     private void performAction(T s) {
-        if (shouldShowConfirmationDialog(s)) {
+        if (isNegativeAction(s)) {
             performButtonAction(s);
         } else {
-            doOnDialogAcceptAction(s);
+            doOnPositiveAction(s);
         }
     }
 
-    protected abstract boolean shouldShowConfirmationDialog(T t);
+    protected abstract boolean isNegativeAction(T t);
 
     private void performButtonAction(T s) {
         dialogWithDelayPresenter.setListener(getEventId(), b -> handleFeedback(b, s));
@@ -51,15 +51,17 @@ public abstract class ClickListenerWithConfirmationFactoryTemplate<T> {
 
     private void handleFeedback(boolean accept, T s) {
         if (accept) {
-            doOnDialogAcceptAction(s);
+            doOnNegativeDialogAcceptAction(s);
         } else {
-            doOnDialogRejectAction(s);
+            doOnNegativeDialogRejectAction(s);
         }
     }
 
-    protected abstract void doOnDialogAcceptAction(T t);
+    protected abstract void doOnNegativeDialogAcceptAction(T t);
 
-    protected abstract void doOnDialogRejectAction(T t);
+    protected abstract void doOnNegativeDialogRejectAction(T t);
+
+    protected abstract void doOnPositiveAction(T t);
 
     protected abstract String getEventId();
 
