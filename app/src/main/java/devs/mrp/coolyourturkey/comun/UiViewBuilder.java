@@ -24,13 +24,13 @@ public abstract class UiViewBuilder<T extends View, I> {
     protected abstract T fromView(View view) throws InvalidViewTypeException;
 
     private T initializeObject(T aSwitch, I identifier) {
-        setInitialState(aSwitch, identifier);
+        setDefaultState(aSwitch, identifier);
         attachListeners(aSwitch, identifier);
         return aSwitch;
     }
 
     protected abstract void attachListeners(T aSwitch, I identifier);
 
-    protected abstract void setInitialState(T aSwitch, I identifier);
+    protected abstract void setDefaultState(T aSwitch, I identifier);
 
 }

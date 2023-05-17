@@ -5,6 +5,7 @@ import android.view.View;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.UiViewBuilder;
@@ -17,6 +18,8 @@ public abstract class ViewConfigurer<REPOSITORY, VIEW extends View, IDENTIFIER, 
     private DialogWithDelayPresenter dialogWithDelayPresenter;
     private List<View> viewsToModify;
     private BiConsumer<VIEW,View> modifyAction;
+    private List<Supplier<Boolean>> requiredTrueEnablers;
+    private List<Supplier<Boolean>> requiredFalseEnablers;
 
     public ViewConfigurer(REPOSITORY preferencias,
                           ClickListenerBuilder<VIEW, REPOSITORY, IDENTIFIER> clickListenerFactoryBuilder,
@@ -38,6 +41,16 @@ public abstract class ViewConfigurer<REPOSITORY, VIEW extends View, IDENTIFIER, 
 
     public ViewConfigurer<REPOSITORY, VIEW, IDENTIFIER, DEFAULT> modifyAction(BiConsumer<VIEW, View> modifyAction) {
         this.modifyAction = modifyAction;
+        return this;
+    }
+
+    public ViewConfigurer<REPOSITORY, VIEW, IDENTIFIER, DEFAULT> addRequiredTrueEnablers(Supplier<Boolean> trueEnabler) {
+        requiredTrueEnablers.add(trueEnabler);
+        return this;
+    }
+
+    public ViewConfigurer<REPOSITORY, VIEW, IDENTIFIER, DEFAULT> addRequiredFalseEnablers(Supplier<Boolean> falseEnabler) {
+        requiredFalseEnablers.add(falseEnabler);
         return this;
     }
 

@@ -200,9 +200,15 @@ public class ConfiguracionFragment extends Fragment {
         switchViewConfigurer = switchViewConfigurerSupplier.get();
         try {
             uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
-            uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
-            uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE);
-            uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM);
+            uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK)
+                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
+            uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
+            uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM)
+                    .ifPresent(aSwitch -> aSwitch.setEnabled(
+                            !mMisPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE, true)
+                            && mMisPreferencias.getActivaToqueDeQuedaSiNo()
+                    ));
         } catch (InvalidPropertiesFormatException e) {
             Log.e(TAG, "Error initializing views", e);
         }
@@ -216,7 +222,8 @@ public class ConfiguracionFragment extends Fragment {
                     })
                     .viewsToModify(Arrays.asList(v.findViewById(R.id.dontSumPositiveLockdown)))
                     .configure();
-            uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE);
+            uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE)
+                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
         } catch (InvalidPropertiesFormatException e) {
             Log.e(TAG, "Error initializing views", e);
         }

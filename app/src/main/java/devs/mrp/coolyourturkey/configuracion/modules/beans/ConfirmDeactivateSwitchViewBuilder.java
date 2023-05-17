@@ -39,7 +39,7 @@ public class ConfirmDeactivateSwitchViewBuilder extends UiViewBuilder<Switch, Pr
     }
 
     @Override
-    protected void setInitialState(Switch aSwitch, PreferencesEnum identifier) {
+    protected void setDefaultState(Switch aSwitch, PreferencesEnum identifier) {
         aSwitch.setChecked(misPreferencias.getBoolean(identifier, defaultState));
     }
 
