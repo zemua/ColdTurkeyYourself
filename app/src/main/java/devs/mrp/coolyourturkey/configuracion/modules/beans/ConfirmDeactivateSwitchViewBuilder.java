@@ -16,7 +16,6 @@ public class ConfirmDeactivateSwitchViewBuilder extends UiViewBuilder<Switch, Pr
     private MisPreferencias misPreferencias;
     private ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> clickListenerFactory;
     private boolean defaultState;
-    private PreferencesEnum identifier;
 
     public ConfirmDeactivateSwitchViewBuilder(MisPreferencias prefs,
                                               ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> listenerFactory,

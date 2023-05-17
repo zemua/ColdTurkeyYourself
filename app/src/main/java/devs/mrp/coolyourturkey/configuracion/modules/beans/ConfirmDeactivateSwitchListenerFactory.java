@@ -5,6 +5,7 @@ import android.widget.Switch;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
@@ -14,18 +15,22 @@ import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
 public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> {
 
-    private List<View> viewsToDisable;
+    private List<View> viewsToModify;
+    private BiConsumer<Switch,View> modifyAction;
 
     public ConfirmDeactivateSwitchListenerFactory(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         super(preferencias, dialogWithDelayPresenter);
-        viewsToDisable = Collections.emptyList();
+        viewsToModify = Collections.emptyList();
+        this.modifyAction = (s,v) -> {};
     }
 
     public ConfirmDeactivateSwitchListenerFactory(MisPreferencias preferencias,
                                                   DialogWithDelayPresenter dialogWithDelayPresenter,
-                                                  List<View> viewsToDisable) {
+                                                  List<View> viewsToModify,
+                                                  BiConsumer<Switch,View> modifyAction) {
         super(preferencias, dialogWithDelayPresenter);
-        this.viewsToDisable = Collections.unmodifiableList(viewsToDisable);
+        this.viewsToModify = Collections.unmodifiableList(viewsToModify);
+        this.modifyAction = modifyAction;
     }
 
     @Override
@@ -45,7 +50,7 @@ public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithCon
     protected void doOnNegativeDialogAcceptAction(Switch aSwitch, PreferencesEnum identifier) {
         preferencias.setBoolean(identifier, false);
         aSwitch.setChecked(false);
-        viewsToDisable.stream().forEach(v -> v.setEnabled(true));
+        viewsToModify.stream().forEach(v -> modifyAction.accept(aSwitch, v));
     }
 
     @Override
@@ -56,7 +61,7 @@ public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithCon
     @Override
     protected void doOnPositiveAction(Switch aSwitch, PreferencesEnum identifier) {
         preferencias.setBoolean(identifier, true);
-        viewsToDisable.stream().forEach(v -> v.setEnabled(false));
+        viewsToModify.stream().forEach(v -> v.setEnabled(false));
     }
 
     @Override

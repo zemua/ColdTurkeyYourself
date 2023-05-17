@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -37,6 +41,7 @@ import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
 import devs.mrp.coolyourturkey.comun.UiViewBuilder;
 import devs.mrp.coolyourturkey.comun.UriUtils;
+import devs.mrp.coolyourturkey.configuracion.modules.builder.ViewConfigurer;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
@@ -71,7 +76,7 @@ public class ConfiguracionFragment extends Fragment {
     public static String FALSE = "false";
 
     @Inject
-    UiViewBuilder<Switch, PreferencesEnum> confirmDeactivateSwitchViewBuilder;
+    Supplier<ViewConfigurer<MisPreferencias, Switch, PreferencesEnum, Boolean>> switchViewConfigurerSupplier;
 
     private Context mContext;
     ColorStateList oldColors;
@@ -189,9 +194,32 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
-        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
-        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE);
-        confirmDeactivateSwitchViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM);
+        ViewConfigurer<MisPreferencias, Switch, PreferencesEnum, Boolean> switchViewConfigurer;
+        UiViewBuilder<Switch, PreferencesEnum> uiViewBuilder;
+
+        switchViewConfigurer = switchViewConfigurerSupplier.get();
+        try {
+            uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
+            uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
+            uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE);
+            uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM);
+        } catch (InvalidPropertiesFormatException e) {
+            Log.e(TAG, "Error initializing views", e);
+        }
+
+        switchViewConfigurer = switchViewConfigurerSupplier.get();
+        try {
+            uiViewBuilder = switchViewConfigurer
+                    .defaultState(true)
+                    .modifyAction((aSwitch,view) -> {
+                        view.setEnabled(!aSwitch.isChecked());
+                    })
+                    .viewsToModify(Arrays.asList(v.findViewById(R.id.dontSumPositiveLockdown)))
+                    .configure();
+            uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE);
+        } catch (InvalidPropertiesFormatException e) {
+            Log.e(TAG, "Error initializing views", e);
+        }
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {

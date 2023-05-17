@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.comun;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +18,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -37,7 +39,7 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
     private static Stream<Arguments> providesTestData() {
         BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> negativesBifunction = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d);
         BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> neutralDecreaseBifunction = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d);
-        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> disablerOnPositive = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d, Collections.emptyList());
+        BiFunction<MisPreferencias, DialogWithDelayPresenter, ClickListenerWithConfirmationFactoryTemplate> disablerOnPositive = (p, d) -> new ConfirmDeactivateSwitchListenerFactory(p, d, Collections.emptyList(), (s,v) -> {});
         return Stream.of(
                 Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), negativesBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK),
                 Arguments.of(mock(MisPreferencias.class), mock(DialogWithDelayPresenter.class), neutralDecreaseBifunction, Boolean.TRUE, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE),
@@ -121,13 +123,44 @@ class ClickListenerWithConfirmationFactoryTemplateTest {
     }
 
     @Test
-    void testDisablerOnActivate() {
-        fail("not yet implemented");
+    void testEnablerOnDeactivate() {
+        MisPreferencias preferencias = mock(MisPreferencias.class);
+        DialogWithDelayPresenter dialogWithDelayPresenter = mock(DialogWithDelayPresenter.class);
+        View v1 = mock(View.class);
+        View v2 = mock(View.class);
+        List<View> views = Arrays.asList(v1, v2);
+        BiConsumer<Switch,View> action = (s,v) -> {v.setEnabled(!s.isChecked());};
+
+        ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = new ConfirmDeactivateSwitchListenerFactory(preferencias, dialogWithDelayPresenter, views, action);
+        View.OnClickListener listener = clickListenerFactory.getListener(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
+        when(view.isChecked()).thenReturn(false);
+        listener.onClick(view);
+
+        ArgumentCaptor<Consumer<Boolean>> consumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.any(), consumerCaptor.capture());
+        Consumer<Boolean> consumer = consumerCaptor.getValue();
+        consumer.accept(true);
+
+        verify(v1, times(1)).setEnabled(true);
+        verify(v2, times(1)).setEnabled(true);
     }
 
     @Test
-    void testEnablerOnDeactivate() {
-        fail("not yet implemented");
+    void testDisablerOnActivate() {
+        MisPreferencias preferencias = mock(MisPreferencias.class);
+        DialogWithDelayPresenter dialogWithDelayPresenter = mock(DialogWithDelayPresenter.class);
+        View v1 = mock(View.class);
+        View v2 = mock(View.class);
+        List<View> views = Arrays.asList(v1, v2);
+        BiConsumer<Switch,View> action = (s,v) -> {v.setEnabled(!s.isChecked());};
+
+        ClickListenerWithConfirmationFactoryTemplate clickListenerFactory = new ConfirmDeactivateSwitchListenerFactory(preferencias, dialogWithDelayPresenter, views, action);
+        View.OnClickListener listener = clickListenerFactory.getListener(PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK);
+        when(view.isChecked()).thenReturn(true);
+        listener.onClick(view);
+
+        verify(v1, times(1)).setEnabled(false);
+        verify(v2, times(1)).setEnabled(false);
     }
 
 }
