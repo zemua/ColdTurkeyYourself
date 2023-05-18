@@ -24,7 +24,7 @@ class MisPreferenciasTest {
 
     private MisPreferencias misPreferencias;
 
-    private PreferencesBooleanEnum propertyName = PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK;
+    private PreferencesEnum propertyName = PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK;
 
     @BeforeEach
     void setup() {

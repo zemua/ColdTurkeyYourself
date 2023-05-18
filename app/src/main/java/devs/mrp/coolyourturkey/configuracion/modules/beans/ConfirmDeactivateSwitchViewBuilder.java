@@ -6,19 +6,19 @@ import android.widget.Switch;
 import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.UiViewBuilder;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
+import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public class ConfirmDeactivateSwitchViewBuilder extends UiViewBuilder<Switch, PreferencesBooleanEnum>  {
+public class ConfirmDeactivateSwitchViewBuilder extends UiViewBuilder<Switch, PreferencesEnum>  {
 
     private static final String TAG = ConfirmDeactivateSwitchViewBuilder.class.getSimpleName();
 
     private MisPreferencias misPreferencias;
-    private ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesBooleanEnum> clickListenerFactory;
+    private ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> clickListenerFactory;
     private boolean defaultState;
 
     public ConfirmDeactivateSwitchViewBuilder(MisPreferencias prefs,
-                                              ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesBooleanEnum> listenerFactory,
+                                              ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> listenerFactory,
                                               boolean defaultState) {
         this.misPreferencias = prefs;
         this.clickListenerFactory = listenerFactory;
@@ -34,12 +34,12 @@ public class ConfirmDeactivateSwitchViewBuilder extends UiViewBuilder<Switch, Pr
     }
 
     @Override
-    protected void attachListeners(Switch aSwitch, PreferencesBooleanEnum identifier) {
+    protected void attachListeners(Switch aSwitch, PreferencesEnum identifier) {
         aSwitch.setOnClickListener(clickListenerFactory.getListener(identifier));
     }
 
     @Override
-    protected void setDefaultState(Switch aSwitch, PreferencesBooleanEnum identifier) {
+    protected void setDefaultState(Switch aSwitch, PreferencesEnum identifier) {
         aSwitch.setChecked(misPreferencias.getBoolean(identifier, defaultState));
     }
 

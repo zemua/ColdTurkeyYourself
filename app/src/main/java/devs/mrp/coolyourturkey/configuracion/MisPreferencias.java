@@ -51,13 +51,13 @@ public class MisPreferencias {
         return mSharedPreferences;
     }
 
-    public void setBoolean(PreferencesBooleanEnum property, Boolean value) {
+    public void setBoolean(PreferencesEnum property, Boolean value) {
         SharedPreferences.Editor e = getSharedPreferences().edit();
         e.putBoolean(property.getValue(), value);
         e.apply();
     }
 
-    public Boolean getBoolean(PreferencesBooleanEnum property, Boolean def) {
+    public Boolean getBoolean(PreferencesEnum property, Boolean def) {
         return getSharedPreferences().getBoolean(property.getValue(), def);
     }
 

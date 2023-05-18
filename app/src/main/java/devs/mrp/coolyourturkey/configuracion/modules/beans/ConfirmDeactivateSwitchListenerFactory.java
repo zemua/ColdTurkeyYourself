@@ -10,10 +10,10 @@ import java.util.function.BiConsumer;
 import devs.mrp.coolyourturkey.comun.ClickListenerWithConfirmationFactoryTemplate;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
+import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesBooleanEnum> {
+public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithConfirmationFactoryTemplate<Switch, PreferencesEnum> {
 
     private List<View> viewsToModify;
     private BiConsumer<Switch,View> modifyAction;
@@ -47,25 +47,25 @@ public class ConfirmDeactivateSwitchListenerFactory extends ClickListenerWithCon
     }
 
     @Override
-    protected void doOnNegativeDialogAcceptAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
+    protected void doOnNegativeDialogAcceptAction(Switch aSwitch, PreferencesEnum identifier) {
         preferencias.setBoolean(identifier, false);
         aSwitch.setChecked(false);
         viewsToModify.stream().forEach(v -> modifyAction.accept(aSwitch, v));
     }
 
     @Override
-    protected void doOnNegativeDialogRejectAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
+    protected void doOnNegativeDialogRejectAction(Switch aSwitch, PreferencesEnum identifier) {
         aSwitch.setChecked(true);
     }
 
     @Override
-    protected void doOnPositiveAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
+    protected void doOnPositiveAction(Switch aSwitch, PreferencesEnum identifier) {
         preferencias.setBoolean(identifier, true);
         viewsToModify.stream().forEach(v -> v.setEnabled(false));
     }
 
     @Override
-    protected String getEventId(PreferencesBooleanEnum identifier) {
+    protected String getEventId(PreferencesEnum identifier) {
         return identifier.getValue();
     }
 }
