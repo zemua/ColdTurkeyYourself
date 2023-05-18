@@ -41,6 +41,7 @@ public abstract class ViewConfigurerBuilder<REPOSITORY, VIEW extends View, IDENT
     }
 
     public UiViewConfigurer<VIEW, IDENTIFIER> configure() {
+        // TODO use validation with annotated @NotNull etc class variables
         return configureBuilder(prefs, clickListenerFactoryBuilder, dialogWithDelayPresenter, onStateChangeAction);
     }
 

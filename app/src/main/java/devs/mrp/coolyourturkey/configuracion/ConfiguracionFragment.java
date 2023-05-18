@@ -203,8 +203,11 @@ public class ConfiguracionFragment extends Fragment {
         ViewConfigurerBuilder<MisPreferencias, Switch, PreferencesBooleanEnum> switchViewConfigurer;
         UiViewConfigurer<Switch, PreferencesBooleanEnum> uiViewBuilder;
 
+        // TODO move all the configuration to the builder
         switchViewConfigurer = preferencesSwitchBuilderProvider.get();
-        uiViewBuilder = switchViewConfigurer.configure();
+        uiViewBuilder = switchViewConfigurer
+                .onStateChangeAction(() -> viewDisabler.evaluateConditions())
+                .configure();
         Optional<Switch> decreasePositiveSwitch = uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
         decreasePositiveSwitch.ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
 
