@@ -6,14 +6,14 @@ import android.view.View;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public abstract class ClickListenerWithConfirmationFactoryTemplate<T, I> {
+public abstract class ClickListenerConfigurer<T, I> {
 
-    private static final String TAG = ClickListenerWithConfirmationFactoryTemplate.class.getSimpleName();
+    private static final String TAG = ClickListenerConfigurer.class.getSimpleName();
 
     protected MisPreferencias preferencias;
     protected DialogWithDelayPresenter dialogWithDelayPresenter;
 
-    public ClickListenerWithConfirmationFactoryTemplate(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
+    public ClickListenerConfigurer(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         this.preferencias = preferencias;
         this.dialogWithDelayPresenter = dialogWithDelayPresenter;
     }

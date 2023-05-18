@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 
-public abstract class UiViewBuilder<T extends View, I> {
+public abstract class UiViewConfigurer<T extends View, I> {
 
-    private static final String TAG = UiViewBuilder.class.getSimpleName();
+    private static final String TAG = UiViewConfigurer.class.getSimpleName();
 
     public Optional<T> buildElement(View parent, int resourceId, I identifier) {
         View v = parent.findViewById(resourceId);

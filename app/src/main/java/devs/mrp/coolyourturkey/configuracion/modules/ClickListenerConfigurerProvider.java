@@ -7,16 +7,16 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
-import devs.mrp.coolyourturkey.configuracion.PreferencesEnum;
-import devs.mrp.coolyourturkey.configuracion.modules.builder.ClickListenerBuilder;
+import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
+import devs.mrp.coolyourturkey.configuracion.modules.builder.ClickListenerConfigurerBuilder;
 import devs.mrp.coolyourturkey.configuracion.modules.builder.impl.SwitchClickListenerBuilder;
 
 @Module
 @InstallIn(SingletonComponent.class)
-public class ClickListenerFactoryProvider {
+public class ClickListenerConfigurerProvider {
 
     @Provides
-    public ClickListenerBuilder<Switch, MisPreferencias, PreferencesEnum> switchClickListenerBuilder() {
+    public ClickListenerConfigurerBuilder<Switch, MisPreferencias, PreferencesBooleanEnum> switchClickListenerBuilder() {
         return new SwitchClickListenerBuilder();
     }
 

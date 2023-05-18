@@ -36,12 +36,12 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
-import devs.mrp.coolyourturkey.comun.UiViewBuilder;
+import devs.mrp.coolyourturkey.comun.UiViewConfigurer;
 import devs.mrp.coolyourturkey.comun.UriUtils;
 import devs.mrp.coolyourturkey.comun.ViewDisabler;
 import devs.mrp.coolyourturkey.comun.ViewDisablerSupplier;
 import devs.mrp.coolyourturkey.configuracion.modules.builder.PreferencesSwitchBuilderProvider;
-import devs.mrp.coolyourturkey.configuracion.modules.builder.ViewConfigurer;
+import devs.mrp.coolyourturkey.configuracion.modules.builder.ViewConfigurerBuilder;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
@@ -200,21 +200,21 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
-        ViewConfigurer<MisPreferencias, Switch, PreferencesEnum, Boolean> switchViewConfigurer;
-        UiViewBuilder<Switch, PreferencesEnum> uiViewBuilder;
+        ViewConfigurerBuilder<MisPreferencias, Switch, PreferencesBooleanEnum> switchViewConfigurer;
+        UiViewConfigurer<Switch, PreferencesBooleanEnum> uiViewBuilder;
 
         switchViewConfigurer = preferencesSwitchBuilderProvider.get();
-        uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
-        Optional<Switch> decreasePositiveSwitch = uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE);
+        uiViewBuilder = switchViewConfigurer.configure();
+        Optional<Switch> decreasePositiveSwitch = uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
         decreasePositiveSwitch.ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
 
         switchViewConfigurer = preferencesSwitchBuilderProvider.get();
-        uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
-        uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK)
+        uiViewBuilder = switchViewConfigurer.configure();
+        uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK)
                 .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
-        uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
+        uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)
                 .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
-        uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM)
+        uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM)
                 .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(
                         () -> mSwitchActivaToqueDeQueda.isChecked(),
                         () -> decreasePositiveSwitch.map(s -> !s.isChecked()).orElse(true))));
