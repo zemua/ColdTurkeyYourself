@@ -27,7 +27,7 @@ public class SwitchViewConfigurer extends ViewConfigurer<MisPreferencias, Switch
                                                                       Boolean defaultState,
                                                                       DialogWithDelayPresenter dialogWithDelayPresenter,
                                                                       List<View> viewsToModify,
-                                                                      BiConsumer<Switch, View> modifyAction) throws InvalidPropertiesFormatException {
+                                                                      BiConsumer<Switch, View> modifyAction) {
         clickListenerFactoryBuilder.dialogWithDelayPresenter(dialogWithDelayPresenter)
                 .modifyAction(modifyAction)
                 .preferencias(prefs)

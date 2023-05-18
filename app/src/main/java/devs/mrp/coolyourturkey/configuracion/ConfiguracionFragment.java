@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
-import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -198,35 +196,25 @@ public class ConfiguracionFragment extends Fragment {
         UiViewBuilder<Switch, PreferencesEnum> uiViewBuilder;
 
         switchViewConfigurer = switchViewConfigurerSupplier.get();
-        try {
-            uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
-            uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK)
-                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
-            uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
-                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
-            uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM)
-                    .ifPresent(aSwitch -> aSwitch.setEnabled(
-                            !mMisPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE, true)
-                            && mMisPreferencias.getActivaToqueDeQuedaSiNo()
-                    ));
-        } catch (InvalidPropertiesFormatException e) {
-            Log.e(TAG, "Error initializing views", e);
-        }
+        uiViewBuilder = switchViewConfigurer.defaultState(true).configure();
+        uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesEnum.LOCKDOWN_NEGATIVE_BLOCK)
+                .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
+        uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
+        uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DONT_SUM)
+                .ifPresent(aSwitch -> aSwitch.setEnabled(
+                        !mMisPreferencias.getBoolean(PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE, true)
+                        && mMisPreferencias.getActivaToqueDeQuedaSiNo()
+                ));
 
         switchViewConfigurer = switchViewConfigurerSupplier.get();
-        try {
-            uiViewBuilder = switchViewConfigurer
-                    .defaultState(true)
-                    .modifyAction((aSwitch,view) -> {
-                        view.setEnabled(!aSwitch.isChecked());
-                    })
-                    .viewsToModify(Arrays.asList(v.findViewById(R.id.dontSumPositiveLockdown)))
-                    .configure();
-            uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE)
-                    .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
-        } catch (InvalidPropertiesFormatException e) {
-            Log.e(TAG, "Error initializing views", e);
-        }
+        uiViewBuilder = switchViewConfigurer
+                .defaultState(true)
+                .modifyAction((aSwitch,view) -> {view.setEnabled(!aSwitch.isChecked());})
+                .viewsToModify(Arrays.asList(v.findViewById(R.id.dontSumPositiveLockdown)))
+                .configure();
+        uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesEnum.LOCKDOWN_POSITIVE_DECREASE)
+                .ifPresent(aSwitch -> aSwitch.setEnabled(mMisPreferencias.getActivaToqueDeQuedaSiNo()));
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {

@@ -2,7 +2,6 @@ package devs.mrp.coolyourturkey.configuracion.modules.builder;
 
 import android.view.View;
 
-import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -54,9 +53,9 @@ public abstract class ViewConfigurer<REPOSITORY, VIEW extends View, IDENTIFIER, 
         return this;
     }
 
-    public UiViewBuilder<VIEW, IDENTIFIER> configure() throws InvalidPropertiesFormatException {
+    public UiViewBuilder<VIEW, IDENTIFIER> configure() {
         if (defaultState == null) {
-            throw new InvalidPropertiesFormatException("Default state should be set");
+            throw new RuntimeException("View's default state must be set");
         }
         return configureBuilder(prefs, clickListenerFactoryBuilder, defaultState, dialogWithDelayPresenter, viewsToModify, modifyAction);
     }
@@ -66,6 +65,6 @@ public abstract class ViewConfigurer<REPOSITORY, VIEW extends View, IDENTIFIER, 
                                                                         DEFAULT defaultState,
                                                                         DialogWithDelayPresenter dialogWithDelayPresenter,
                                                                         List<View> viewsToModify,
-                                                                        BiConsumer<VIEW,View> modifyAction) throws InvalidPropertiesFormatException;
+                                                                        BiConsumer<VIEW,View> modifyAction);
 
 }

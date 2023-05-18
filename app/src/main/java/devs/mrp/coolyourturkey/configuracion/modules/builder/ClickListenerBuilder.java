@@ -37,7 +37,7 @@ public abstract class ClickListenerBuilder<VIEW extends View, REPOSITORY, IDENTI
         return this;
     }
 
-    public ClickListenerWithConfirmationFactoryTemplate<VIEW, IDENTIFIER> build() throws InvalidPropertiesFormatException {
+    public ClickListenerWithConfirmationFactoryTemplate<VIEW, IDENTIFIER> build() {
         if (viewsToModify == null) {
             viewsToModify = Collections.emptyList();
         }
@@ -45,7 +45,7 @@ public abstract class ClickListenerBuilder<VIEW extends View, REPOSITORY, IDENTI
             modifyAction = (a,b) -> {};
         }
         if (preferencias == null || dialogWithDelayPresenter == null) {
-            throw new InvalidPropertiesFormatException("All values must be set");
+            throw new RuntimeException("All View builder values must be set");
         }
         return buildListener(preferencias, dialogWithDelayPresenter, viewsToModify, modifyAction);
     }
