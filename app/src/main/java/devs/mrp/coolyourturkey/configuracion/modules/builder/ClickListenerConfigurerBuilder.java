@@ -30,10 +30,14 @@ public abstract class ClickListenerConfigurerBuilder<VIEW extends View, REPOSITO
         if (onStateChangeAction == null) {
             onStateChangeAction = () -> {};
         }
-        if (preferencias == null || dialogWithDelayPresenter == null) {
-            throw new RuntimeException("All View builder values must be set");
+        if (anyNulls()) {
+            throw new RuntimeException("Preferences and DialogDelayPresenter values must be set");
         }
         return buildListener(preferencias, dialogWithDelayPresenter, onStateChangeAction);
+    }
+
+    private boolean anyNulls() {
+        return preferencias == null || dialogWithDelayPresenter == null;
     }
 
     protected abstract ClickListenerConfigurer<VIEW, IDENTIFIER> buildListener(REPOSITORY preferencias,
