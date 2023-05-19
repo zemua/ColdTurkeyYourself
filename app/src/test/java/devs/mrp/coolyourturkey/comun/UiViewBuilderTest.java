@@ -15,9 +15,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import devs.mrp.coolyourturkey.comun.impl.ViewDisablerImpl;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
 import devs.mrp.coolyourturkey.configuracion.modules.beans.PreferencesSwitchConfigurer;
@@ -25,18 +27,20 @@ import devs.mrp.coolyourturkey.configuracion.modules.beans.PreferencesSwitchConf
 @ExtendWith(MockitoExtension.class)
 class UiViewBuilderTest {
 
-    @Mock
-    private View parent;
+    private static View parent;
     @Mock
     private Switch aSwitch;
     @Mock
     private View.OnClickListener clickListener;
 
     private static Stream<Arguments> providesTestData() {
-        BiFunction<MisPreferencias, ClickListenerConfigurer, UiViewConfigurer> negativesBifunction = (p, d) -> new PreferencesSwitchConfigurer(p, d);
-        BiFunction<MisPreferencias, ClickListenerConfigurer, UiViewConfigurer> neutralDecreaseBifunction = (p, d) -> new PreferencesSwitchConfigurer(p, d);
+        parent = mock(View.class);
+        BiFunction<MisPreferencias, ClickListenerConfigurer, UiViewConfigurer> negativesBifunction = (p, d) -> new PreferencesSwitchConfigurer(p, d, parent, 123, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK, Arrays.asList(()->false),Arrays.asList(()->true),new ViewDisablerImpl());
+        BiFunction<MisPreferencias, ClickListenerConfigurer, UiViewConfigurer> negativesBifunction2 = (p, d) -> new PreferencesSwitchConfigurer(p, d, parent, 123, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK, Arrays.asList(()->false),Arrays.asList(()->false),new ViewDisablerImpl());
+        BiFunction<MisPreferencias, ClickListenerConfigurer, UiViewConfigurer> neutralDecreaseBifunction = (p, d) -> new PreferencesSwitchConfigurer(p, d, parent, 123, PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE, Arrays.asList(()->true),Arrays.asList(()->true),new ViewDisablerImpl());
         return Stream.of(
                 Arguments.of(mock(MisPreferencias.class), mock(ClickListenerConfigurer.class), negativesBifunction, Boolean.TRUE, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK),
+                Arguments.of(mock(MisPreferencias.class), mock(ClickListenerConfigurer.class), negativesBifunction2, Boolean.TRUE, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK),
                 Arguments.of(mock(MisPreferencias.class), mock(ClickListenerConfigurer.class), neutralDecreaseBifunction, Boolean.TRUE, PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)
         );
     }
@@ -53,7 +57,7 @@ class UiViewBuilderTest {
         when(clickListenerFactoryProvider.getListener(type)).thenReturn(clickListener);
         when(preferencias.getBoolean(type, defaultChecked)).thenReturn(defaultChecked);
 
-        builder.buildElement(parent, 123, type);
+        builder.buildElement();
 
         verify(aSwitch, times(1)).setOnClickListener(clickListener);
         verify(preferencias, times(1)).getBoolean(type, defaultChecked);

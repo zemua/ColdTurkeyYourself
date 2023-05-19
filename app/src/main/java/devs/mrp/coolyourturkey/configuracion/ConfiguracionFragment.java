@@ -36,12 +36,10 @@ import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
-import devs.mrp.coolyourturkey.comun.UiViewConfigurer;
 import devs.mrp.coolyourturkey.comun.UriUtils;
 import devs.mrp.coolyourturkey.comun.ViewDisabler;
 import devs.mrp.coolyourturkey.comun.ViewDisablerSupplier;
 import devs.mrp.coolyourturkey.configuracion.modules.builder.PreferencesSwitchBuilderProvider;
-import devs.mrp.coolyourturkey.configuracion.modules.builder.ViewConfigurerBuilder;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
@@ -200,27 +198,43 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
 
-        ViewConfigurerBuilder<MisPreferencias, Switch, PreferencesBooleanEnum> switchViewConfigurer;
-        UiViewConfigurer<Switch, PreferencesBooleanEnum> uiViewBuilder;
+        Optional<Switch> decreasePositiveSwitch = preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE)
+                .viewResourceId(R.id.decreasePositiveLockdown)
+                .actionOnStateChange(() -> viewDisabler.evaluateConditions())
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .configure()
+                .buildElement();
 
-        // TODO move all the configuration to the builder
-        switchViewConfigurer = preferencesSwitchBuilderProvider.get();
-        uiViewBuilder = switchViewConfigurer
-                .onStateChangeAction(() -> viewDisabler.evaluateConditions())
-                .configure();
-        Optional<Switch> decreasePositiveSwitch = uiViewBuilder.buildElement(v, R.id.decreasePositiveLockdown, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
-        decreasePositiveSwitch.ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK)
+                .viewResourceId(R.id.closeNegativeLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .configure()
+                .buildElement();
 
-        switchViewConfigurer = preferencesSwitchBuilderProvider.get();
-        uiViewBuilder = switchViewConfigurer.configure();
-        uiViewBuilder.buildElement(v, R.id.closeNegativeLockdown, PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK)
-                .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
-        uiViewBuilder.buildElement(v, R.id.decreaseNeutralLockdown, PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)
-                .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(() -> mSwitchActivaToqueDeQueda.isChecked())));
-        uiViewBuilder.buildElement(v, R.id.dontSumPositiveLockdown, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM)
-                .ifPresent(aSwitch -> viewDisabler.addViewConditions(aSwitch, Arrays.asList(
-                        () -> mSwitchActivaToqueDeQueda.isChecked(),
-                        () -> decreasePositiveSwitch.map(s -> !s.isChecked()).orElse(true))));
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                .viewResourceId(R.id.decreaseNeutralLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .configure()
+                .buildElement();
+
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM)
+                .viewResourceId(R.id.dontSumPositiveLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .addRequiredTrueEnablers(() -> decreasePositiveSwitch.map(s -> !s.isChecked()).orElse(true))
+                .configure()
+                .buildElement();
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
