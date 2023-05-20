@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 import devs.mrp.coolyourturkey.comun.ViewDisabler;
 
-class ViewEnablerImplTest {
+class ViewDisablerImplTest {
 
     private ViewDisabler viewDisabler;
     private View v1;

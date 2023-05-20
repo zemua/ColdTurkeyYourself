@@ -22,7 +22,7 @@ public class PreferencesSwitchListenerConfigurer extends ClickListenerConfigurer
                                                DialogWithDelayPresenter dialogWithDelayPresenter,
                                                Runnable doOnChangeAction) {
         super(preferencias, dialogWithDelayPresenter);
-        this.doOnChangeAction = doOnChangeAction;
+        this.doOnChangeAction = doOnChangeAction != null ? doOnChangeAction : () -> {};
     }
 
     @Override
