@@ -46,20 +46,39 @@ public class PreferencesSwitchListenerConfigurer extends ClickListenerConfigurer
 
     @Override
     protected void doOnNegativeDialogAcceptAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
-        preferencias.setBoolean(identifier, false);
-        aSwitch.setChecked(false);
+        boolean negativePosition = negativePosition(aSwitch);
+        preferencias.setBoolean(identifier, negativePosition);
+        aSwitch.setChecked(negativePosition);
         doOnChangeAction.run();
     }
 
     @Override
     protected void doOnNegativeDialogRejectAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
-        aSwitch.setChecked(true);
+        aSwitch.setChecked(positivePosition(aSwitch));
     }
 
     @Override
     protected void doOnPositiveAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
-        preferencias.setBoolean(identifier, true);
+        boolean positivePosition = positivePosition(aSwitch);
+        preferencias.setBoolean(identifier, positivePosition);
+        aSwitch.setChecked(positivePosition);
         doOnChangeAction.run();
+    }
+
+    private boolean negativePosition(Switch s) {
+        if (isNegativeAction(s)) {
+            return s.isChecked();
+        } else {
+            return !s.isChecked();
+        }
+    }
+
+    private boolean positivePosition(Switch s) {
+        if (!isNegativeAction(s)) {
+            return s.isChecked();
+        } else {
+            return !s.isChecked();
+        }
     }
 
     @Override
