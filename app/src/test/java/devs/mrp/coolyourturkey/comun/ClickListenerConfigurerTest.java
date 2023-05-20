@@ -38,7 +38,7 @@ class ClickListenerConfigurerTest {
 
     @BeforeEach
     void setup() {
-        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction);
+        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->!s.isChecked());
     }
 
     @Test

@@ -42,6 +42,7 @@ public abstract class ClickListenerConfigurer<T, I> {
         }
     }
 
+    // TODO set isNegativeCondition(Supplier<Boolean>) in the builder, default to () -> {}
     protected abstract boolean isNegativeAction(T t);
 
     private void performButtonAction(T s, I identifier) {

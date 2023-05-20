@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Switch;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
@@ -31,9 +32,11 @@ public class PreferencesSwitchConfigurerBuilder extends ViewConfigurerBuilder<Mi
                                                                                 PreferencesBooleanEnum preferencesBooleanEnum,
                                                                                 List<Supplier<Boolean>> requiredFalseEnablers,
                                                                                 List<Supplier<Boolean>> requiredTrueEnablers,
-                                                                                ViewDisabler viewDisabler) {
+                                                                                ViewDisabler viewDisabler,
+                                                                                Function<Switch,Boolean> conditionForNegative) {
         clickListenerFactoryBuilder.dialogWithDelayPresenter(dialogWithDelayPresenter)
                 .preferencias(prefs)
+                .conditionForNegative(conditionForNegative)
                 .onStateChangeAction(onStateChangeAction);
         return new PreferencesSwitchConfigurer(prefs,
                 clickListenerFactoryBuilder.build(),

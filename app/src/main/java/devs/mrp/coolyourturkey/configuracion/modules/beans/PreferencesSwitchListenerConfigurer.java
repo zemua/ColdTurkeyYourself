@@ -3,6 +3,8 @@ package devs.mrp.coolyourturkey.configuracion.modules.beans;
 import android.view.View;
 import android.widget.Switch;
 
+import java.util.function.Function;
+
 import devs.mrp.coolyourturkey.comun.ClickListenerConfigurer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -12,17 +14,21 @@ import devs.mrp.coolyourturkey.exceptions.InvalidViewTypeException;
 public class PreferencesSwitchListenerConfigurer extends ClickListenerConfigurer<Switch, PreferencesBooleanEnum> {
 
     private Runnable doOnChangeAction;
+    private Function<Switch,Boolean> conditionForNegative;
 
     public PreferencesSwitchListenerConfigurer(MisPreferencias preferencias, DialogWithDelayPresenter dialogWithDelayPresenter) {
         super(preferencias, dialogWithDelayPresenter);
-        doOnChangeAction = () -> {};
+        this.doOnChangeAction = () -> {};
+        this.conditionForNegative = v -> false;
     }
 
     public PreferencesSwitchListenerConfigurer(MisPreferencias preferencias,
                                                DialogWithDelayPresenter dialogWithDelayPresenter,
-                                               Runnable doOnChangeAction) {
+                                               Runnable doOnChangeAction,
+                                               Function<Switch,Boolean> conditionForNegative) {
         super(preferencias, dialogWithDelayPresenter);
         this.doOnChangeAction = doOnChangeAction != null ? doOnChangeAction : () -> {};
+        this.conditionForNegative = conditionForNegative;
     }
 
     @Override
@@ -35,7 +41,7 @@ public class PreferencesSwitchListenerConfigurer extends ClickListenerConfigurer
 
     @Override
     protected boolean isNegativeAction(Switch aSwitch) {
-        return !aSwitch.isChecked();
+        return conditionForNegative.apply(aSwitch);
     }
 
     @Override

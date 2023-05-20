@@ -1,8 +1,11 @@
 package devs.mrp.coolyourturkey.configuracion.modules.builder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import android.widget.Switch;
 
@@ -13,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.function.Function;
 
 import devs.mrp.coolyourturkey.comun.ClickListenerConfigurer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
@@ -71,6 +75,26 @@ class ClickListenerConfigurerBuilderTest {
         field.setAccessible(true);
         Runnable value = (Runnable) field.get(result);
         assertNotNull(value);
+    }
+
+    @Test
+    void createsDefaultIsNegativeConditionIfNotProvided() throws NoSuchFieldException, IllegalAccessException {
+        ClickListenerConfigurer<Switch, PreferencesBooleanEnum> result = clickListenerConfigurerBuilder.conditionForNegative(null).build();
+        Field field = result.getClass().getDeclaredField("conditionForNegative");
+        field.setAccessible(true);
+        Function<Switch,Boolean> value = (Function) field.get(result);
+        assertNotNull(value);
+        assertFalse(value.apply(mock(Switch.class)));
+    }
+
+    @Test
+    void keepsIsNegativeConditionIfNotProvided() throws NoSuchFieldException, IllegalAccessException {
+        ClickListenerConfigurer<Switch, PreferencesBooleanEnum> result = clickListenerConfigurerBuilder.conditionForNegative(v -> true).build();
+        Field field = result.getClass().getDeclaredField("conditionForNegative");
+        field.setAccessible(true);
+        Function<Switch,Boolean> value = (Function) field.get(result);
+        assertNotNull(value);
+        assertTrue(value.apply(mock(Switch.class)));
     }
 
 }

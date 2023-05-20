@@ -205,6 +205,7 @@ public class ConfiguracionFragment extends Fragment {
                 .actionOnStateChange(() -> viewDisabler.evaluateConditions())
                 .viewDisabler(viewDisabler)
                 .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
                 .configure()
                 .buildElement();
 
@@ -214,6 +215,7 @@ public class ConfiguracionFragment extends Fragment {
                 .viewResourceId(R.id.closeNegativeLockdown)
                 .viewDisabler(viewDisabler)
                 .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
                 .configure()
                 .buildElement();
 
@@ -223,6 +225,7 @@ public class ConfiguracionFragment extends Fragment {
                 .viewResourceId(R.id.decreaseNeutralLockdown)
                 .viewDisabler(viewDisabler)
                 .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
                 .configure()
                 .buildElement();
 
@@ -233,6 +236,7 @@ public class ConfiguracionFragment extends Fragment {
                 .viewDisabler(viewDisabler)
                 .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
                 .addRequiredTrueEnablers(() -> decreasePositiveSwitch.map(s -> !s.isChecked()).orElse(true))
+                .conditionForNegative(s -> !s.isChecked())
                 .configure()
                 .buildElement();
 

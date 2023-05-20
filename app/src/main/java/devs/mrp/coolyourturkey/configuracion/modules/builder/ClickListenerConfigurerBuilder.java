@@ -2,6 +2,8 @@ package devs.mrp.coolyourturkey.configuracion.modules.builder;
 
 import android.view.View;
 
+import java.util.function.Function;
+
 import devs.mrp.coolyourturkey.comun.ClickListenerConfigurer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 
@@ -10,6 +12,7 @@ public abstract class ClickListenerConfigurerBuilder<VIEW extends View, REPOSITO
     private REPOSITORY preferencias;
     private DialogWithDelayPresenter dialogWithDelayPresenter;
     private Runnable onStateChangeAction;
+    private Function<VIEW,Boolean> conditionForNegative;
 
     public ClickListenerConfigurerBuilder<VIEW, REPOSITORY, IDENTIFIER> preferencias(REPOSITORY preferencias) {
         this.preferencias = preferencias;
@@ -26,14 +29,22 @@ public abstract class ClickListenerConfigurerBuilder<VIEW extends View, REPOSITO
         return this;
     }
 
+    public ClickListenerConfigurerBuilder<VIEW, REPOSITORY, IDENTIFIER> conditionForNegative(Function<VIEW,Boolean> conditionForNegative) {
+        this.conditionForNegative = conditionForNegative;
+        return this;
+    }
+
     public ClickListenerConfigurer<VIEW, IDENTIFIER> build() {
-        if (onStateChangeAction == null) {
-            onStateChangeAction = () -> {};
-        }
         if (anyNulls()) {
             throw new RuntimeException("Preferences and DialogDelayPresenter values must be set");
         }
-        return buildListener(preferencias, dialogWithDelayPresenter, onStateChangeAction);
+        if (onStateChangeAction == null) {
+            onStateChangeAction = () -> {};
+        }
+        if (conditionForNegative == null) {
+            conditionForNegative = v -> false;
+        }
+        return buildListener(preferencias, dialogWithDelayPresenter, onStateChangeAction, conditionForNegative);
     }
 
     private boolean anyNulls() {
@@ -42,6 +53,7 @@ public abstract class ClickListenerConfigurerBuilder<VIEW extends View, REPOSITO
 
     protected abstract ClickListenerConfigurer<VIEW, IDENTIFIER> buildListener(REPOSITORY preferencias,
                                                                                DialogWithDelayPresenter dialogWithDelayPresenter,
-                                                                               Runnable onStateChangeAction);
+                                                                               Runnable onStateChangeAction,
+                                                                               Function<VIEW,Boolean> conditionForNegative);
 
 }

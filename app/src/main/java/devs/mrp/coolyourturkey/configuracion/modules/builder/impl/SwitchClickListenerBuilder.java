@@ -2,6 +2,8 @@ package devs.mrp.coolyourturkey.configuracion.modules.builder.impl;
 
 import android.widget.Switch;
 
+import java.util.function.Function;
+
 import devs.mrp.coolyourturkey.comun.ClickListenerConfigurer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -14,7 +16,8 @@ public class SwitchClickListenerBuilder extends ClickListenerConfigurerBuilder<S
     @Override
     protected ClickListenerConfigurer buildListener(MisPreferencias preferencias,
                                                     DialogWithDelayPresenter dialogWithDelayPresenter,
-                                                    Runnable onStateChangeAction) {
-        return new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, onStateChangeAction);
+                                                    Runnable onStateChangeAction,
+                                                    Function<Switch,Boolean> conditionForNegative) {
+        return new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, onStateChangeAction, conditionForNegative);
     }
 }

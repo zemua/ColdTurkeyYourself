@@ -6,6 +6,7 @@ import android.view.View;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.validation.ConstraintViolation;
@@ -38,6 +39,7 @@ public abstract class ViewConfigurerBuilder<REPOSITORY, VIEW extends View, IDENT
     @NotNull
     private IDENTIFIER identifier;
     private ViewDisabler viewDisabler;
+    private Function<VIEW,Boolean> conditionForNegative;
 
     public ViewConfigurerBuilder(REPOSITORY preferencias,
                                  ClickListenerConfigurerBuilder<VIEW, REPOSITORY, IDENTIFIER> clickListenerFactoryBuilder,
@@ -82,6 +84,11 @@ public abstract class ViewConfigurerBuilder<REPOSITORY, VIEW extends View, IDENT
         return this;
     }
 
+    public ViewConfigurerBuilder<REPOSITORY, VIEW, IDENTIFIER> conditionForNegative(Function<VIEW,Boolean> conditionForNegative) {
+        this.conditionForNegative = conditionForNegative;
+        return this;
+    }
+
     public UiViewConfigurer<VIEW, IDENTIFIER> configure() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
@@ -101,7 +108,8 @@ public abstract class ViewConfigurerBuilder<REPOSITORY, VIEW extends View, IDENT
                 identifier,
                 requiredFalseEnablers,
                 requiredTrueEnablers,
-                viewDisabler);
+                viewDisabler,
+                conditionForNegative);
     }
 
     private void throwViolationsError(Set<ConstraintViolation<ViewConfigurerBuilder>> violations) {
@@ -124,6 +132,7 @@ public abstract class ViewConfigurerBuilder<REPOSITORY, VIEW extends View, IDENT
                                                                            IDENTIFIER identifier,
                                                                            List<Supplier<Boolean>> requiredFalseEnablers,
                                                                            List<Supplier<Boolean>> requiredTrueEnablers,
-                                                                           ViewDisabler viewDisabler);
+                                                                           ViewDisabler viewDisabler,
+                                                                           Function<VIEW,Boolean> conditionForNegative);
 
 }
