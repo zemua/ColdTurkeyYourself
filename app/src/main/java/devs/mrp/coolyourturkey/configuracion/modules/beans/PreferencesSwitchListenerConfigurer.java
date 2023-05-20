@@ -61,7 +61,6 @@ public class PreferencesSwitchListenerConfigurer extends ClickListenerConfigurer
     protected void doOnPositiveAction(Switch aSwitch, PreferencesBooleanEnum identifier) {
         boolean positivePosition = positivePosition(aSwitch);
         preferencias.setBoolean(identifier, positivePosition);
-        aSwitch.setChecked(positivePosition);
         doOnChangeAction.run();
     }
 

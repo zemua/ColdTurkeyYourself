@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 import android.widget.Switch;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,13 +35,9 @@ class ClickListenerConfigurerTest {
     @Mock
     Runnable doOnChangeAction;
 
-    @BeforeEach
-    void setup() {
-        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->!s.isChecked());
-    }
-
     @Test
     void testNegativeAction() {
+        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->!s.isChecked());
         View.OnClickListener result = configurer.getListener(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
         Switch aSwitch = mock(Switch.class);
         when(aSwitch.isChecked()).thenReturn(false);
@@ -66,12 +61,49 @@ class ClickListenerConfigurerTest {
 
     @Test
     void testPositiveAction() {
+        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->!s.isChecked());
         View.OnClickListener result = configurer.getListener(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
         Switch aSwitch = mock(Switch.class);
         when(aSwitch.isChecked()).thenReturn(true);
         result.onClick(aSwitch);
         verify(doOnChangeAction, times(1)).run();
         verify(preferencias, times(1)).setBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, true);
+        verify(aSwitch, times(0)).setChecked(ArgumentMatchers.anyBoolean());
+    }
+
+    @Test
+    void testInvertedNegativeAction() {
+        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->s.isChecked());
+        View.OnClickListener result = configurer.getListener(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
+        Switch aSwitch = mock(Switch.class);
+        when(aSwitch.isChecked()).thenReturn(true);
+        result.onClick(aSwitch);
+        ArgumentCaptor<Consumer<Boolean>> captor = ArgumentCaptor.forClass(Consumer.class);
+        verify(dialogWithDelayPresenter, times(1)).setListener(ArgumentMatchers.eq(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE.getValue()),captor.capture());
+        Consumer<Boolean> consumer = captor.getValue();
+        verifyNoInteractions(doOnChangeAction);
+        verifyNoInteractions(preferencias);
+        verify(aSwitch, never()).setChecked(ArgumentMatchers.anyBoolean());
+        consumer.accept(false);
+        verifyNoInteractions(doOnChangeAction);
+        verifyNoInteractions(preferencias);
+        verify(aSwitch, times(1)).setChecked(false);
+        verify(aSwitch, times(0)).setChecked(true);
+        consumer.accept(true);
+        verify(doOnChangeAction, times(1)).run();
+        verify(preferencias, times(1)).setBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, true);
+        verify(aSwitch, times(1)).setChecked(true);
+    }
+
+    @Test
+    void testInvertedPositiveAction() {
+        configurer = new PreferencesSwitchListenerConfigurer(preferencias, dialogWithDelayPresenter, doOnChangeAction, s->s.isChecked());
+        View.OnClickListener result = configurer.getListener(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE);
+        Switch aSwitch = mock(Switch.class);
+        when(aSwitch.isChecked()).thenReturn(false);
+        result.onClick(aSwitch);
+        verify(doOnChangeAction, times(1)).run();
+        verify(preferencias, times(1)).setBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, false);
         verify(aSwitch, times(0)).setChecked(ArgumentMatchers.anyBoolean());
     }
 
