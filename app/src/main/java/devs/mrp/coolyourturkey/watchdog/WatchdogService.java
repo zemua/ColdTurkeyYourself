@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.watchdog;
 
+import static java.lang.Thread.sleep;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -13,6 +15,12 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
@@ -38,14 +46,6 @@ import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import devs.mrp.coolyourturkey.watchdog.utils.Notifier;
 import devs.mrp.coolyourturkey.watchdog.utils.impl.ChangeOfDayNotifier;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.lang.Thread.sleep;
-
-import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class WatchdogService extends LifecycleService {
@@ -268,9 +268,10 @@ public class WatchdogService extends LifecycleService {
 
     private void closeUpCurrentLoopCycle(WatchDogData data) {
         // notice change positive/negative/neutral
-        if (data.getEstaNotif() != data.getUltimanotif() && data.getMisPreferencias().getAvisoCambioPositivaNegativaNeutral()) {
-            new TimeToaster(this.getApplication()).noticeChanged(data.getEstaNotif());
-        }
+        //if (data.getEstaNotif() != data.getUltimanotif() && data.getMisPreferencias().getAvisoCambioPositivaNegativaNeutral()) {
+        //    new TimeToaster(this.getApplication()).noticeChanged(data.getEstaNotif());
+        //}
+
         // update notification and data in exported files
         if (data.ifUpdated() || data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             data.setWasPausado(false);
@@ -281,6 +282,7 @@ public class WatchdogService extends LifecycleService {
             data.setUltimaNotif(data.getEstaNotif());
             data.setUpdated(false);
         }
+
         // check if we need to block
         data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
@@ -294,6 +296,7 @@ public class WatchdogService extends LifecycleService {
                 }
             }
         });
+
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
         // decrease points for not going to sleep
         if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
