@@ -56,13 +56,13 @@ dependencies {
     implementation 'javax.el:javax.el-api:2.2.4'
     implementation 'org.glassfish.web:javax.el:2.2.4'
 
-    // (Required) Writing and executing Unit Tests on the JUnit Platform
+    // Testing (Required) Writing and executing Unit Tests on the JUnit Platform
     testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 
-    // (Optional) If you need "Parameterized Tests"
+    // Testing (Optional) If you need "Parameterized Tests"
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
 
     // Room components

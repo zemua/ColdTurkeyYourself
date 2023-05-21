@@ -11,14 +11,13 @@ import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertDialog> {
 
@@ -100,7 +99,7 @@ public class DialogWithDelay extends DialogFragment implements Feedbacker<AlertD
                     .setNegativeButton(R.string.rechazar, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            DialogWithDelay.this.sendResult(Activity.RESULT_CANCELED, false);
+                            // same behavior as onDismiss(), and both will be called, prevent double-execution
                         }
                     })
                     .create();
