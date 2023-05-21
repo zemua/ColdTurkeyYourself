@@ -56,6 +56,7 @@ public class PositiveAction extends AbstractHandler{
         }
     }
 
+    // TODO decouple point handling from action handling
     private void keepPoints(WatchDogData data) {
         if (data.getUltimoContador() != null) {
             data.setTiempoAcumulado(data.getUltimoContador().getAcumulado());

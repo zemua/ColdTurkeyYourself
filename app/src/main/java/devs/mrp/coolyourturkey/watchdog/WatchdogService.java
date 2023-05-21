@@ -283,6 +283,7 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
 
+        // TODO remove
         // check if we need to block
         data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
@@ -298,6 +299,8 @@ public class WatchdogService extends LifecycleService {
         });
 
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
+
+        // TODO remove
         // decrease points for not going to sleep
         if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             if (data.getEstaNotif() != ForegroundAppChecker.NEGATIVO) { // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here

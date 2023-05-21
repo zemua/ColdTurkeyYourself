@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.watchdog.actionchain;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -153,16 +152,14 @@ class PositiveActionTest {
     void testToqueDeQuedaDecrease() {
         when(ultimoContador.getAcumulado()).thenReturn(456L);
         when(toqueDeQuedaHandler.isToqueDeQueda()).thenReturn(true);
-        when(misPreferencias.getBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE.getDefaultState())).thenReturn(false);
-        when(misPreferencias.getBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM.getDefaultState())).thenReturn(true);
+        when(misPreferencias.getBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE.getDefaultState())).thenReturn(true);
 
         positiveAction.handle(data);
 
-        verify(data, times(1)).setTiempoAcumulado(456L);
-        verify(timePusher, times(0)).push(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong());
+        verify(data, times(1)).setTiempoAcumulado(456L - (321L*4));
+        verify(timePusher, times(1)).push(987L, 456L - (321L*4));
         verify(timeLogHandler, times(1)).insertTimeGoodApp("some package", 321L);
         verify(data, times(1)).setNeedToBlock(false);
-        fail("not properly tested");
     }
 
     private class WatchDogDataTest extends WatchDogData {
