@@ -22,6 +22,14 @@ public class WatchDogData {
         return this.mService;
     }
 
+    private boolean needToBlock = false;
+    public boolean isNeedToBlock() {
+        return needToBlock;
+    }
+    public void setNeedToBlock(boolean needToBlock) {
+        this.needToBlock = needToBlock;
+    }
+
     private ForegroundAppChecker lchecker;
     public WatchDogData setForegroundAppChecker(ForegroundAppChecker checker){
         this.lchecker = checker;
