@@ -95,7 +95,8 @@ public class WatchdogService extends LifecycleService {
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
                 .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
                 .setConditionChecker(ConditionCheckerFactory.getConditionChecker(this.getApplication(), this))
-                .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this));
+                .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this))
+                .setElementAndGroupFacade(elementAndGroupFacade);
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -285,7 +286,7 @@ public class WatchdogService extends LifecycleService {
 
         // TODO remove
         // check if we need to block
-        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
+        /*data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
                     && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0
                         || data.getToqueDeQuedaHandler().isToqueDeQueda()
@@ -296,17 +297,17 @@ public class WatchdogService extends LifecycleService {
                     });
                 }
             }
-        });
+        });*/
 
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
 
         // TODO remove
         // decrease points for not going to sleep
-        if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
+        /*if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             if (data.getEstaNotif() != ForegroundAppChecker.NEGATIVO) { // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
                 negativeDecreaseCounter();
             }
-        }
+        } */
     }
 
     private void actualizaNotificacion(Notification n) {

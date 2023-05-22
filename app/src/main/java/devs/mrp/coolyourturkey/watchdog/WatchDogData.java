@@ -6,6 +6,7 @@ import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.contador.Contador;
+import devs.mrp.coolyourturkey.databaseroom.grupo.ElementAndGroupFacade;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ChangeChecker;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionCheckerCommander;
 import devs.mrp.coolyourturkey.grupos.packagemapper.PackageConditionsChecker;
@@ -26,8 +27,9 @@ public class WatchDogData {
     public boolean isNeedToBlock() {
         return needToBlock;
     }
-    public void setNeedToBlock(boolean needToBlock) {
+    public WatchDogData setNeedToBlock(boolean needToBlock) {
         this.needToBlock = needToBlock;
+        return this;
     }
 
     private ForegroundAppChecker lchecker;
@@ -289,5 +291,14 @@ public class WatchDogData {
     }
     public PackageConditionsChecker getPackageConditionsChecker() {
         return this.packageConditionsChecker;
+    }
+
+    private ElementAndGroupFacade elementAndGroupFacade;
+    public ElementAndGroupFacade getElementAndGroupFacade() {
+        return elementAndGroupFacade;
+    }
+    public WatchDogData setElementAndGroupFacade(ElementAndGroupFacade elementAndGroupFacade) {
+        this.elementAndGroupFacade = elementAndGroupFacade;
+        return this;
     }
 }
