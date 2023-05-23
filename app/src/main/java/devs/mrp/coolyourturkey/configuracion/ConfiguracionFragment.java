@@ -366,10 +366,7 @@ public class ConfiguracionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int p = mMisPreferencias.getProporcionTrabajoOcio();
-                if (p > 4) {
-                    mMisPreferencias.setProporcionTrabajoOcio(p - 1);
-                    mTextoProporcion.setText(String.valueOf(p - 1));
-                } else if (p > 1) {
+                if (p > 1) {
                     muestraDialogoMolesto(getActivity().getSupportFragmentManager(),
                             REQUEST_CODE_MENOS_PROPORCION,
                             mContext.getString(R.string.dialogo_titulo_reducir_proporcion),
