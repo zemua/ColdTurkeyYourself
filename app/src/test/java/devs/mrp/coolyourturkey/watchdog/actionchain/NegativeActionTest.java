@@ -218,7 +218,6 @@ class NegativeActionTest {
     @Test
     void testConditionsNotMetButPreventBlocking() throws Exception {
         when(ultimoContador.getAcumulado()).thenReturn(99456L);
-        when(toqueDeQuedaHandler.isToqueDeQueda()).thenReturn(false);
         ArgumentCaptor<Consumer<Boolean>> logCaptor = ArgumentCaptor.forClass(Consumer.class);
         ArgumentCaptor<Consumer<Boolean>> preventCloseCaptor = ArgumentCaptor.forClass(Consumer.class);
         when(misPreferencias.getMilisToast()).thenReturn(50L);
