@@ -4,6 +4,7 @@ import android.util.Log;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
+import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
 import devs.mrp.coolyourturkey.watchdog.ForegroundAppChecker;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
 
@@ -71,12 +72,17 @@ public class NegativeAction extends AbstractHandler{
     private void onPreventClose(WatchDogData data, boolean isPreventClose) {
         if (isPreventClose) {
             data.setNeedToBlock(false);
-        } else if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
+        } else if (shallBlockOnToqueDeQueda(data)) {
             data.setNeedToBlock(true);
             block(data);
         } else {
             data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> onAllConditionsMet(data, areMet));
         }
+    }
+
+    private boolean shallBlockOnToqueDeQueda(WatchDogData data) {
+        return data.getToqueDeQuedaHandler().isToqueDeQueda() &&
+                data.getMisPreferencias().getBoolean(PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK, true);
     }
 
     private void onAllConditionsMet(WatchDogData data, boolean isConditionsMet) {
