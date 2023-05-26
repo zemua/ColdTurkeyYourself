@@ -28,19 +28,15 @@ public class NegativeAction extends AbstractHandler{
     protected void handle(WatchDogData data) {
         data.setEstaNotif(ForegroundAppChecker.NEGATIVO);
         pointsUpdater.decreasePoints(data);
-        updateNotification(data);
         logTime(data);
         sendNotice(data);
         actOnConditions(data);
+        updateNotification(data); // this at the end as it needs the processed data
     }
 
     private void updateNotification(WatchDogData data) {
-        if (data.getEstaNotif() != data.getUltimanotif() || !data.getUltimoNombre().equals(data.getPackageName()) || Math.abs(data.getTiempoAcumulado() - data.getUltimoAcumulado()) > data.getTimeDifferenceToUpdate() || data.getWasPausado() || data.getToqueDeQuedaHandler().isToqueDeQueda()) {
-            data.setNotification(data.getWatchDogHandler().getNotificacionNegativa(data.getPackageName(), data.getTiempoAcumulado() + data.getTiempoImportado(), data.getProporcion()));
-            data.setUpdated(true);
-        } else {
-            data.setUpdated(false);
-        }
+        data.setNotification(data.getWatchDogHandler().getNotificacionNegativa(data.getPackageName(), data.getTiempoAcumulado() + data.getTiempoImportado(), data.getProporcion()));
+        data.setUpdated(true);
     }
 
     private void logTime(WatchDogData data) {

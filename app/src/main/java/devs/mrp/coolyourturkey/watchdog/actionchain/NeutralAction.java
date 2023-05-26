@@ -24,7 +24,6 @@ public class NeutralAction extends AbstractHandler{
 
     @Override
     protected void handle(WatchDogData data) {
-        handleNotification(data);
         if (isLockdownDecrease(data)) {
             pointsUpdater.decreasePoints(data);
         } else {
@@ -32,6 +31,7 @@ public class NeutralAction extends AbstractHandler{
         }
         logTimeUsage(data);
         data.setNeedToBlock(false);
+        handleNotification(data); // this at the end as it needs the processed data
     }
 
     private void handleNotification(WatchDogData data) {

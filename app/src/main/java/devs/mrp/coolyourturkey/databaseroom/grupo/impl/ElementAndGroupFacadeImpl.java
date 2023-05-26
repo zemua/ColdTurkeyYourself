@@ -1,5 +1,8 @@
 package devs.mrp.coolyourturkey.databaseroom.grupo.impl;
 
+import android.os.Looper;
+
+import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -29,6 +32,10 @@ public class ElementAndGroupFacadeImpl implements ElementAndGroupFacade {
     @Override
     public void onPreventClosing(String appName, Consumer<Boolean> onPreventClosingConsumer) {
         LiveData<List<ElementToGroup>> elementToGroupLiveData = elementToGroupRepository.findElementOfTypeAndName(ElementType.APP, appName);
+        HandlerCompat.createAsync(Looper.getMainLooper()).post(() -> observe(onPreventClosingConsumer, elementToGroupLiveData));
+    }
+
+    private void observe(Consumer<Boolean> onPreventClosingConsumer, LiveData<List<ElementToGroup>> elementToGroupLiveData) {
         Observer<List<ElementToGroup>> elementToGroupObserver = elements -> {
             elementToGroupLiveData.removeObservers(owner);
             if (elements.size() == 0) {

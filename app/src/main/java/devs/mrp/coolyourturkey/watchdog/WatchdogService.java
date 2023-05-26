@@ -199,13 +199,11 @@ public class WatchdogService extends LifecycleService {
             int lultimanotif = ForegroundAppChecker.NULL;
             int lestanotif = ForegroundAppChecker.NULL;
             String lultimonombre = "";
-            long lultimoAcumulado = 0L;
             boolean lupdated = false;
 
             data.setUltimaNotif(lultimanotif)
                     .setEstaNotif(lestanotif)
                     .setUltimoNombre(lultimonombre)
-                    .setUltimoAcumulado(lultimoAcumulado)
                     .setUpdated(lupdated);
 
             while (getEjecuta()) {
@@ -259,7 +257,6 @@ public class WatchdogService extends LifecycleService {
         data.setPackageName(lapp.packageName);
 
         int ltipo = lapp.appType;
-        data.setTiempoAcumulado(0L);
         data.setTiempoImportado(mImporter.importarTiempoTotal());
         data.setProporcion(data.getMisPreferencias().getProporcionTrabajoOcio());
         // fire up the chain to handle positive/negative/netrual app time

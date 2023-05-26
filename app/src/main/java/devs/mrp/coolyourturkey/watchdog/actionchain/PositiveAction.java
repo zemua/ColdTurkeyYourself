@@ -23,8 +23,6 @@ public class PositiveAction extends AbstractHandler{
 
     @Override
     protected void handle(WatchDogData data) {
-        handleNotification(data);
-
         if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             handleToqueDeQueda(data);
         } else {
@@ -32,6 +30,7 @@ public class PositiveAction extends AbstractHandler{
         }
         logTime(data);
         data.setNeedToBlock(false);
+        handleNotification(data); // this at the end as it needs the processed data
     }
 
     private void handleNotification(WatchDogData data) {
