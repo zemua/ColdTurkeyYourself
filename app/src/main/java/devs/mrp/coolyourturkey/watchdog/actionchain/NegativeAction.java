@@ -12,6 +12,10 @@ public class NegativeAction extends AbstractHandler{
 
     private static final String TAG = NegativeAction.class.getSimpleName();
 
+    public NegativeAction(PointsUpdater pointsUpdater) {
+        super(pointsUpdater);
+    }
+
     @Override
     protected boolean canHandle(int tipo){
         if (tipo == ForegroundAppChecker.NEGATIVO) {
@@ -23,19 +27,11 @@ public class NegativeAction extends AbstractHandler{
     @Override
     protected void handle(WatchDogData data) {
         data.setEstaNotif(ForegroundAppChecker.NEGATIVO);
-        discountTime(data);
+        pointsUpdater.decreasePoints(data);
         updateNotification(data);
-        data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
         logTime(data);
         sendNotice(data);
-        actOnConditions(data); // TODO decouple together with neutral and positive
-    }
-
-    private void discountTime(WatchDogData data) {
-        if (data.getUltimoContador() != null) {
-            long lproporcionMilisTranscurridos = data.getMilisTranscurridos() * data.getProporcion();
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado() - lproporcionMilisTranscurridos);
-        }
+        actOnConditions(data);
     }
 
     private void updateNotification(WatchDogData data) {

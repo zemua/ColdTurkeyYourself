@@ -23,6 +23,7 @@ import devs.mrp.coolyourturkey.watchdog.TimePusher;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
 import devs.mrp.coolyourturkey.watchdog.WatchdogHandler;
 import devs.mrp.coolyourturkey.watchdog.WatchdogService;
+import devs.mrp.coolyourturkey.watchdog.actionchain.impl.PointsUpdaterImpl;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +50,7 @@ class NeutralActionTest {
 
     @BeforeEach
     void setup() {
-        neutralAction = new NeutralAction();
+        neutralAction = new NeutralAction(new PointsUpdaterImpl());
 
         data.setTimePusher(timePusher);
         data.setTimeLogHandler(timeLogHandler);

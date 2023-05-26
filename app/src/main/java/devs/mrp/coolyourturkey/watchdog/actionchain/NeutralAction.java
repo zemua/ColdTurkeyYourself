@@ -10,6 +10,10 @@ public class NeutralAction extends AbstractHandler{
 
     private static final String TAG = NeutralAction.class.getSimpleName();
 
+    public NeutralAction(PointsUpdater pointsUpdater) {
+        super(pointsUpdater);
+    }
+
     @Override
     protected boolean canHandle(int tipo) {
         if (tipo == ForegroundAppChecker.NEUTRO) {
@@ -22,9 +26,9 @@ public class NeutralAction extends AbstractHandler{
     protected void handle(WatchDogData data) {
         handleNotification(data);
         if (isLockdownDecrease(data)) {
-            decreasePoints(data);
+            pointsUpdater.decreasePoints(data);
         } else {
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado());
+            pointsUpdater.keepPoints(data);
         }
         logTimeUsage(data);
         data.setNeedToBlock(false);
@@ -52,14 +56,6 @@ public class NeutralAction extends AbstractHandler{
         return data.getToqueDeQuedaHandler().isToqueDeQueda() &&
                 data.getMisPreferencias().getBoolean(PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE,
                         PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE.getDefaultState());
-    }
-
-    private void decreasePoints(WatchDogData data) {
-        if (data.getUltimoContador() != null) {
-            long lproporcionMilisTranscurridos = Math.abs(data.getMilisTranscurridos() * data.getProporcion());
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado() - lproporcionMilisTranscurridos);
-            data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
-        }
     }
 
     private void logTimeUsage(WatchDogData data) {

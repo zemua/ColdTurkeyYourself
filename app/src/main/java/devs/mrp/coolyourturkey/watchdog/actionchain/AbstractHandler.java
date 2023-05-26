@@ -1,12 +1,15 @@
 package devs.mrp.coolyourturkey.watchdog.actionchain;
 
-import devs.mrp.coolyourturkey.watchdog.ForegroundAppChecker;
-import devs.mrp.coolyourturkey.watchdog.TimeToaster;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
 
 public abstract class AbstractHandler {
 
     protected AbstractHandler mNextHandler;
+    protected PointsUpdater pointsUpdater;
+
+    public AbstractHandler(PointsUpdater pointsUpdater) {
+        this.pointsUpdater = pointsUpdater;
+    }
 
     public void setNextHandler(AbstractHandler handler) {
         mNextHandler = handler;

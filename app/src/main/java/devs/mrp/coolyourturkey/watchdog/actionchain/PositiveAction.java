@@ -9,6 +9,10 @@ public class PositiveAction extends AbstractHandler{
 
     private static final String TAG = PositiveAction.class.getSimpleName();
 
+    public PositiveAction(PointsUpdater pointsUpdater) {
+        super(pointsUpdater);
+    }
+
     @Override
     protected boolean canHandle(int tipo) {
         if (tipo == ForegroundAppChecker.POSITIVO) {
@@ -40,45 +44,23 @@ public class PositiveAction extends AbstractHandler{
 
     private void handleToqueDeQueda(WatchDogData data) {
         if (data.getMisPreferencias().getBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE.getDefaultState())) {
-            decreasePoints(data);
+            pointsUpdater.decreasePoints(data);
         } else if (data.getMisPreferencias().getBoolean(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM, PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM.getDefaultState())) {
-            keepPoints(data);
+            pointsUpdater.keepPoints(data);
         } else {
             handleAccordingToConditions(data);
-        }
-    }
-
-    private void decreasePoints(WatchDogData data) {
-        if (data.getUltimoContador() != null) {
-            long lproporcionMilisTranscurridos = Math.abs(data.getMilisTranscurridos() * data.getProporcion());
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado() - lproporcionMilisTranscurridos);
-            data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
-        }
-    }
-
-    // TODO decouple point handling from action handling
-    private void keepPoints(WatchDogData data) {
-        if (data.getUltimoContador() != null) {
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado());
         }
     }
 
     private void handleAccordingToConditions(WatchDogData data) {
         data.getTimeLogHandler().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (areMet) {
-                increasePoints(data);
+                pointsUpdater.increasePoints(data);
             } else {
-                keepPoints(data);
+                pointsUpdater.keepPoints(data);
                 data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.conditions_not_met));
             }
         });
-    }
-
-    private void increasePoints(WatchDogData data) {
-        if (data.getUltimoContador() != null) {
-            data.setTiempoAcumulado(data.getUltimoContador().getAcumulado() + data.getMilisTranscurridos());
-            data.getTimePusher().push(data.getNow(), data.getTiempoAcumulado());
-        }
     }
 
     private void logTime(WatchDogData data) {

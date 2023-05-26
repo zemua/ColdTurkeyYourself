@@ -261,19 +261,12 @@ public class WatchdogService extends LifecycleService {
         int ltipo = lapp.appType;
         data.setTiempoAcumulado(0L);
         data.setTiempoImportado(mImporter.importarTiempoTotal());
-        //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
         data.setProporcion(data.getMisPreferencias().getProporcionTrabajoOcio());
         // fire up the chain to handle positive/negative/netrual app time
         actionRequestor.receiveRequest(ltipo, data);
     }
 
     private void closeUpCurrentLoopCycle(WatchDogData data) {
-        // notice change positive/negative/neutral
-        //if (data.getEstaNotif() != data.getUltimanotif() && data.getMisPreferencias().getAvisoCambioPositivaNegativaNeutral()) {
-        //    new TimeToaster(this.getApplication()).noticeChanged(data.getEstaNotif());
-        //}
-
-        // update notification and data in exported files
         if (data.ifUpdated() || data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             data.setWasPausado(false);
             mExporter.export(data.getTiempoAcumulado());
@@ -284,30 +277,7 @@ public class WatchdogService extends LifecycleService {
             data.setUpdated(false);
         }
 
-        // TODO remove
-        // check if we need to block
-        /*data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
-            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
-                    && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0
-                        || data.getToqueDeQuedaHandler().isToqueDeQueda()
-                        || !areMet))) {
-                if (PermisosChecker.checkPermisoAlertas(this)) {
-                    elementAndGroupFacade.onPreventClosing(data.getPackageName(), preventClose -> {
-                        if (!preventClose) {data.getScreenBlock().go();}
-                    });
-                }
-            }
-        });*/
-
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
-
-        // TODO remove
-        // decrease points for not going to sleep
-        /*if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
-            if (data.getEstaNotif() != ForegroundAppChecker.NEGATIVO) { // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
-                negativeDecreaseCounter();
-            }
-        } */
     }
 
     private void actualizaNotificacion(Notification n) {
@@ -326,7 +296,6 @@ public class WatchdogService extends LifecycleService {
     public void onDestroy() {
         super.onDestroy();
         flagsOff();
-        //mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
     }
 
     private void setEjecuta(boolean e) {
@@ -372,18 +341,5 @@ public class WatchdogService extends LifecycleService {
     public IBinder onBind(Intent intent) {
         super.onBind(intent);
         return binder;
-    }
-
-    private void negativeDecreaseCounter(){
-        long lproporcionMilisTranscurridos = mData.getMilisTranscurridos() * mData.getProporcion();
-        long lacumula = mData.getUltimoContador().getAcumulado() - lproporcionMilisTranscurridos;
-        mData.getTimePusher().push(mData.getNow(), lacumula);
-    }
-
-    private void positiveIncreaseCounter() {
-        if (!mData.getToqueDeQuedaHandler().isToqueDeQueda()) {
-            long lacumula = mData.getUltimoContador().getAcumulado() + mData.getMilisTranscurridos();
-            mData.getTimePusher().push(mData.getNow(), lacumula);
-        }
     }
 }
