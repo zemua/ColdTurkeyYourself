@@ -53,6 +53,7 @@ class ViewConfigurerBuilderTest {
     void configureCorreclty() {
         when(clickListenerFactoryBuilder.dialogWithDelayPresenter(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.preferencias(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
+        when(clickListenerFactoryBuilder.conditionForNegative(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.onStateChangeAction(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.build()).thenReturn(clickListenerFactory);
         when(clickListenerFactory.getListener(PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)).thenReturn(aView -> {targetSwitch.setEnabled(false);});
@@ -75,6 +76,7 @@ class ViewConfigurerBuilderTest {
     void misconfiguredDisabler() {
         when(clickListenerFactoryBuilder.dialogWithDelayPresenter(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.preferencias(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
+        when(clickListenerFactoryBuilder.conditionForNegative(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.onStateChangeAction(ArgumentMatchers.any())).thenReturn(clickListenerFactoryBuilder);
         when(clickListenerFactoryBuilder.build()).thenReturn(clickListenerFactory);
         when(clickListenerFactory.getListener(PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)).thenReturn(aView -> {targetSwitch.setEnabled(false);});
