@@ -25,20 +25,28 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogDelayer;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
 import devs.mrp.coolyourturkey.comun.TimePickerFragment;
 import devs.mrp.coolyourturkey.comun.UriUtils;
+import devs.mrp.coolyourturkey.comun.ViewDisabler;
+import devs.mrp.coolyourturkey.comun.ViewDisablerSupplier;
+import devs.mrp.coolyourturkey.configuracion.modules.builder.PreferencesSwitchBuilderProvider;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapViewModel;
 import devs.mrp.coolyourturkey.watchdog.Exporter;
 
-import java.util.List;
-import java.util.Optional;
-
+@AndroidEntryPoint
 public class ConfiguracionFragment extends Fragment {
 
     private static String TAG = "CONFIGURACION FRAGMENT";
@@ -64,6 +72,13 @@ public class ConfiguracionFragment extends Fragment {
     public static String IMPORT_TXT_YES_NO_KEY = "import txt currently or not";
     public static String TRUE = "true";
     public static String FALSE = "false";
+
+    @Inject
+    PreferencesSwitchBuilderProvider preferencesSwitchBuilderProvider;
+    @Inject
+    ViewDisablerSupplier viewDisablerSupplier;
+
+    private ViewDisabler viewDisabler;
 
     private Context mContext;
     ColorStateList oldColors;
@@ -142,6 +157,8 @@ public class ConfiguracionFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        viewDisabler = viewDisablerSupplier.get();
+
         View v = inflater.inflate(R.layout.fragment_configuracion, container, false);
         mShareSwitch = (Switch) v.findViewById(R.id.config_switch_share_time);
         mShareButton = (Button) v.findViewById(R.id.config_button_share_time);
@@ -180,6 +197,48 @@ public class ConfiguracionFragment extends Fragment {
         mButtonNotifyChangeOfDayMinus = (Button) v.findViewById(R.id.minusWarnChangeOfDay);
         mButtonNotifyChangeOfDayPlus = (Button) v.findViewById(R.id.plusWarnChangeOfDay);
         mTextNotifyChangeOfDayMinutes = (TextView) v.findViewById(R.id.textWarnHourChangeOfDay);
+
+        Optional<Switch> decreasePositiveSwitch = preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DECREASE)
+                .viewResourceId(R.id.decreasePositiveLockdown)
+                .actionOnStateChange(() -> viewDisabler.evaluateConditions())
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
+                .configure()
+                .buildElement();
+
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK)
+                .viewResourceId(R.id.closeNegativeLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
+                .configure()
+                .buildElement();
+
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_NEUTRAL_DECREASE)
+                .viewResourceId(R.id.decreaseNeutralLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .conditionForNegative(s -> !s.isChecked())
+                .configure()
+                .buildElement();
+
+        preferencesSwitchBuilderProvider.get()
+                .parentElement(v)
+                .repositoryIdentifier(PreferencesBooleanEnum.LOCKDOWN_POSITIVE_DONT_SUM)
+                .viewResourceId(R.id.dontSumPositiveLockdown)
+                .viewDisabler(viewDisabler)
+                .addRequiredTrueEnablers(() -> mSwitchActivaToqueDeQueda.isChecked())
+                .addRequiredTrueEnablers(() -> decreasePositiveSwitch.map(s -> !s.isChecked()).orElse(true))
+                .conditionForNegative(s -> !s.isChecked())
+                .configure()
+                .buildElement();
 
         LiveData<List<ValueMap>> lvalueExport = mValueMapViewModel.getValueOf(EXPORT_TXT_VALUE_MAP_KEY);
         lvalueExport.observe(getViewLifecycleOwner(), new Observer<List<ValueMap>>() {
@@ -307,10 +366,7 @@ public class ConfiguracionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int p = mMisPreferencias.getProporcionTrabajoOcio();
-                if (p > 4) {
-                    mMisPreferencias.setProporcionTrabajoOcio(p - 1);
-                    mTextoProporcion.setText(String.valueOf(p - 1));
-                } else if (p > 1) {
+                if (p > 1) {
                     muestraDialogoMolesto(getActivity().getSupportFragmentManager(),
                             REQUEST_CODE_MENOS_PROPORCION,
                             mContext.getString(R.string.dialogo_titulo_reducir_proporcion),
@@ -497,6 +553,7 @@ public class ConfiguracionFragment extends Fragment {
                     mSwitchAvisoToqueDeQueda.setEnabled(true);
                     mSwitchActivaToqueDeQueda.setText(R.string.activado);
                     mMisPreferencias.setActivaToqueDeQuedaSiNo(true);
+                    viewDisabler.evaluateConditions();
                 }
             }
         });
@@ -604,6 +661,7 @@ public class ConfiguracionFragment extends Fragment {
             }
         });
 
+        viewDisabler.evaluateConditions();
         return v;
     }
 
@@ -704,6 +762,7 @@ public class ConfiguracionFragment extends Fragment {
                 mSwitchActivaToqueDeQueda.setText(R.string.desactivado);
                 mMisPreferencias.setActivaToqueDeQuedaSiNo(false);
                 mSwitchAvisoToqueDeQueda.setEnabled(false);
+                viewDisabler.evaluateConditions();
             }
         }
         if (mDialogDelayer != null) {

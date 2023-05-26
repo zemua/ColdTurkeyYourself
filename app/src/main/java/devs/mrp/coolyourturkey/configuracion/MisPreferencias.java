@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.Settings;
-import android.util.Log;
-
-import devs.mrp.coolyourturkey.R;
 
 import java.util.Formatter;
+
+import devs.mrp.coolyourturkey.R;
 
 public class MisPreferencias {
 
@@ -39,7 +38,7 @@ public class MisPreferencias {
     private static final String RANDOM_CHECK_TIMESTAMP = "random.check.time.stamp";
 
     Context mContext;
-    private static SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences;
 
     public MisPreferencias(Context context) {
         mContext = context;
@@ -51,6 +50,18 @@ public class MisPreferencias {
         }
         return mSharedPreferences;
     }
+
+    public void setBoolean(PreferencesBooleanEnum property, Boolean value) {
+        SharedPreferences.Editor e = getSharedPreferences().edit();
+        e.putBoolean(property.getValue(), value);
+        e.apply();
+    }
+
+    public Boolean getBoolean(PreferencesBooleanEnum property, Boolean def) {
+        return getSharedPreferences().getBoolean(property.getValue(), def);
+    }
+
+    // TODO decouple to composition all set/get specific implementations
 
     public void setExport(boolean b) {
         SharedPreferences.Editor e = getSharedPreferences().edit();

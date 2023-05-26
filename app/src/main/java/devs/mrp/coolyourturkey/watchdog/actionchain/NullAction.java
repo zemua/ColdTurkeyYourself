@@ -4,6 +4,10 @@ import devs.mrp.coolyourturkey.watchdog.ForegroundAppChecker;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
 
 public class NullAction extends AbstractHandler{
+    public NullAction(PointsUpdater pointsUpdater) {
+        super(pointsUpdater);
+    }
+
     @Override
     protected boolean canHandle(int tipo) {
         if (tipo == ForegroundAppChecker.NULL) {
@@ -15,7 +19,7 @@ public class NullAction extends AbstractHandler{
     @Override
     protected void handle(WatchDogData data) {
         data.setEstaNotif(ForegroundAppChecker.NULL);
-        data.setTiempoAcumulado(data.getUltimoContador().getAcumulado());
+        pointsUpdater.keepPoints(data);
         if (data.getEstaNotif() != data.getUltimanotif() || !data.getUltimoNombre().equals(data.getPackageName()) || Math.abs(data.getTiempoAcumulado() - data.getUltimoAcumulado()) > data.getTimeDifferenceToUpdate() || data.getWasPausado()) {
             data.setNotification(data.getWatchDogHandler().getNotificacionNeutra(data.getPackageName(), data.getTiempoAcumulado() + data.getTiempoImportado(), data.getProporcion()));
             data.setUpdated(true);

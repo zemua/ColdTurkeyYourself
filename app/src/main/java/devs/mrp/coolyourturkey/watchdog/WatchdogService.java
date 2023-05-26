@@ -1,5 +1,7 @@
 package devs.mrp.coolyourturkey.watchdog;
 
+import static java.lang.Thread.sleep;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -13,6 +15,12 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
@@ -38,14 +46,6 @@ import devs.mrp.coolyourturkey.watchdog.checkscheduling.CheckManager;
 import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 import devs.mrp.coolyourturkey.watchdog.utils.Notifier;
 import devs.mrp.coolyourturkey.watchdog.utils.impl.ChangeOfDayNotifier;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.lang.Thread.sleep;
-
-import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class WatchdogService extends LifecycleService {
@@ -95,7 +95,8 @@ public class WatchdogService extends LifecycleService {
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
                 .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
                 .setConditionChecker(ConditionCheckerFactory.getConditionChecker(this.getApplication(), this))
-                .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this));
+                .setPackageConditionsChecker(PackageConditionsCheckerFactory.get(this.getApplication(), this))
+                .setElementAndGroupFacade(elementAndGroupFacade);
 
         if (ejecutor == null) {
             ejecutor = new SingleExecutor();
@@ -198,13 +199,11 @@ public class WatchdogService extends LifecycleService {
             int lultimanotif = ForegroundAppChecker.NULL;
             int lestanotif = ForegroundAppChecker.NULL;
             String lultimonombre = "";
-            long lultimoAcumulado = 0L;
             boolean lupdated = false;
 
             data.setUltimaNotif(lultimanotif)
                     .setEstaNotif(lestanotif)
                     .setUltimoNombre(lultimonombre)
-                    .setUltimoAcumulado(lultimoAcumulado)
                     .setUpdated(lupdated);
 
             while (getEjecuta()) {
@@ -258,20 +257,13 @@ public class WatchdogService extends LifecycleService {
         data.setPackageName(lapp.packageName);
 
         int ltipo = lapp.appType;
-        data.setTiempoAcumulado(0L);
         data.setTiempoImportado(mImporter.importarTiempoTotal());
-        //Log.d(TAG, "tiempo importado: " + String.valueOf(mTiempoImportado));
         data.setProporcion(data.getMisPreferencias().getProporcionTrabajoOcio());
         // fire up the chain to handle positive/negative/netrual app time
         actionRequestor.receiveRequest(ltipo, data);
     }
 
     private void closeUpCurrentLoopCycle(WatchDogData data) {
-        // notice change positive/negative/neutral
-        if (data.getEstaNotif() != data.getUltimanotif() && data.getMisPreferencias().getAvisoCambioPositivaNegativaNeutral()) {
-            new TimeToaster(this.getApplication()).noticeChanged(data.getEstaNotif());
-        }
-        // update notification and data in exported files
         if (data.ifUpdated() || data.getToqueDeQuedaHandler().isToqueDeQueda()) {
             data.setWasPausado(false);
             mExporter.export(data.getTiempoAcumulado());
@@ -281,26 +273,8 @@ public class WatchdogService extends LifecycleService {
             data.setUltimaNotif(data.getEstaNotif());
             data.setUpdated(false);
         }
-        // check if we need to block
-        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
-            if (((data.getEstaNotif() == ForegroundAppChecker.NEGATIVO)
-                    && (data.getTiempoAcumulado() + data.getTiempoImportado() <= 0
-                        || data.getToqueDeQuedaHandler().isToqueDeQueda()
-                        || !areMet))) {
-                if (PermisosChecker.checkPermisoAlertas(this)) {
-                    elementAndGroupFacade.onPreventClosing(data.getPackageName(), preventClose -> {
-                        if (!preventClose) {data.getScreenBlock().go();}
-                    });
-                }
-            }
-        });
+
         data.getToqueDeQuedaHandler().avisar(); // notice for all kind of apps positive/negative/neutral
-        // decrease points for not going to sleep
-        if (data.getToqueDeQuedaHandler().isToqueDeQueda()) {
-            if (data.getEstaNotif() != ForegroundAppChecker.NEGATIVO) { // if negative it is blocked + decreased before, if not and toque-de-queda true, it decreases points here
-                negativeDecreaseCounter();
-            }
-        }
     }
 
     private void actualizaNotificacion(Notification n) {
@@ -319,7 +293,6 @@ public class WatchdogService extends LifecycleService {
     public void onDestroy() {
         super.onDestroy();
         flagsOff();
-        //mData.getWatchDogHandler().unregisterOnOffBroadcast(this);
     }
 
     private void setEjecuta(boolean e) {
@@ -365,18 +338,5 @@ public class WatchdogService extends LifecycleService {
     public IBinder onBind(Intent intent) {
         super.onBind(intent);
         return binder;
-    }
-
-    private void negativeDecreaseCounter(){
-        long lproporcionMilisTranscurridos = mData.getMilisTranscurridos() * mData.getProporcion();
-        long lacumula = mData.getUltimoContador().getAcumulado() - lproporcionMilisTranscurridos;
-        mData.getTimePusher().push(mData.getNow(), lacumula);
-    }
-
-    private void positiveIncreaseCounter() {
-        if (!mData.getToqueDeQuedaHandler().isToqueDeQueda()) {
-            long lacumula = mData.getUltimoContador().getAcumulado() + mData.getMilisTranscurridos();
-            mData.getTimePusher().push(mData.getNow(), lacumula);
-        }
     }
 }
