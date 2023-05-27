@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.comun.GenericTimedToaster;
 import devs.mrp.coolyourturkey.comun.MyBeanFactory;
+import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.comun.SingleExecutor;
 import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
@@ -71,6 +72,12 @@ public class WatchdogService extends LifecycleService {
     @Inject
     ElementAndGroupFacade elementAndGroupFacade;
 
+    @Inject
+    MisPreferencias misPreferencias;
+
+    @Inject
+    Notificador notificador;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -90,7 +97,7 @@ public class WatchdogService extends LifecycleService {
                 .setWasPausado(true)
                 .setTiempoImportado(0L)
                 .setScreenBlock(new ScreenBlock(this, this.getApplication()))
-                .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this))
+                .setToquedeQuedaHandler(new ToqueDeQuedaHandler(this, misPreferencias, notificador))
                 .setMisPreferencias(new MisPreferencias(this))
                 .setConditionToaster(new GenericTimedToaster(this.getApplication()))
                 .setChangeNotificationChecker(ChangeCheckerFactory.getChangeNotifier(this.getApplication(), this))
@@ -102,7 +109,7 @@ public class WatchdogService extends LifecycleService {
             ejecutor = new SingleExecutor();
         }
         setEjecuta(true);
-        mData.setWatchDogHandler(new WatchdogHandler(this));
+        mData.setWatchDogHandler(new WatchdogHandler(this, misPreferencias, notificador));
 
         mData.setNotification(mData.getWatchDogHandler().getNotificacionReposo());
 

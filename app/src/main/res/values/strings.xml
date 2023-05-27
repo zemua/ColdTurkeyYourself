@@ -213,4 +213,6 @@
     <string name="neutrales_restan">Neutrales restan</string>
     <string name="positivas_no_suman">Positivas no suman</string>
     <string name="positivas_restan">Positivas restan</string>
+    <string name="notificaciones_toque_de_queda">Notificaciones de toque de queda</string>
+    <string name="envia_avisos_toque_de_queda">Envía avisos relacionados con el toque de queda</string>
 </resources>

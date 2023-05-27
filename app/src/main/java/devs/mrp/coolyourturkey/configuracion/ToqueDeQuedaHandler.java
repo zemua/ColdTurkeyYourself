@@ -5,19 +5,24 @@ import android.icu.util.Calendar;
 
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.MilisToTime;
+import devs.mrp.coolyourturkey.comun.Notificador;
 import devs.mrp.coolyourturkey.comun.ToasterComun;
 
 public class ToqueDeQuedaHandler {
 
     private static long lastAviso = 0L;
     private static long tiempoEntreAvisos = 1000L * 60L; // 1 minuto
+    private static final String ID_NOTIFICATION_CHANNEL = ToqueDeQuedaHandler.class.getSimpleName();
+    private static final int ID_NOTIFICATION = 273945;
 
-    Context mContext;
-    MisPreferencias mMisPreferencias;
+    private Context mContext;
+    private MisPreferencias mMisPreferencias;
+    private Notificador notificador;
 
-    public ToqueDeQuedaHandler(Context context) {
-        mContext = context;
-        mMisPreferencias = new MisPreferencias(context);
+    public ToqueDeQuedaHandler(Context context, MisPreferencias misPreferencias, Notificador notificador) {
+        this.mContext = context;
+        this.mMisPreferencias = misPreferencias;
+        this.notificador = notificador;
     }
 
     private boolean getCase(long dormir, long despertar, long ahora){
@@ -106,16 +111,38 @@ public class ToqueDeQuedaHandler {
                 ToasterComun.LARGO);
     }
 
+    private void notifyPreToque(int minutos) {
+        notificador.createNotificationChannel(R.string.notificaciones_toque_de_queda,
+                R.string.envia_avisos_toque_de_queda,
+                ToqueDeQuedaHandler.ID_NOTIFICATION_CHANNEL);
+        notificador.createNotification(R.drawable.police_badge,
+                mContext.getString(R.string.notificaciones_toque_de_queda),
+                String.valueOf(minutos).concat(" ").concat(mContext.getString(R.string.minutos_para_toque_de_queda)),
+                ToqueDeQuedaHandler.ID_NOTIFICATION_CHANNEL,
+                ToqueDeQuedaHandler.ID_NOTIFICATION);
+    }
+
+    private void notifyEnToque() {
+        notificador.createNotificationChannel(R.string.notificaciones_toque_de_queda,
+                R.string.envia_avisos_toque_de_queda,
+                ToqueDeQuedaHandler.ID_NOTIFICATION_CHANNEL);
+        notificador.createNotification(R.drawable.police_badge,
+                mContext.getString(R.string.notificaciones_toque_de_queda),
+                mContext.getString(R.string.toque_de_queda),
+                ToqueDeQuedaHandler.ID_NOTIFICATION_CHANNEL,
+                ToqueDeQuedaHandler.ID_NOTIFICATION);
+    }
+
     public void avisar(long milisNow) {
         if (!mMisPreferencias.getAvisoToqueDeQuedaSiNo() || !mMisPreferencias.getActivaToqueDeQuedaSiNo()){
             return;
         }
         long misMilis = milisToMilis(milisNow);
         if (isToqueDeQueda(misMilis) && timeOut(milisNow)){
-            toastEnToque();
+            notifyEnToque();
             lastAviso = System.currentTimeMillis();
         } else if (isAvisoToqueDeQueda(misMilis) && timeOut(milisNow)){
-            toastPreToque(MilisToTime.getMinutos(getTiempoDormir()-misMilis).intValue());
+            notifyPreToque(MilisToTime.getMinutos(getTiempoDormir()-misMilis).intValue());
             lastAviso = System.currentTimeMillis();
         }
     }
