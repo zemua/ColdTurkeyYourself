@@ -14,20 +14,19 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
 
-import devs.mrp.coolyourturkey.MainActivity;
-import devs.mrp.coolyourturkey.R;
-import devs.mrp.coolyourturkey.comun.MilisToTime;
-import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
-import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
-import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
-import devs.mrp.coolyourturkey.plantillas.Feedbacker;
-import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
-
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import devs.mrp.coolyourturkey.MainActivity;
+import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
+import devs.mrp.coolyourturkey.plantillas.Feedbacker;
+import devs.mrp.coolyourturkey.watchdog.groups.TimeLogHandler;
 
 public class WatchdogHandler implements Feedbacker<Object> {
 
@@ -58,7 +57,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
 
         mPackageManager = context.getPackageManager();
 
-        mPendingIntent = PendingIntent.getActivity(context, WATCHDOG_SERVICE_INTENT_ID, mNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mPendingIntent = PendingIntent.getActivity(context, WATCHDOG_SERVICE_INTENT_ID, mNotificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         mToqueDeQuedaHandler = new ToqueDeQuedaHandler(context);
     }

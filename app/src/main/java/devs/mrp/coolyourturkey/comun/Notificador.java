@@ -13,8 +13,6 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import devs.mrp.coolyourturkey.R;
-
 public class Notificador {
 
     public static final String CONDITION_MET_CHANNEL_ID = "coldturkeyyourself_condition_met_channel";
@@ -94,7 +92,7 @@ public class Notificador {
 
     public PendingIntent getPendingIntent(Intent intent) {
         //<intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         return pendingIntent;
     }
 
