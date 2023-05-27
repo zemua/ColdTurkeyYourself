@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.MainActivity;
 import devs.mrp.coolyourturkey.R;
+import devs.mrp.coolyourturkey.comun.Notificador;
+import devs.mrp.coolyourturkey.configuracion.MisPreferencias;
 import devs.mrp.coolyourturkey.configuracion.ToqueDeQuedaHandler;
 import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
@@ -51,7 +53,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
     private ToqueDeQuedaHandler mToqueDeQuedaHandler;
     private static boolean channelCreated = false;
 
-    WatchdogHandler(Context context) {
+    WatchdogHandler(Context context, MisPreferencias misPreferencias, Notificador notificador) {
         mContext = context;
         mNotificationIntent = new Intent(context, MainActivity.class);
 
@@ -59,7 +61,7 @@ public class WatchdogHandler implements Feedbacker<Object> {
 
         mPendingIntent = PendingIntent.getActivity(context, WATCHDOG_SERVICE_INTENT_ID, mNotificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-        mToqueDeQuedaHandler = new ToqueDeQuedaHandler(context);
+        mToqueDeQuedaHandler = new ToqueDeQuedaHandler(context, misPreferencias, notificador);
     }
 
     public Notification getNotificacionReposo() {
