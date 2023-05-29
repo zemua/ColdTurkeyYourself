@@ -265,6 +265,32 @@ class NegativeActionTest {
     }
 
     @Test
+    void testToqueDeQuedaNoOptionsSelectedButConditionsNotMet() throws Exception {
+        when(ultimoContador.getAcumulado()).thenReturn(99456L);
+        when(toqueDeQuedaHandler.isToqueDeQueda()).thenReturn(false);
+        ArgumentCaptor<Consumer<Boolean>> logCaptor = ArgumentCaptor.forClass(Consumer.class);
+        ArgumentCaptor<Consumer<Boolean>> preventCloseCaptor = ArgumentCaptor.forClass(Consumer.class);
+        when(misPreferencias.getMilisToast()).thenReturn(50L);
+        when(toqueDeQuedaHandler.isToqueDeQueda()).thenReturn(true);
+        when(misPreferencias.getBoolean(PreferencesBooleanEnum.LOCKDOWN_NEGATIVE_BLOCK, true)).thenReturn(false);
+
+        negativeAction.handle(data);
+
+        verify(elementAndGroupFacade, times(1)).onPreventClosing(ArgumentMatchers.eq("some package"), preventCloseCaptor.capture());
+        preventCloseCaptor.getValue().accept(false);
+
+        verify(packageConditionsChecker, times(1)).onAllConditionsMet(ArgumentMatchers.eq("some package"), logCaptor.capture());
+        logCaptor.getValue().accept(false);
+
+        verify(data, times(1)).setTiempoAcumulado(99456L - (321L*4));
+        verify(timePusher, times(1)).push(987L, 99456L - (321L*4));
+        verify(timeLogHandler, times(1)).insertTimeBadApp("some package", 321L);
+        verify(data, times(1)).setNeedToBlock(true);
+        verify(genericTimedToaster, times(0)).noticeMessage(ArgumentMatchers.anyString());
+        verify(screenBlock, times(1)).go();
+    }
+
+    @Test
     void testToqueDeQuedaBlocks() throws Exception {
         when(ultimoContador.getAcumulado()).thenReturn(99456L);
         when(toqueDeQuedaHandler.isToqueDeQueda()).thenReturn(false);
