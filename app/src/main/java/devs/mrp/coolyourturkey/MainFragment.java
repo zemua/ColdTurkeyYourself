@@ -1,13 +1,15 @@
 package devs.mrp.coolyourturkey;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +17,9 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import devs.mrp.coolyourturkey.R;
 
 import devs.mrp.coolyourturkey.comun.MilisToTime;
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
@@ -45,6 +46,7 @@ public class MainFragment extends Fragment {
     public static final int FEEDBACK_CONDICIONES_NEGATIVAS = 11;
     public static final int FEEDBACK_RANDOM_CHECK = 12;
     public static final int FEEDBACK_GRUPOS_NEGATIVOS = 13;
+    public static final int FEEDBACK_ACTIVATE_NOTIFICATIONS = 14;
 
     private static final String EXTRA_SWITCH_POSITION = "extra switch position";
 
@@ -61,6 +63,7 @@ public class MainFragment extends Fragment {
     private Button mPositiveTime;
     private Button mNegativeTime;
     private Button mConfigButton;
+    private Button activateNotificationsButton;
     private Switch mServiceSwitch;
     private TextView mTiempoActual;
     private ValueMapViewModel mValueMapViewModel;
@@ -80,6 +83,7 @@ public class MainFragment extends Fragment {
         if (mTimeAssembler != null && mTiempoActual != null) {
             mTiempoActual.setText(getString(R.string.tiempo_restante).concat(MilisToTime.getFormated(mTimeAssembler.getLast())));
         }
+        activateNotificationsButton();
     }
 
     @Override
@@ -107,6 +111,7 @@ public class MainFragment extends Fragment {
         mTiempoButton = (Button) v.findViewById(R.id.ver_tiempo_doble);
         mTiempoActual = (TextView) v.findViewById(R.id.text_tiempo_actual);
         mRandomCheckButton = (Button) v.findViewById(R.id.buttonRandomCheck);
+        activateNotificationsButton = (Button) v.findViewById(R.id.enableNotificationsButton);
 
         mConfigButton = (Button) v.findViewById(R.id.to_config_button);
         mWatchDogStarter.startService(); // WatchDogService tiene un ejecutor mono-instancia, si ya hay uno ejecutándose lo salta y sale directamente
@@ -119,6 +124,10 @@ public class MainFragment extends Fragment {
         //mNegativeConditionsButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_CONDICIONES_NEGATIVAS, mNegativeConditionsButton));
         mTiempoButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TIEMPO_DOBLE, mTiempoButton));
         mConfigButton.setOnClickListener(lv -> mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_TO_CONFIG, mConfigButton));
+        activateNotificationsButton.setOnClickListener(lv -> {
+            mFeedbackReceiver.receiveFeedback(MainFragment.this, FEEDBACK_ACTIVATE_NOTIFICATIONS, activateNotificationsButton);
+            activateNotificationsButton.setVisibility(View.GONE);
+        });
 
         mTimeAssembler = new TimeAssembler(this.getActivity().getApplication(), this);
         mTimeAssembler.addFeedbackListener((tipo, feedback, args) -> {
@@ -128,6 +137,14 @@ public class MainFragment extends Fragment {
         });
 
         return v;
+    }
+
+    private void activateNotificationsButton() {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            activateNotificationsButton.setVisibility(View.VISIBLE);
+        } else {
+            activateNotificationsButton.setVisibility(View.GONE);
+        }
     }
 
     private ServiceConnection connection = new ServiceConnection() {

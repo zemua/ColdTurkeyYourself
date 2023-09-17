@@ -45,7 +45,7 @@ public class DialogWithDelayPresenterImpl implements DialogWithDelayPresenter {
     @Override
     public void showDialog(String requestKey, String titulo, String mensaje, int iconoResId) {
         if (titulo != null && mensaje != null && fragment.getContext().getDrawable(iconoResId) != null) {
-            DialogWithDelayShower dwd = dialogFactory.getDialog(iconoResId, titulo, mensaje, requestKey);
+            DialogWithDelayShower dwd = dialogFactory.getDialog(iconoResId, titulo, mensaje, requestKey, mDelaySeconds);
             dwd.show(fragment.getChildFragmentManager(), null);
         }
     }

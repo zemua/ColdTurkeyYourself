@@ -215,4 +215,7 @@
     <string name="positivas_restan">Positivas restan</string>
     <string name="notificaciones_toque_de_queda">Notificaciones de toque de queda</string>
     <string name="envia_avisos_toque_de_queda">Envía avisos relacionados con el toque de queda</string>
+    <string name="activar_notificaciones">Activar Notificaciones</string>
+    <string name="notificaciones">Notificaciones</string>
+    <string name="debes_activar_notificaciones_reasoning">Debes activar las notificaciones para poder utilizar esta funcionalidad de la aplicación. Time Turkey enviará a intervalos irregulares una notificación para realizar una comprobación con las preguntas que hayas configurado, dependiendo de tus respuestas podrás ganar puntos positivos.</string>
 </resources>

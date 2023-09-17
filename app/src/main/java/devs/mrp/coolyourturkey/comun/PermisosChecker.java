@@ -1,5 +1,6 @@
 package devs.mrp.coolyourturkey.comun;
 
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -56,5 +58,13 @@ public class PermisosChecker {
     public static void requestPermisoAlertas(Context contexto){
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         contexto.startActivity(intent);
+    }
+
+    public static void requestPermisoNotificaciones(Context context) {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getApplicationInfo().packageName);
+            context.startActivity(intent);
+        }
     }
 }

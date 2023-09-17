@@ -2,10 +2,6 @@ package devs.mrp.coolyourturkey.comun;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.FragmentManager;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -23,6 +19,11 @@ public class DialogWithDelayAndFragmentResponse extends DialogWithDelay implemen
 
     public DialogWithDelayAndFragmentResponse(int iconResId, String title, String message, String requestKey) {
         super(iconResId, title, message);
+        this.requestKey = requestKey;
+    }
+
+    public DialogWithDelayAndFragmentResponse(int iconResId, String title, String message, String requestKey, int delaySeconds) {
+        super(iconResId, delaySeconds, title, message);
         this.requestKey = requestKey;
     }
 
