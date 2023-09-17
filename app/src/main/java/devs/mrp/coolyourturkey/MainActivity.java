@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
         super.onResume();
         if (!checkPermisoEstadisticas(this)) {
             ((MainFragment) fragment).muestraDialogoPermisos(fm, MainFragment.REQUEST_PERMISO_USO);
+        } else if (!PermisosChecker.checkPermisoAlertas(this)) {
+            ((MainFragment) fragment).muestraDialogoPermisos(fm, MainFragment.REQUEST_PERMISO_ALERTA);
         }
     }
 
