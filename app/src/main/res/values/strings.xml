@@ -218,4 +218,6 @@
     <string name="activar_notificaciones">Activar Notificaciones</string>
     <string name="notificaciones">Notificaciones</string>
     <string name="debes_activar_notificaciones_reasoning">Debes activar las notificaciones para poder utilizar esta funcionalidad de la aplicación. Time Turkey enviará a intervalos irregulares una notificación para realizar una comprobación con las preguntas que hayas configurado, dependiendo de tus respuestas podrás ganar puntos positivos.</string>
+    <string name="canal_notificaciones">Canal de Notificaciones</string>
+    <string name="random_check_notification_channel_reasoning">Time Turkey tiene permiso para mostrar notificaciones, sin embargo, para utilizar esta funcionalidad necesita estar activado el canal de notificaciones "Control aleatorio".</string>
 </resources>

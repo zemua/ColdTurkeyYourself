@@ -1,6 +1,8 @@
 package devs.mrp.coolyourturkey.randomcheck;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -41,6 +42,7 @@ public class RandomChecksFragment extends Fragment implements MyObservable<Objec
     public static final String FEEDBACK_NEGATIVE_CHECKS = "feedback_negative_checks_click";
 
     private static final String NOTIFICATIONS_REQUEST_KEY = "notification.permissions.request.key";
+    private static final String NOTIFICATIONS_CHANNEL_KEY = "notification.permissions.channel.key";
 
     private List<MyObserver<Object>> observers = new ArrayList<>();
 
@@ -105,26 +107,57 @@ public class RandomChecksFragment extends Fragment implements MyObservable<Objec
             }
         });
 
-        mSonidoButton.setOnClickListener(view -> {
-            Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getActivity().getApplicationInfo().packageName);
-            intent.putExtra(Settings.EXTRA_CHANNEL_ID, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
-            startActivity(intent);
-        });
+        mSonidoButton.setOnClickListener(view -> startChannelIntent());
 
         return v;
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            dialogWithDelayPresenter.setListener(NOTIFICATIONS_REQUEST_KEY, result -> {
-                if (result) {
-                    PermisosChecker.requestPermisoNotificaciones(this.getContext());
-                }
-            });
-            dialogWithDelayPresenter.showDialog(NOTIFICATIONS_REQUEST_KEY, this.getString(R.string.notificaciones), this.getString(R.string.debes_activar_notificaciones_reasoning), android.R.drawable.ic_popup_reminder);
+    public void onStart() {
+        super.onStart();
+        showNotificationPermissionDialogs();
+    }
+
+    private void showNotificationPermissionDialogs() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (!hasNotificationPermissions()) {
+                dialogWithDelayPresenter.setListener(NOTIFICATIONS_REQUEST_KEY, result -> {
+                    if (result) {
+                        PermisosChecker.requestPermisoNotificaciones(this.getContext());
+                    }
+                });
+                dialogWithDelayPresenter.showDialog(NOTIFICATIONS_REQUEST_KEY,
+                        this.getString(R.string.notificaciones),
+                        this.getString(R.string.debes_activar_notificaciones_reasoning),
+                        android.R.drawable.ic_popup_reminder);
+            } else if (!isNotificationChannelActive()) {
+                dialogWithDelayPresenter.setListener(NOTIFICATIONS_CHANNEL_KEY, result -> {
+                    if (result) {
+                        startChannelIntent();
+                    }
+                });
+                dialogWithDelayPresenter.showDialog(NOTIFICATIONS_CHANNEL_KEY,
+                        this.getString(R.string.canal_notificaciones),
+                        this.getString(R.string.random_check_notification_channel_reasoning),
+                        android.R.drawable.ic_popup_reminder);
+            }
         }
+    }
+
+    private boolean hasNotificationPermissions() {
+        return ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean isNotificationChannelActive() {
+        NotificationManager manager = (NotificationManager) this.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = manager.getNotificationChannel(RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
+        return channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+    }
+
+    private void startChannelIntent() {
+        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getActivity().getApplicationInfo().packageName);
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, RandomCheckWorker.NOTIFICATION_CHANNEL_ID);
+        startActivity(intent);
     }
 }

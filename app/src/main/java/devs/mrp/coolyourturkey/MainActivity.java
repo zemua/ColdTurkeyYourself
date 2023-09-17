@@ -1,10 +1,15 @@
 package devs.mrp.coolyourturkey;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -47,6 +52,14 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
          */
         /*if(BuildConfig.DEBUG)
             StrictMode.enableDefaults();*/
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (lacksNotificationPermissions() && checkPermisoEstadisticas(this)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS},1);
+        }
     }
 
     @Override
@@ -135,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
     /**
      * Checar y trasladar la necesidad de permisos
      */
+
+    private boolean lacksNotificationPermissions() {
+        return Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED;
+    }
 
     public static boolean checkPermisoEstadisticas(Context contexto) {
         return PermisosChecker.checkPermisoEstadisticas(contexto);
