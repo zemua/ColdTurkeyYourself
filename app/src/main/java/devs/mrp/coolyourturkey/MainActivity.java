@@ -1,13 +1,10 @@
 package devs.mrp.coolyourturkey;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -57,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
         super.onResume();
         if (!checkPermisoEstadisticas(this)) {
             ((MainFragment) fragment).muestraDialogoPermisos(fm, MainFragment.REQUEST_PERMISO_USO);
-        } else if (!PermisosChecker.checkPermisoAlertas(this)) {
-            ((MainFragment) fragment).muestraDialogoPermisos(fm, MainFragment.REQUEST_PERMISO_ALERTA);
         }
     }
 
@@ -111,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
                     Intent intentGruposNegativos = new Intent(MainActivity.this, GruposNegativosActivity.class);
                     startActivity(intentGruposNegativos);
                     break;
+                case MainFragment.FEEDBACK_ACTIVATE_NOTIFICATIONS:
+                    PermisosChecker.requestPermisoNotificaciones(this);
+                    break;
             }
         }
     }
@@ -140,13 +138,6 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
 
     public static boolean checkPermisoEstadisticas(Context contexto) {
         return PermisosChecker.checkPermisoEstadisticas(contexto);
-    }
-
-    public static boolean checkShouldShowRationale(Activity actividad) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(actividad, Manifest.permission.READ_CONTACTS)) {
-            return true;
-        }
-        return false;
     }
 
     public static void requestPermisoEstadisticas(Context contexto) {
