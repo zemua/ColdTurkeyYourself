@@ -14,15 +14,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.UriUtils;
 import devs.mrp.coolyourturkey.databaseroom.urisimportar.Importables;
 import devs.mrp.coolyourturkey.plantillas.FeedbackListener;
 import devs.mrp.coolyourturkey.plantillas.Feedbacker;
 import devs.mrp.coolyourturkey.watchdog.Importer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ImportsAdapter extends RecyclerView.Adapter<ImportsAdapter.ImportsViewHolder> implements Feedbacker<Importables> {
 
@@ -74,9 +75,7 @@ public class ImportsAdapter extends RecyclerView.Adapter<ImportsAdapter.ImportsV
 
     @Override
     public void onBindViewHolder(@NonNull ImportsAdapter.ImportsViewHolder holder, int position) {
-
         Uri luri = Uri.parse(mDataSet.get(position).getUri());
-        //holder.vhTextView.setText(mDataSet.get(position).getUri());
         holder.vhTextView.setText(UriUtils.getFileName(luri, mContext));
         if (oldColors == null){oldColors = holder.vhTextView.getTextColors();}
         if(!Importer.tenemosPermisoLectura(mContext, luri)){
@@ -90,7 +89,7 @@ public class ImportsAdapter extends RecyclerView.Adapter<ImportsAdapter.ImportsV
         holder.vhButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Importables limportable = mDataSet.get(position);
+                Importables limportable = mDataSet.get(holder.getBindingAdapterPosition());
                 giveFeedback(TIPO_DELETE, limportable);
             }
         });
@@ -102,7 +101,7 @@ public class ImportsAdapter extends RecyclerView.Adapter<ImportsAdapter.ImportsV
     }
 
     public void updateDataset(List<Importables> data){
-        mDataSet = data;
+        mDataSet = data.stream().filter(d -> Importer.tenemosPermisoLectura(mContext, Uri.parse(d.getUri()))).collect(Collectors.toList());
         ImportsAdapter.this.notifyDataSetChanged();
     }
 
