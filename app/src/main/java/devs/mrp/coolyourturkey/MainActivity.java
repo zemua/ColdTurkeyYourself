@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements FeedbackReceiver<
     @Override
     public void onStart() {
         super.onStart();
-        if (lacksNotificationPermissions() && checkPermisoEstadisticas(this)) {
+        if (lacksNotificationPermissions() && checkPermisoEstadisticas(this) && PermisosChecker.checkPermisoAlertas(this)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS},1);
         }
     }
