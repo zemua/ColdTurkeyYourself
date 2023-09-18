@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +44,7 @@ import devs.mrp.coolyourturkey.databaseroom.urisimportar.ImportablesViewModel;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMap;
 import devs.mrp.coolyourturkey.databaseroom.valuemap.ValueMapViewModel;
 import devs.mrp.coolyourturkey.watchdog.Exporter;
+import devs.mrp.coolyourturkey.watchdog.Importer;
 
 @AndroidEntryPoint
 public class ConfiguracionFragment extends Fragment {
@@ -245,7 +245,7 @@ public class ConfiguracionFragment extends Fragment {
             @Override
             public void onChanged(List<ValueMap> valueMaps) {
                 mLoadedExports = true;
-                if (valueMaps.size() > 0) {
+                if (valueMaps.size() > 0 && Exporter.tenemosPermisoEscritura(mContext, Uri.parse(valueMaps.get(0).getValor()))) {
                     mExportValueMap = valueMaps.get(0);
                     //mShareText.setText(valueMaps.get(0).getValor());
                     Uri luri = Uri.parse(valueMaps.get(0).getValor());
