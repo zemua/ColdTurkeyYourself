@@ -20,13 +20,15 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
     private Integer mGroupId;
     private String mGroupName;
     private boolean mGroupPreventClose;
+    private boolean mGroupIgnoreBasedConditions;
 
-    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName, boolean preventClose) {
+    public ReviewerPagerAdapterPositive(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Context context, Integer groupId, String groupName, boolean preventClose, boolean ignoreBasedConditions) {
         super(fragmentManager, lifecycle);
         this.mContext = context;
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.mGroupPreventClose = preventClose;
+        this.mGroupIgnoreBasedConditions = ignoreBasedConditions;
     }
 
     @NonNull
@@ -40,7 +42,7 @@ public class ReviewerPagerAdapterPositive extends ReviewerPagerAdapter {
             case 2:
                 return new ExternalTabFragment(GroupType.POSITIVE, mGroupId);
             case 3:
-                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.POSITIVE, mGroupPreventClose);
+                return new ConditionsTabFragment(mGroupId, mGroupName, GroupType.POSITIVE, mGroupPreventClose, mGroupIgnoreBasedConditions);
             default:
                 return new AppsTabFragment(GroupType.POSITIVE, mGroupId);
         }

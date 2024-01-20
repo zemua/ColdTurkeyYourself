@@ -11,8 +11,8 @@ public class ReviewerPagerChooser {
 
     private ReviewerPagerAdapter adapter;
 
-    public ReviewerPagerChooser(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Integer groupId, Context context, String groupName, boolean preventClose) {
-        set(fragmentManager, lifecycle, type, context, groupId, groupName, preventClose);
+    public ReviewerPagerChooser(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Integer groupId, Context context, String groupName, boolean preventClose, boolean ignoreBasedConditions) {
+        set(fragmentManager, lifecycle, type, context, groupId, groupName, preventClose, ignoreBasedConditions);
     }
 
     public FragmentStateAdapter get() {
@@ -23,13 +23,13 @@ public class ReviewerPagerChooser {
         return adapter.getPositionName(position);
     }
 
-    private void set(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Context context, Integer groupId, String groupName, boolean preventClose) {
+    private void set(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, Type type, Context context, Integer groupId, String groupName, boolean preventClose, boolean ignoreBasedConditions) {
         switch (type) {
             case NEGATIVE:
-                adapter = new ReviewerPagerAdapterNegative(fragmentManager, lifecycle, context, groupId, groupName, preventClose);
+                adapter = new ReviewerPagerAdapterNegative(fragmentManager, lifecycle, context, groupId, groupName, preventClose, ignoreBasedConditions);
                 break;
             case POSITIVE:
-                adapter = new ReviewerPagerAdapterPositive(fragmentManager, lifecycle, context, groupId, groupName, preventClose);
+                adapter = new ReviewerPagerAdapterPositive(fragmentManager, lifecycle, context, groupId, groupName, preventClose, ignoreBasedConditions);
                 break;
             default:
                 break;

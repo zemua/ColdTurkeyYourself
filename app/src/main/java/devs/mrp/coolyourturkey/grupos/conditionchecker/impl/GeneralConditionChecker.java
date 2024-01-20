@@ -7,16 +7,14 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observer;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import devs.mrp.coolyourturkey.comun.MilisToTime;
+import devs.mrp.coolyourturkey.databaseroom.grupo.Grupo;
+import devs.mrp.coolyourturkey.databaseroom.grupo.GrupoRepository;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoCondition;
 import devs.mrp.coolyourturkey.databaseroom.grupo.grupocondition.GrupoConditionRepository;
 import devs.mrp.coolyourturkey.grupos.conditionchecker.ConditionChecker;
@@ -28,14 +26,16 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
     private Application app;
     private LifecycleOwner owner;
     private GrupoConditionRepository conditionRepository;
+    private GrupoRepository grupoRepository;
 
     private String TAG = "GeneralConditionChecker";
 
-    public GeneralConditionChecker(Application app, LifecycleOwner owner, GrupoConditionRepository conditionRepository) {
+    public GeneralConditionChecker(Application app, LifecycleOwner owner, GrupoConditionRepository conditionRepository, GrupoRepository grupoRepository) {
         this.app = app;
         this.owner = owner;
         checkers = Arrays.asList(new LocalRecordsChecker(app, owner), new FileChecker(app, owner), new LocalRandomChecksChecker(app, owner));
         this.conditionRepository = conditionRepository;
+        this.grupoRepository = grupoRepository;
     }
 
     private void observeOnTimeCounted(Iterator<ConditionChecker> checkers, GrupoCondition condition, long result, Consumer<Long> action) {
@@ -67,7 +67,18 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
 
     @Override
     public void onConditionMet(GrupoCondition condition, Consumer<Boolean> action) {
-        observeOnConditionMet(checkers.listIterator(), condition, 0L, action);
+        LiveData<List<Grupo>> grupoLiveData = grupoRepository.findGrupoById(condition.getConditionalgroupid());
+        grupoLiveData.observe(this.owner, groups -> {
+            Grupo grupo = null;
+            if (groups.size() > 0) {
+                grupo = groups.get(0);
+            }
+            if (Objects.nonNull(grupo) && grupo.isIgnoreBasedConditions()) {
+                action.accept(true);
+            } else {
+                observeOnConditionMet(checkers.listIterator(), condition, 0L, action);
+            }
+        });
     }
 
     private void observeOnAllConditionsMet(Iterator<GrupoCondition> conditions, Consumer<Boolean> action) {

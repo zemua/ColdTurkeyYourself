@@ -51,6 +51,7 @@ public class ConditionsTabFragment extends Fragment {
     private Integer mGroupId;
     private String mGroupName;
     private boolean mGroupPreventClose;
+    private boolean mGroupIgnoreBasedConditions;
     private ViewModelProvider.Factory viewModelFactory;
     private GrupoViewModel grupoViewModel;
     private GrupoConditionViewModel grupoConditionViewModel;
@@ -72,12 +73,13 @@ public class ConditionsTabFragment extends Fragment {
         super();
     }
 
-    public ConditionsTabFragment(Integer groupId, String groupName, GroupType type, boolean preventClose) {
+    public ConditionsTabFragment(Integer groupId, String groupName, GroupType type, boolean preventClose, boolean ignoreBasedConditions) {
         super();
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.type = type;
         this.mGroupPreventClose = preventClose;
+        this.mGroupIgnoreBasedConditions = ignoreBasedConditions;
     }
 
     @Nullable
@@ -128,7 +130,12 @@ public class ConditionsTabFragment extends Fragment {
         mButton.setOnClickListener((view) -> launchAddCondition());
 
         mSecondButton = v.findViewById(R.id.second_button);
-        setupPreventCloseButton(mSecondButton);
+        mSecondButton.setVisibility(View.VISIBLE);
+        if (type.equals(GroupType.NEGATIVE)) {
+            setupPreventCloseButton(mSecondButton);
+        } else {
+            setupIgnoreConditionsBasedOnThisGroup(mSecondButton);
+        }
 
         return v;
     }
@@ -168,10 +175,6 @@ public class ConditionsTabFragment extends Fragment {
     }
 
     private void setupPreventCloseButton(Switch button) {
-        if (!type.equals(GroupType.NEGATIVE)) {
-            mSecondButton.setVisibility(View.GONE);
-            return;
-        }
         button.setText(R.string.evitar_cierre);
         mSecondButton.setChecked(mGroupPreventClose);
         setConditionsEnabled(!mGroupPreventClose);
@@ -193,6 +196,29 @@ public class ConditionsTabFragment extends Fragment {
                 grupoViewModel.setPreventCloseForGroupId(true, mGroupId);
                 mGroupPreventClose = true;
                 setConditionsEnabled(false);
+            }
+        });
+    }
+
+    private void setupIgnoreConditionsBasedOnThisGroup(Switch button) {
+        button.setText(R.string.ignore_based_conditions);
+        mSecondButton.setChecked(mGroupIgnoreBasedConditions);
+
+        mSecondButton.setOnClickListener(v -> {
+            if (mSecondButton.isChecked()) {
+                mSecondButton.setChecked(false);
+                dialogWithDelayPresenter.showDialog(REQUEST_KEY_PREVENT_CLOSE);
+            } else {
+                grupoViewModel.setIgnoreBasedConditionsForGroupId(false, mGroupId);
+                mGroupIgnoreBasedConditions = false;
+            }
+        });
+
+        dialogWithDelayPresenter.setListener(REQUEST_KEY_PREVENT_CLOSE,result ->{
+            if (result) {
+                mSecondButton.setChecked(true);
+                grupoViewModel.setIgnoreBasedConditionsForGroupId(true, mGroupId);
+                mGroupIgnoreBasedConditions = true;
             }
         });
     }

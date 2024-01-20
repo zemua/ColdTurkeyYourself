@@ -38,6 +38,7 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
     private String mGroupName;
     private GrupoType mGroupType;
     private boolean mGroupPreventClosing;
+    private boolean mGroupIgnoreBasedConditions;
     private Context mContext;
     private Handler mainHandler;
 
@@ -51,12 +52,13 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         super();
     }
 
-    public ReviewerFragment(int groupId, String groupName, GrupoType grupoType, boolean preventClosing) {
+    public ReviewerFragment(int groupId, String groupName, GrupoType grupoType, boolean preventClosing, boolean ignoreBasedConditions) {
         super();
         this.mGroupId = groupId;
         this.mGroupName = groupName;
         this.mGroupType = grupoType;
         this.mGroupPreventClosing = preventClosing;
+        this.mGroupIgnoreBasedConditions = ignoreBasedConditions;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class ReviewerFragment extends FeedbackerFragment<Intent> {
         buttonDelete = v.findViewById(R.id.buttonDelete);
         viewPager = v.findViewById(R.id.groupViewPager);
 
-        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getChildFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName, mGroupPreventClosing);
+        ReviewerPagerChooser chooser = new ReviewerPagerChooser(getChildFragmentManager(), getLifecycle(), pagerType(), mGroupId, mContext, mGroupName, mGroupPreventClosing, mGroupIgnoreBasedConditions);
         FragmentStateAdapter adapter = chooser.get();
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(chooser.getPositionName(position))).attach();
