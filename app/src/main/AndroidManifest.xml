@@ -9,6 +9,7 @@
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -61,8 +62,11 @@
         <activity android:name="devs.mrp.coolyourturkey.grupos.grupospositivosv2.GruposPositivosActivityV2"></activity>
         <activity android:name="devs.mrp.coolyourturkey.grupos.reviewer.tabs.addcondition.AddConditionActivity"></activity>
         <service android:name="devs.mrp.coolyourturkey.watchdog.WatchdogService"
+            android:foregroundServiceType="specialUse"
             android:exported="false"
             android:description="@string/descripcion_servicio_watchdog" >
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="@string/explanation_for_special_use"/>
         </service>
     </application>
 

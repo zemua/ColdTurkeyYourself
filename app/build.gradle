@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "devs.mrp.coolyourturkey"
         minSdkVersion 26
-        targetSdkVersion 33
-        versionCode 26
-        versionName "0.6.5"
+        targetSdkVersion 34
+        versionCode 27
+        versionName "0.6.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
