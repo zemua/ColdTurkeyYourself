@@ -29,10 +29,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     packagingOptions {
-        pickFirst 'META-INF/NOTICE.md'
+        resources {
+            pickFirsts += ['META-INF/NOTICE.md']
+        }
     }
+
 
     namespace 'devs.mrp.coolyourturkey'
 }
