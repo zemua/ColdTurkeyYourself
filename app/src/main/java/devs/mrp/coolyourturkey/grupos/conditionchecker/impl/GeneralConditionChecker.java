@@ -115,18 +115,12 @@ public class GeneralConditionChecker implements ConditionCheckerCommander {
                 grupo = groups.get(0);
             }
             if (Objects.nonNull(grupo)) {
-                message.accept(app.getString(R.string.conditions_not_met)
+                long remainingMinutes = condition.getConditionalminutes() - MilisToTime.getMinutes(timeMillis);
+                message.accept(grupo.getNombre()
                         + ": "
-                        + grupo.getNombre()
+                        + app.getString(R.string.faltan)
                         + " "
-                        + condition.getFromlastndays()
-                        + app.getString(R.string.dias)
-                        + ": "
-                        + MilisToTime.getMinutes(timeMillis)
-                        + " "
-                        + app.getString(R.string.de)
-                        + " "
-                        + condition.getConditionalminutes()
+                        + remainingMinutes
                         + " "
                         + app.getString(R.string.minutos)
                 );

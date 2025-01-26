@@ -30,6 +30,10 @@ public class GenericTimedToaster {
         }
     }
 
+    public void noticeMessageWithoutFloodProtection(String message) {
+        toastInMainThread(mContext, message, Toast.LENGTH_LONG);
+    }
+
     private boolean istimeUp(Long now) {
         if (now - mTiempoEntreToasts > lastToastTime) {
             return true;

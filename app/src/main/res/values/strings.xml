@@ -133,6 +133,7 @@
     <string name="sincronizar_con_archivo_txt">Sincronizar Con Archivo TXT</string>
     <string name="tiempo_de_los_ultimos">tiempo de los últimos</string>
     <string name="en_el_archivo">en el archivo</string>
+    <string name="faltan">faltan</string>
     <string name="condition_met_channel_name">Condición cumplida</string>
     <string name="condition_not_met">Condición no cumplida</string>
     <string name="condition_met_channel_description">Canal usado para enviar notificaciones cuando un grupo cumple las condiciones para sumar puntos</string>
