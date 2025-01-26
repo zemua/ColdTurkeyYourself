@@ -18,9 +18,14 @@ public class PackageConditionsCheckerImpl implements PackageConditionsChecker {
 
     @Override
     public void onAllConditionsMet(String packageName, Consumer<Boolean> action) {
+        onAllConditionsMet(packageName, action, (s) -> {});
+    }
+
+    @Override
+    public void onAllConditionsMet(String packageName, Consumer<Boolean> action, Consumer<String> message) {
         mapper.groupIdFromPackageName(packageName, groupId -> {
             if (groupId > 0) {
-                checker.onAllConditionsMet(groupId, isMet -> action.accept(isMet));
+                checker.onAllConditionsMet(groupId, (isMet) -> action.accept(isMet), (msg) -> message.accept(msg));
             } else {
                 // if no assigned to group, then no conditions
                 action.accept(true);

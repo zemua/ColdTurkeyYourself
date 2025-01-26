@@ -110,8 +110,11 @@
     <string name="condicion_para_grupo">Condición para grupo</string>
     <string name="h_de_horas">Horas</string>
     <string name="m_de_minutos">Minutos</string>
+    <string name="minutos">minutos</string>
     <string name="d_de_dias_con_explicacion">Días (0 = hoy)</string>
     <string name="d_de_dias">Días</string>
+    <string name="dias">días</string>
+    <string name="de">de</string>
     <string name="tipo_de_condicion">Tipo de condición</string>
     <string name="si_el_grupo">Si el grupo</string>
     <string name="si_el_archivo">Si el archivo</string>
@@ -131,6 +134,7 @@
     <string name="tiempo_de_los_ultimos">tiempo de los últimos</string>
     <string name="en_el_archivo">en el archivo</string>
     <string name="condition_met_channel_name">Condición cumplida</string>
+    <string name="condition_not_met">Condición no cumplida</string>
     <string name="condition_met_channel_description">Canal usado para enviar notificaciones cuando un grupo cumple las condiciones para sumar puntos</string>
     <string name="cumple_las_condiciones">Ahora puede sumar puntos</string>
     <string name="avisame_cuando_un_grupo_recien_cumpla_condiciones">Avísame cuando un grupo pase a cumplir las condiciones para sumar puntos.</string>

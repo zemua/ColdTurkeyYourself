@@ -68,7 +68,9 @@ public class NegativeAction extends AbstractHandler{
             data.setNeedToBlock(true);
             block(data);
         } else {
-            data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> onAllConditionsMet(data, areMet));
+            data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(),
+                    areMet -> onAllConditionsMet(data, areMet),
+                    msg -> {data.getConditionToaster().noticeMessage(msg);});
         }
     }
 
