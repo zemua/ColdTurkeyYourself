@@ -59,7 +59,7 @@ public class PositiveAction extends AbstractHandler{
                 //data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.conditions_not_met));
             }
         }, msg -> {
-            data.getConditionToaster().noticeMessage(msg);
+            data.getConditionToaster().noticeMessageNoFloodForSameMessage(msg);
         });
     }
 
