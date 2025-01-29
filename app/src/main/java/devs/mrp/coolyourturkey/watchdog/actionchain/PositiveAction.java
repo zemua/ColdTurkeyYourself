@@ -1,6 +1,5 @@
 package devs.mrp.coolyourturkey.watchdog.actionchain;
 
-import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.configuracion.PreferencesBooleanEnum;
 import devs.mrp.coolyourturkey.watchdog.ForegroundAppChecker;
 import devs.mrp.coolyourturkey.watchdog.WatchDogData;
@@ -52,13 +51,15 @@ public class PositiveAction extends AbstractHandler{
     }
 
     private void handleAccordingToConditions(WatchDogData data) {
-        data.getTimeLogHandler().onAllConditionsMet(data.getPackageName(), areMet -> {
+        data.getPackageConditionsChecker().onAllConditionsMet(data.getPackageName(), areMet -> {
             if (areMet) {
                 pointsUpdater.increasePoints(data);
             } else {
                 pointsUpdater.keepPoints(data);
-                data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.conditions_not_met));
+                //data.getConditionToaster().noticeMessage(data.getService().getApplication().getResources().getString(R.string.conditions_not_met));
             }
+        }, msg -> {
+            data.getConditionToaster().noticeMessage(msg);
         });
     }
 
