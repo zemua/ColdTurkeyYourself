@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "devs.mrp.coolyourturkey"
         minSdkVersion 26
-        targetSdkVersion 33
-        versionCode 25
-        versionName "0.6.4"
+        targetSdkVersion 35
+        versionCode 28
+        versionName "0.6.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,10 +29,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     packagingOptions {
-        pickFirst 'META-INF/NOTICE.md'
+        resources {
+            pickFirsts += ['META-INF/NOTICE.md']
+        }
     }
+
 
     namespace 'devs.mrp.coolyourturkey'
 }

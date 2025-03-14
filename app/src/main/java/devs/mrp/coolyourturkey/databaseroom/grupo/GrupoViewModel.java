@@ -43,4 +43,6 @@ public class GrupoViewModel extends AndroidViewModel {
 
     public void setPreventCloseForGroupId(boolean value, int groupId) {mRepo.setPreventCloseForGroupId(value, groupId);}
 
+    public void setIgnoreBasedConditionsForGroupId(boolean value, int groupId) {mRepo.setIgnoreBasedConditionsForGroupId(value, groupId);}
+
 }

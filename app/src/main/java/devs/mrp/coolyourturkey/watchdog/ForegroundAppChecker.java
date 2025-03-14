@@ -9,16 +9,15 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import devs.mrp.coolyourturkey.comun.PermisosChecker;
-import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
-import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
-import devs.mrp.coolyourturkey.workspace.WspController;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import devs.mrp.coolyourturkey.comun.PermisosChecker;
+import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
+import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 
 public class ForegroundAppChecker {
 
@@ -198,6 +197,8 @@ public class ForegroundAppChecker {
         result.packageName = lastPackage;
         result.activityName = lastPackageActivity;
         result.appType = packageNameToCodeType(lastPackage);
+
+        Log.d(TAG, "Retrieved event info -- package name: " + result.packageName + " / activity name: " + result.activityName + " / app type: " + result.appType);
 
         lastQueryTime = now;
 

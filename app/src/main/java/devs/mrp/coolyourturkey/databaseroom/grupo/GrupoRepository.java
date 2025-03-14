@@ -65,4 +65,8 @@ public class GrupoRepository {
         TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.setPreventCloseForGroupId(value, groupId));
     }
 
+    public void setIgnoreBasedConditionsForGroupId(boolean value, int groupId) {
+        TurkeyDatabaseRoom.databaseWriteExecutor.execute(() -> mDao.setIgnoreBasedConditionsForGroupId(value, groupId));
+    }
+
 }

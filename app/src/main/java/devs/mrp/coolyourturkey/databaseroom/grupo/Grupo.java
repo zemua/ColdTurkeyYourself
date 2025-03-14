@@ -28,6 +28,9 @@ public class Grupo {
     @ColumnInfo(name = "preventclose", defaultValue = "0")
     private boolean preventclose;
 
+    @ColumnInfo(name = "ignoreconditions", defaultValue = "0")
+    private boolean ignoreBasedConditions;
+
     public Grupo(String nombre) {this.nombre = nombre;}
 
     @NonNull
@@ -67,5 +70,17 @@ public class Grupo {
 
     public void setPreventclose(boolean preventclose) {
         this.preventclose = preventclose;
+    }
+
+    public boolean isIgnoreBasedConditions() {
+        if (!GrupoType.POSITIVE.equals(this.type)) {
+            // if not positive, there are no conditions based on it
+            return true;
+        }
+        return Objects.isNull(this.ignoreBasedConditions) ? false : this.ignoreBasedConditions;
+    }
+
+    public void setIgnoreBasedConditions(boolean ignoreBasedConditions) {
+        this.ignoreBasedConditions = ignoreBasedConditions;
     }
 }

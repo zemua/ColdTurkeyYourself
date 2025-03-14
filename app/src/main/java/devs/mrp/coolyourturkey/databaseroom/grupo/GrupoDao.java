@@ -41,4 +41,7 @@ public interface GrupoDao {
    @Query("UPDATE grupo SET preventclose = :value WHERE id = :groupId")
     void setPreventCloseForGroupId(boolean value, int groupId);
 
+    @Query("UPDATE grupo SET ignoreconditions = :value WHERE id = :groupId")
+   void setIgnoreBasedConditionsForGroupId(boolean value, int groupId);
+
 }

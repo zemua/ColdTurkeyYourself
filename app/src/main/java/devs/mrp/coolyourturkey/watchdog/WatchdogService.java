@@ -6,7 +6,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -140,7 +142,13 @@ public class WatchdogService extends LifecycleService {
 
         mData.setTimePusher(MyBeanFactory.getTimePusherFactory().get(mContadorRepo));
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        startForeground(WatchdogHandler.TURKEY_NOTIFICATION_ID, mData.getNotification());
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            startForeground(WatchdogHandler.TURKEY_NOTIFICATION_ID, mData.getNotification());
+        } else {
+            startForeground(WatchdogHandler.TURKEY_NOTIFICATION_ID, mData.getNotification(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        }
     }
 
     @Override

@@ -110,8 +110,11 @@
     <string name="condicion_para_grupo">Condición para grupo</string>
     <string name="h_de_horas">Horas</string>
     <string name="m_de_minutos">Minutos</string>
+    <string name="minutos">minutos</string>
     <string name="d_de_dias_con_explicacion">Días (0 = hoy)</string>
     <string name="d_de_dias">Días</string>
+    <string name="dias">días</string>
+    <string name="de">de</string>
     <string name="tipo_de_condicion">Tipo de condición</string>
     <string name="si_el_grupo">Si el grupo</string>
     <string name="si_el_archivo">Si el archivo</string>
@@ -130,7 +133,9 @@
     <string name="sincronizar_con_archivo_txt">Sincronizar Con Archivo TXT</string>
     <string name="tiempo_de_los_ultimos">tiempo de los últimos</string>
     <string name="en_el_archivo">en el archivo</string>
+    <string name="faltan">faltan</string>
     <string name="condition_met_channel_name">Condición cumplida</string>
+    <string name="condition_not_met">Condición no cumplida</string>
     <string name="condition_met_channel_description">Canal usado para enviar notificaciones cuando un grupo cumple las condiciones para sumar puntos</string>
     <string name="cumple_las_condiciones">Ahora puede sumar puntos</string>
     <string name="avisame_cuando_un_grupo_recien_cumpla_condiciones">Avísame cuando un grupo pase a cumplir las condiciones para sumar puntos.</string>
@@ -204,6 +209,7 @@
     <string name="you_are_close_to_the_change_of_day">Estás cerca del cambio de día</string>
     <string name="app_bloqued">¡App Bloqueada!</string>
     <string name="evitar_cierre">Evitar cierre</string>
+    <string name="ignore_based_conditions">Ignora condiciones basadas en este grupo</string>
     <string name="recapacita">Recapacita</string>
     <string name="estas_seguro_que_debes_hacer_esto">¿Estás seguro de que debes hacer esto?</string>
     <string name="frequency">Frecuencia</string>
@@ -220,4 +226,5 @@
     <string name="debes_activar_notificaciones_reasoning">Debes activar las notificaciones para poder utilizar esta funcionalidad de la aplicación. Time Turkey enviará a intervalos irregulares una notificación para realizar una comprobación con las preguntas que hayas configurado, dependiendo de tus respuestas podrás ganar puntos positivos.</string>
     <string name="canal_notificaciones">Canal de Notificaciones</string>
     <string name="random_check_notification_channel_reasoning">Time Turkey tiene permiso para mostrar notificaciones, sin embargo, para utilizar esta funcionalidad necesita estar activado el canal de notificaciones "Control aleatorio".</string>
+    <string name="explanation_for_special_use">Time Turkey necesita permiso para mantener un servicio funcionando, de forma que pueda comprobar el id de la aplicación que está abierta en cada momento, para sumar puntos, restar puntos, o bloquear una app según la configuración seleccionada y así ser de ayuda en la productividad del usuario</string>
 </resources>

@@ -9,12 +9,9 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import devs.mrp.coolyourturkey.R;
 import devs.mrp.coolyourturkey.comun.DialogWithDelay;
-import devs.mrp.coolyourturkey.comun.DialogWithDelayPresenter;
 import devs.mrp.coolyourturkey.comun.FeedbackerFragment;
 import devs.mrp.coolyourturkey.comun.SingleFragmentActivity;
 import devs.mrp.coolyourturkey.configuracion.ConfiguracionFragment;
@@ -32,6 +29,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     public static final String EXTRA_GROUP_NAME = "extra_group_name";
     public static final String EXTRA_GROUP_TYPE = "extra_group_type";
     public static final String EXTRA_PREVENT_CLOSE = "extra_prevent_close";
+    public static final String EXTRA_IGNORE_CONDITIONS = "extra_ignore_conditions";
 
     private static final int EXPORT_LAST_DAYS = 30;
 
@@ -41,6 +39,7 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
     private String mGroupName;
     private GrupoType mGroupType;
     private boolean mPreventClose;
+    private boolean mIgnoreBasedConditions;
 
     private GrupoRepository grupoRepository;
     private GrupoExportRepository grupoExportRepository;
@@ -95,7 +94,8 @@ public class ReviewerActivity extends SingleFragmentActivity<Intent> {
         mGroupName = intent.getStringExtra(EXTRA_GROUP_NAME);
         mGroupType = GrupoType.valueOf(intent.getStringExtra(EXTRA_GROUP_TYPE));
         mPreventClose = intent.getBooleanExtra(EXTRA_PREVENT_CLOSE, false);
-        ReviewerFragment fragment = new ReviewerFragment(mGroupId, mGroupName, mGroupType, mPreventClose);
+        mIgnoreBasedConditions = intent.getBooleanExtra(EXTRA_IGNORE_CONDITIONS, false);
+        ReviewerFragment fragment = new ReviewerFragment(mGroupId, mGroupName, mGroupType, mPreventClose, mIgnoreBasedConditions);
         return fragment;
     }
 
