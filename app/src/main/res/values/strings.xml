@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Time Turkey</string>
-    <string name="apps_buenas">Aplicaciones Positivas</string>
-    <string name="apps_malas">Aplicaciones Negativas</string>
+    <string name="apps_buenas">Apps Positivas</string>
+    <string name="apps_malas">Apps Negativas</string>
     <string name="es_positiva">Es positiva</string>
     <string name="es_negativa">Es negativa</string>
     <string name="esta_en_otra_lista">Está en otra lista</string>
