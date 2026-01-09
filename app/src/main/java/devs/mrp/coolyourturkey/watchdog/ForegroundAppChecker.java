@@ -10,10 +10,12 @@ import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import devs.mrp.coolyourturkey.comun.PermisosChecker;
 import devs.mrp.coolyourturkey.databaseroom.listados.AplicacionListada;
@@ -22,6 +24,7 @@ import devs.mrp.coolyourturkey.usagestats.ForegroundAppSpec;
 public class ForegroundAppChecker {
 
     private static final String TAG = "FOREGROUND APP CHECKER CLASS";
+    private static final Map<String, TurkeyEvent> packageMap = new ConcurrentHashMap<>();
 
     List<String> appsForeground;
     Map<String, AplicacionListada> mAppsBuenas;
@@ -184,14 +187,20 @@ public class ForegroundAppChecker {
         UsageEvents levents = mUsageStatsManager.queryEvents(queryStartTime, now);
         while (levents.hasNextEvent()) {
             levents.getNextEvent(event);
-
-            if (event.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED /* MOVE_TO_FOREGROUND deprecated */) {
-                if (event.getTimeStamp() >= lastPackageTime) {
-                    lastPackageTime = event.getTimeStamp();
-                    lastPackage = event.getPackageName();
-                    lastPackageActivity = event.getClassName();
-                }
+            Log.d(TAG, "Event: "+ event.getEventType() + " " + event.getPackageName());
+            if (event.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED || event.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                putEvent(new TurkeyEvent(event.getTimeStamp(), event.getPackageName(), event.getClassName()));
+            } else if (event.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND || event.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED) {
+                Log.d(TAG, "Removing: " + event.getPackageName());
+                packageMap.remove(event.getPackageName());
             }
+        }
+
+        TurkeyEvent mostRecent = packageMap.values().stream().max(Comparator.comparingLong(TurkeyEvent::getTimeStamp)).orElse(null);
+        if (mostRecent != null) {
+            lastPackageTime = mostRecent.getTimeStamp();
+            lastPackage = mostRecent.getPackageName();
+            lastPackageActivity = mostRecent.getClassName();
         }
 
         result.packageName = lastPackage;
@@ -232,5 +241,37 @@ public class ForegroundAppChecker {
 
     public void actualizaMalas(Map<String, AplicacionListada> malas) {
         mAppsMalas = malas;
+    }
+
+    private void putEvent(TurkeyEvent event) {
+        TurkeyEvent existing = packageMap.get(event.getPackageName());
+        if (existing == null || existing.getTimeStamp() < event.getTimeStamp()) {
+            Log.d(TAG, "Adding: " + event.getPackageName() + " " + event.getTimeStamp());
+            packageMap.put(event.getPackageName(), event);
+        }
+    }
+
+    private class TurkeyEvent {
+        private long timeStamp;
+        private String packageName;
+        private String className;
+
+        public TurkeyEvent(long timeStamp, String packageName, String className) {
+            this.timeStamp = timeStamp;
+            this.packageName = packageName;
+            this.className = className;
+        }
+
+        public long getTimeStamp() {
+            return timeStamp;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+
+        public String getClassName() {
+            return className;
+        }
     }
 }
